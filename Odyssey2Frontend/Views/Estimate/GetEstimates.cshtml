@@ -1,0 +1,351 @@
+﻿@model JsonResponseModel
+@{
+	EstimationIntIdModel estimationIntIdModel = null;
+	if (
+		Model.intStatus == 200
+		)
+	{
+		estimationIntIdModel = (EstimationIntIdModel)Model.objResponse;
+	}
+
+	ViewData["Title"] = "Estimate";
+	ViewBag.boolIsEstimate = true;
+	ViewBag.HideFormAttribute = false;
+}
+
+<div class="row">
+	<div class="col-sm-3">
+		<h2>Estimates</h2>
+	</div>
+</div>
+
+@if (Model.intStatus == 200)
+{
+	bool boolIsConfirmed = false;
+	<input name="boolReadOnly" id="boolReadOnly" type="hidden" value="@(((bool)ViewBag.boolReadOnly).ToString())" />
+	<input name="strJobId" id="strJobId" value="@ViewBag.intJobId" type="hidden" />
+	<input name="intPkWorkflow" id="intPkWorkflow" value="@ViewBag.intPkWorkflow" type="hidden" />
+	<input name="boolIsFromJob" id="boolIsFromJob" value="@estimationIntIdModel.boolIsFromJob.ToString()" type="hidden" />
+	<input name="boolIsEstimate" id="boolIsEstimate" value="true" type="hidden" />
+	<div class="row">
+		<div class="col-sm-8">
+			<div id="accordion">
+				@foreach (EstimateModel estimation in estimationIntIdModel.arrest)
+				{
+					if (
+						estimation.intnEstimationId == 0
+						)
+					{
+						boolIsConfirmed = true;
+					}
+
+					<div class="card" style="margin-bottom: 0%">
+						<div class="card-header estimate-card" id="heading_@estimation.intnEstimationId">
+							<div class="mb-0">
+								<a class="btn btn-link openEstimation" data-toggle="collapse"
+								   data-intnPkEstimation="@estimation.intnEstimationId"
+								   data-Base="@estimation.strBaseDate|@estimation.strBaseTime"
+								   data-estimate="@ViewBag.intJobId|@ViewBag.intPkWorkflow"
+								   data-target="#collapse_@estimation.intnEstimationId@estimation.intnCopyNumber"
+								   data-boolIsConfirmed="@boolIsConfirmed"
+								   data-intnCopyNumber="@estimation.intnCopyNumber"
+								   aria-expanded="true" aria-controls="collapse_@estimation.intnEstimationId">
+									@if (String.IsNullOrEmpty(estimation.strName))
+									{
+										if (@estimation.intnEstimationId >= 0)
+										{
+											<text>Estimate </text>@estimation.intnEstimationId;
+										}
+										else
+										{
+											<text>Partial Estimate</text>
+										}
+									}
+									else
+									{
+										@estimation.strName
+
+									}
+								</a>
+
+								<label id="qty-@(estimation.intnEstimationId + estimation.intnCopyNumber.GetValueOrDefault())"
+									   class="m-0 p-1"><strong>Quantity:</strong> @estimation.intQuantity</label>
+									<label id="price-@(estimation.intnEstimationId + estimation.intnCopyNumber.GetValueOrDefault())"
+										   class="m-0 p-1"><strong>Price:</strong> $@estimation.numPrice.ToString("n2")</label>
+										@*<a href="#" data-toggle="tooltip" title="Quantity: @estimation.intQuantity">
+												<span class="fa-stack m-0 p-1" style="color:#808284; background-color: #808284; border-radius:50%">
+													<i class="fa fa-hashtag fa-stack-1x fa-inverse" style="font-size:80%; margin-top: 18%"></i>
+												</span>
+											</a>
+											<a href="#" data-toggle="tooltip" title="Price: $@estimation.numPrice.ToString("n2")">
+												<span class="fa-stack m-0 p-1" style="color:#808284; background-color: #808284; border-radius:50%">
+													<i class="fa fa-dollar fa-stack-1x fa-inverse" style="font-size:80%; margin-top: 18%"></i>
+												</span>
+											</a>*@
+
+										@if (estimation.intnEstimationId != null && estimation.intnEstimationId >= 0)
+										{
+											String strOriginalEstimationName = String.IsNullOrEmpty(estimation.strName) == true ? "Estimate " + estimation.intnEstimationId : estimation.strName;
+											<form class="saveNewEstimateName" style="width: 50%" hidden>
+												<input name="intEstimationId" value="@estimation.intnEstimationId" type="hidden">
+												<input name="intJobId" value="@ViewBag.intJobId" type="hidden" />
+												<input name="intPkWorkflow" value="@ViewBag.intPkWorkflow" type="hidden" />
+												<div class="input-group">
+													<input name="strName" value="@strOriginalEstimationName" type="text" class="form-control form-control-sm"
+														   data-strName="@strOriginalEstimationName">
+													<div class="input-group-append">
+														<button class="btn btn-sm btn-primary" type="submit"><span class="fa fa-save"></span></button>
+														<button class="btn btn-sm btn-secondary cancelEditEstimateName" type="button"><span class="fa fa-times"></span></button>
+													</div>
+												</div>
+											</form>
+											<button class="btn btn-sm btn-secondary pull-right mt-1 btn-edit-estimate-name"><span class="fa fa-pencil"></span></button>
+											@if (
+												(estimation.intnEstimationId == 0) &&
+												(estimation.intnCopyNumber == null) &&
+												(estimationIntIdModel.arrest.Where(est => est.intEstimationId == 0).Count() < 3) &&
+												(!estimationIntIdModel.boolIsFromJob)
+												)
+											{
+												<button class="btn btn-sm btn-info pull-right mt-1" id="copy-estimate"
+														data-intJobId="@ViewBag.intJobId"
+														data-intPkWorkflow="@ViewBag.intPkWorkflow"
+														data-intEstimateId="@estimation.intnEstimationId">
+													<span class="fa fa-copy"></span>
+												</button>
+											}
+										}
+
+									</div>
+								</div>
+								<div id="collapse_@estimation.intnEstimationId@estimation.intnCopyNumber" class="collapse"
+									 data-intnPkEstimation="@estimation.intnEstimationId"
+									 data-Base="@estimation.strBaseDate|@estimation.strBaseTime"
+									 data-estimate="@ViewBag.intJobId|@ViewBag.intPkWorkflow"
+									 aria-labelledby="heading_@estimation.intnEstimationId" data-parent="#accordion">
+									<div class="card-body">
+
+									</div>
+								</div>
+							</div>
+						}
+			</div>
+		</div>
+	</div>
+	<div class="row" style="margin-bottom: 70px">
+		<div class="col-sm-12 pull-right">
+			<div class="btn-group pull-right">
+				@if (
+				  boolIsConfirmed && estimationIntIdModel.boolIsFromJob
+				  )
+				{
+				<button class="btn btn-sm btn-info pull-right mr-1" id="sendEstimationBtn"
+						data-intJobId="@ViewBag.intJobId"
+						data-intPkWorkflow="@ViewBag.intPkWorkflow">
+					<i class="fa fa-send"></i> Send Estimate
+				</button>
+				}
+				else if (
+					(boolIsConfirmed) && !estimationIntIdModel.boolIsFromJob
+					)
+				{
+					<button class="btn btn-sm btn-danger pull-right mr-1" id="btnDeclineEstimate"
+							data-intjobid="@ViewBag.intJobId"
+							data-intPkWorkflow="@ViewBag.intPkWorkflow">
+						<i class="fa fa-minus-circle" aria-hidden="true"></i> Decline Estimate
+					</button>
+					<button class="btn btn-sm btn-info pull-right mr-1" id="estimateSummaryButton"
+							data-intJobId="@ViewBag.intJobId"
+							data-intPkWorkflow="@ViewBag.intPkWorkflow">
+						<i class="fa fa-file"></i> Estimate Summary
+					</button>
+				}
+				<a download="estimate.pdf"
+				   href="/Estimate/Download?intJobId=@ViewBag.intJobId&intPkWorkflow=@ViewBag.intPkWorkflow"
+				   class="btn btn-sm btn-info pull-right mr-1 @(estimationIntIdModel.boolIsDownloadable == true ? "" : "disabled")">
+					<i class="fa fa-download"></i> Download
+				</a>
+			</div>
+		</div>
+	</div>
+
+	<div id="conditionToApplyModal" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1052">
+		<div class="modal-dialog modal-dialog-centered modal-xl">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Conditions To Apply</h4>
+					<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+				</div>
+				<div class="modal-body" id="conditionToApply">
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary btnSaveConditionToApply"><i class="fa fa-save"></i> Save Condition</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="generalPorpousesModal" class="modal fade" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-dialog-centered modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="generalPorpousesModalTitle"></h4>
+					<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+				</div>
+				<div class="modal-body" id="generalPorpousesModalBody"></div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<!-- Cost Modal -->
+	await Html.RenderPartialAsync("~/Views/Shared/ResourceCostAndTimeModalPartialView.cshtml");
+
+	<!--Add calculations by resource-->
+	await Html.RenderPartialAsync("~/Views/Shared/AddCalculationsByResourceModalPartialView.cshtml", (int)ViewBag.intPkProduct);
+
+	<!-- Paper transformation modal -->
+	<div class="modal fade" id="paperTransforModal">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h2 class="modal-title">Paper transformation</h2>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<form id="frmPaper">
+					<div class="modal-body">
+						<div class="row" style="margin: 0px !important;">
+							<div class="col-sm-4">
+								<input type="hidden" id="intnPkPaTrans" name="intnPkPaTrans" />
+								<input type="hidden" id="boolIsEleetI" name="boolIsEleetI">
+								<input type="hidden" id="intPkEleetOrEleeleI" name="intPkEleetOrEleeleI">
+								<input type="hidden" id="intPkResourceI" name="intPkResourceI">
+								<input type="hidden" id="intPkResource" name="intPkResource">
+								<input type="hidden" id="boolIsEleetO" name="boolIsEleetO">
+								<input type="hidden" id="intPkEleetOrEleeleO" name="intPkEleetOrEleeleO">
+								<input type="hidden" id="intPkResourceO" name="intPkResourceO">
+								<input type="hidden" id="intPkProcessInWorkflow" name="intPkProcessInWorkflow">
+								<input type="hidden" id="intnPkCalculation" name="intnPkCalculation" />
+								<label class="font-bold">Original size</label>
+								<div class="form-row">
+									<div class="col">
+										<label class="input-label">Width</label>
+										<input type="number" class="form-control input-with-dropdowns form-control-sm calculateCuts calculateCutsRequired" min="0" step="0.0001" id="numWidth" name="numWidth" />
+									</div>
+									<div class="col">
+										<label class="input-label">Length</label>
+										<input type="number" class="form-control input-with-dropdowns form-control-sm calculateCuts" min="0" step="0.0001" id="numnHeight" name="numnHeight" />
+									</div>
+									<div class="col">
+										<div>
+											<label class="input-label">Unit</label>
+										</div>
+										<span class="select">
+											<select id="strUnit" name="strUnit">
+												<option value="in">in</option>
+												<option value="cm">cm</option>
+											</select>
+										</span>
+									</div>
+								</div>
+								<label class="font-bold mt-3">Finished size</label>
+								<div class="form-row">
+									<div class="col">
+										<label class="input-label">Width</label>
+										<input type="number" class="form-control input-with-dropdowns form-control-sm calculateCuts calculateCutsRequired" min="0" step="0.0001" id="numCutWidth" name="numCutWidth" />
+									</div>
+									<div class="col">
+										<label class="input-label">Length</label>
+										<input type="number" class="form-control input-with-dropdowns form-control-sm calculateCuts calculateCutsRequired" min="0" step="0.0001" id="numCutHeight" name="numCutHeight" />
+									</div>
+								</div>
+								<label class="font-bold mt-3">Margin</label>
+								<div class="form-row">
+									<div class="col">
+										<label class="input-label">Top</label>
+										<input type="number" class="form-control input-with-dropdowns form-control-sm calculateCuts" min="0" step="0.0001" id="numnMarginTop" name="numnMarginTop" />
+									</div>
+									<div class="col">
+										<label class="input-label">Bottom</label>
+										<input type="number" class="form-control input-with-dropdowns form-control-sm calculateCuts" min="0" step="0.0001" id="numnMarginBottom" name="numnMarginBottom" />
+									</div>
+								</div>
+								<div class="form-row">
+									<div class="col">
+										<label class="input-label">Left</label>
+										<input type="number" class="form-control input-with-dropdowns form-control-sm calculateCuts" min="0" step="0.0001" id="numnMarginLeft" name="numnMarginLeft" />
+									</div>
+									<div class="col">
+										<label class="input-label">Right</label>
+										<input type="number" class="form-control input-with-dropdowns form-control-sm calculateCuts" min="0" step="0.0001" id="numnMarginRight" name="numnMarginRight" />
+									</div>
+								</div>
+								<div class="form-row">
+									<div class="col">
+										<label class="input-label">Vertical Gap</label>
+										<input type="number" class="form-control input-with-dropdowns form-control-sm calculateCuts" min="0" step="0.0001" id="numnVerticalGap" name="numnVerticalGap" />
+									</div>
+									<div class="col">
+										<label class="input-label">Horizontal Gap</label>
+										<input type="number" class="form-control input-with-dropdowns form-control-sm calculateCuts" min="0" step="0.0001" id="numnHorizontalGap" name="numnHorizontalGap" />
+									</div>
+								</div>
+								<div class="form-row mt-2">
+									<div class="col">
+										<div class="alert alert-warning font-bold paperAlertSize" hidden="">
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-8 text-center" id="parentGraphContainer">
+								<div class="alert alert-warning font-bold paperAlert" hidden="">
+									<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+									Cut direction was reversed to minimize waste.
+								</div>
+								<canvas id="paperTransGraph"></canvas>
+								@*<div id="paperTransGraph"></div>*@
+							</div>
+						</div>
+					</div>
+
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button class="btn btn-primary savePaperTrans" type="submit">Save</button>
+						<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+}
+else
+{
+	<div class="row">
+		<div class="col-sm-7">
+			<div class="alert alert-danger">
+				@Model.strUserMessage
+			</div>
+		</div>
+	</div>
+}
+
+@section Scripts {
+	<script>
+		subGetProcessesResourcesAndAccounts();
+		@if (
+			(bool)ViewBag.boolReadOnly
+			)
+		{
+			<text>subDisableAllButtons();</text>
+		}
+	</script>
+}

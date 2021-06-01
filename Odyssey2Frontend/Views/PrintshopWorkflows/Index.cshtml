@@ -1,0 +1,72 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@model List<WorkflowBaseModel>
+
+@{
+	ViewData["Title"] = "My Workflows";
+
+	String strPrintshopName = HttpContextAccessor.HttpContext.Session.GetString("strPrintshopName");
+	String strPrintshopId = HttpContextAccessor.HttpContext.Session.GetString("strPrintshopId");
+}
+
+<div class="row">
+	<div class="col-sm-3"><h2>My Workflows</h2></div>
+	@if (String.IsNullOrEmpty(strPrintshopId))
+	{
+		<div class="col-md-12">
+			<div class="alert alert-info text-center">
+				The Printshop needs to be selected.
+			</div>
+		</div>
+
+	}
+	else
+	{
+		<!--pill tabs-->
+		<div class="col-md-12">
+			<ul class="nav">
+				<li class="res-phisical-nav">
+					<a class="nav-link active" data-toggle="pill" href="#myWorkflowSection" id="workflows-pill">My Workflows</a>
+				</li>
+				<li class="res-phisical-nav">
+					<a class="nav-link" data-toggle="pill" href="#genericWorkflowsSection" id="generic-pill">Generic Workflows</a>
+				</li>
+			</ul>
+		</div>
+		<!--Pill tabs contents-->
+		<div class="tab-content col-md-12">
+			<!--First pill tab content-->
+			<div class="tab-pane fade show active" id="myWorkflowSection">
+				<form id="newWorkflowForm">
+					<div class="form-group row">
+						<div class="col-sm-7">
+							<label class="input-label">New workflow name:</label>
+							<input class="form-control input-with-dropdowns" id="strWorkflowName" name="strWorkflowName" required />
+							<input type="hidden" name="intPkProduct" value="@ViewBag.intPkProduct" />
+						</div>
+						<div class="col-sm-5" style="padding-top: 30px">
+							<button class="btn btn-sm btn-primary pull-right add-new-product-workflow" data-intPkProduct="@ViewBag.intPkProduct" type="submit">
+								<span class="fa fa-plus-circle"></span> Add workflow
+							</button>
+						</div>
+					</div><br />
+				</form>
+				<div class="col-sm-12 text-center" style="overflow-y: scroll; height: 45vh">
+					@{
+						await Html.RenderPartialAsync("WorkflowTablePartialView", Model);
+					}
+				</div>
+			</div>
+			<!--Second pill tab content-->
+			<div class="tab-pane fade show" id="genericWorkflowsSection">
+				<div class="col-sm-12 text-center" style="overflow-y: scroll; height: 62vh">
+
+				</div>
+			</div>
+		</div>
+	}
+</div>
+
+@section Scripts {
+	<script src="~/js/MyWokflows.js"></script>
+}

@@ -1,0 +1,74 @@
+﻿<div class="row">
+	<div class="col-sm-4">
+		<label class="input-label">Statement Type</label>
+		<span class="select">
+			<select id="strStatementType" class="">
+				<option value="">Pick one</option>
+				<option value="Forward">Balance Forward Statement</option>
+				<option value="Transaction">Transaction Statement</option>
+				<option value="Open">Open Statement</option>
+			</select>
+		</span>
+	</div>
+	<div class="col-sm-4">
+		<label class="input-label">Start Date</label>
+		<input id="strStatementStartDate" class="input-with-dropdowns form-control" data-toggle="datetimepicker"
+			   data-target="#strStatementStartDate" />
+	</div>
+	<div class="col-sm-4">
+		<label class="input-label">End Date</label>
+		<input id="strStatementEndDate" class="input-with-dropdowns form-control" data-toggle="datetimepicker"
+			   data-target="#strStatementEndDate" />
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-4">
+		<label class="input-label">Customer Balance Status</label>
+		<span class="select" style="width: 100%">
+			<select class="" id="strBalanceStatus">
+				<option value="">Pick one</option>
+				<option value="All">All</option>
+				<option value="Open">Open</option>
+			</select>
+		</span>
+	</div>
+</div>
+@*<div class="row">
+		<div class="col-sm-12 text-center">
+			<button class="btn btn-info">Ok</button>
+		</div>
+	</div>*@
+<div class="row">
+	<div class="col-sm-12">
+		<div class="table-responsive">
+			<table class="table table-hover">
+				<thead>
+					<tr class="tr-calculation-header">
+						<th>Customer</th>
+						<th colspan="2">Balance</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody id="customersBalancesBody">
+					@*@if (Model != null)
+						{
+							foreach (var item in Model)
+							{
+								<tr>
+									<td>@item.strFullName</td>
+									<td>@item.numBalance</td>
+									<td><button class="btn btn-info btn-sm"><i class="fa fa-print" aria-hidden="true"></i> Print</button></td>
+								</tr>
+							}
+						}
+						else
+						{
+							<tr>
+								<td colspan="3">Nothing to show</td>
+							</tr>
+						}*@
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>

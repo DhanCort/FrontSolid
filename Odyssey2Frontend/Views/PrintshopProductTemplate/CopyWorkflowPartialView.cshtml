@@ -1,0 +1,70 @@
+﻿@model List<SelectListItem>
+
+<form class="CopyWorkflowForm">
+    <div class="row">
+        <div class="form-group col-sm-12">
+            <label class="">New workflow name:</label>
+            <input class="form-control input-with-dropdowns form-control-sm" id="strWorkflowName" name="strWorkflowName"
+                   required />
+            <input type="hidden" name="intPkProduct" value="@ViewBag.intPkProduct" />
+            <input type="hidden" name="intPkWorkflow" value="@ViewBag.intPkWorkflow" />
+        </div>
+    </div>
+    <div class="row"></div>
+    @if (
+           !(bool)ViewBag.boolGeneric
+           )
+    {
+        <div class="col-sm-12 mt-3">
+            <label class="">Select which processes of it would you like to copy:</label>
+            <ul class="" style="height: 200px; overflow-y: scroll;">
+                <li class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" value="all"
+                           id="chkProcessAll" name="chkProcessAll" checked>
+                    <label class="custom-control-label checkbox-label" for="chkProcessAll">All</label>
+                </li>
+                @foreach (var item in ViewBag.darrProcess)
+                {
+                    <li class="custom-control custom-checkbox mt-3 ml-4">
+                        <input type="checkbox" class="custom-control-input chkProcess" value="@item.intPk"
+                               id="@item.intPk" name="@item.intPk" checked>
+                        <label class="custom-control-label checkbox-label" for="@item.intPk">@item.strName</label>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+    <div class="row">
+        <div class="col-sm-12">
+            <label class="">Where would you like to copy it?</label>
+            <input id="intPkProductSelect" type="hidden" name="intPkProductSelect"/>
+            <input class="form-control input-with-dropdowns" id="productSearchInput" required />
+            <div id="display" class="unitsList mt-0 pl-1 mr-1"
+                 style="margin-top: 0px !important; font-family: 'Rawline Regular', sans-serif;
+                                                color: #58585b; font-size: 14px; border-radius:0px; display:none; max-height: 15vh;
+												position: fixed; z-index:10060 !important; overflow-y: auto">
+            </div>
+            @*<div class="input-group mb-3">
+                    <span class="select">
+                        <select name="intPkProductSelect" id="intPkProductSelect">
+                            @foreach (var item in Model)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </span>
+                </div>*@
+        </div>
+    </div>
+    <div class="row" hidden>
+        <div class="col-sm-12 mt-4">
+            <button class="btn btn-sm btn-primary add-new-product-workflow pull-right"
+                    data-intPkProduct="@ViewBag.intPkProduct" type="submit">
+                <span class="fa fa-copy"></span> Copy workflow
+            </button>
+        </div>
+    </div>
+</form>
+<script>
+    darrproducts = @Json.Serialize(Model)
+</script>

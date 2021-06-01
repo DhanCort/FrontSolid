@@ -1,0 +1,401 @@
+﻿@model JsonResponseModel
+
+@if (
+	 Model.intStatus == 200
+	 )
+{
+	JobWorkflowJobModel jobworkflow = (JobWorkflowJobModel)Model.objResponse;
+	ViewBag.intPkWorkflow = jobworkflow.intPkWorkflow;
+
+	<div class="mt-lg-5" id="productWflwToolSection">
+		<div class="row">
+			<div class="col-sm-1 workflowControlSections">
+				<h3>
+					@if (
+					  jobworkflow.boolIsReady
+					  )
+					{
+						<span class="fa-stack pull-left viewNeeded cursor-pointer"
+							  data-intPk="@jobworkflow.intPkWorkflow">
+							<i class="fa fa-circle fa-stack-2x faa-pulse animated indicator-ready"
+							   style="font-size:300%"></i>
+							<i class="fa fa-lightbulb-o fa-stack-1x fa-inverse ml-1 mt-md-2" style="font-size:220%"></i>
+						</span>
+					}
+					else
+					{
+						<span class="fa-stack pull-left viewNeeded cursor-pointer"
+							  data-intPk="@jobworkflow.intPkWorkflow">
+							<i class="fa fa-circle fa-stack-2x faa-pulse animated indicator-not-ready"
+							   style="font-size:300%"></i>
+							<i class="fa fa-lightbulb-o fa-stack-1x fa-inverse ml-1 mt-md-2" style="font-size:220%"></i>
+						</span>
+					}
+				</h3>
+			</div>
+			<div class="col-sm-10">
+				<h4 class="pull-left mt-3" id="wfName">@jobworkflow.strWorkflowName</h4>
+				<button type="button" class="btn btn-sm btn-info ml-1 mt-3 elementToDisable workflowControlSections"
+						id="wfRenameButton">
+					Rename
+				</button>
+
+				<div class="input-group mt-3 resize-input-width workflowControlSections">
+					<input type="text" hidden class="resize-input-width form-control form-control-sm elementToDisable" value="@jobworkflow.strWorkflowName" id="wfNameInput" />
+					<div class="input-group-append">
+						<button type="button" hidden class="btn btn-sm btn-primary elementToDisable" id="wfSaveNameButton">
+							<i class="fa fa-save"></i>
+						</button>
+						<button type="button" hidden class="btn btn-sm btn-secondary elementToDisable" id="wfRenameCancelButton">
+							<i class="fa fa-times"></i>
+						</button>
+					</div>
+				</div>
+				<input type="hidden" id="strTypeId" value="@jobworkflow.strWorkflowName" />
+				<input type="hidden" id="intPkWorkflow" value="@jobworkflow.intPkWorkflow" />
+				<input type="hidden" id="intPkProduct" value="@ViewBag.intnPkProduct" />
+				<input type="hidden" id="boolEstimate" value="@true.ToString()" />
+			</div>
+			<div class="col-sm-1 mt-3">
+				<a type="button" asp-controller="Estimate" asp-action="Index" asp-route-boolRequested="true"
+				   class="btn btn-secondary btn-sm float-right elementToDisable">
+					<i class="fa fa-angle-left" aria-hidden="true"></i> Back
+				</a>
+			</div>
+		</div>
+		<div class="row mb-3 workflowControlSections">
+			<form class="col-sm-6 form-inline">
+				<label class="checkbox-label">Process Groups</label>
+				<span class="select ml-1" style="width: 28%">
+					<select class="elementToDisable" id="intPkProcessGroupSelect" asp-items="ViewBag.selectListProcessGroups">
+						<option value="All">All</option>
+					</select>
+				</span>
+				<label class="checkbox-label ml-2">Process</label>
+				<span class="select ml-1" style="width: 28%">
+					<select class="elementToDisable" id="intPkProcess" asp-items="ViewBag.selectListProcessType">
+						<option value="">Pick one</option>
+					</select>
+				</span>
+				<button type="button" class="btn btn-primary btn-sm ml-2 mr-sm-2 elementToDisable"
+						id="wkflwAddProcess" data-pkProduct="@ViewBag.intnPkProduct">
+					<i class="fa fa-plus-circle" aria-hidden="true"></i> Add
+				</button>
+			</form>
+			<div class="col-sm-2 p-0">
+				<button type="button" class="btn btn-info btn-sm elementToDisable" id="wkflwLink" style="">
+					<i class="fa fa-link" aria-hidden="true"></i> Link
+				</button>
+			</div>
+			<div class="col-sm-1 p-0">
+			</div>
+			<div class="col-sm-3 p-0">
+			</div>
+		</div>
+	</div>
+
+	<div>
+		<div class="row" id="" style="overflow: auto; max-height: 50% !important">
+			@if (
+			  jobworkflow.arrpro != null
+			  )
+			{
+				foreach (WorkflowModel processInWorkflow in jobworkflow.arrpro)
+				{
+					await Html.RenderPartialAsync("ProcessInWorkflowPartialView", processInWorkflow);
+				}
+			}
+		</div>
+	</div>
+
+	<div class="modal fade workflowControlSections" id="neededModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body neededResourcesAndProcess">
+					Modal body..
+				</div>
+
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="jobwfTipsModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body jobwfTipsBody"></div>
+
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade workflowControlSections" id="addCalculationModalByResource">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h3 id="processNameHeaderForWorkflow"></h3>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<input type="hidden" value="@ViewBag.intnPkProduct" id="intnPkProduct" data-boolIsInPostProcess="">
+				<div class="modal-body">
+					<div class="addByResource" style="display: block">
+					</div>
+					<div id="byResourcePartialView" style="display: none">
+						@{ await Html.RenderPartialAsync("../Calculation/ByResourcePartialView.cshtml", new CalculationModel
+							{
+								intnPkProduct = ViewBag.intnPkProduct,
+								boolnIsWorkflow = true
+							});
+						}
+					</div>
+				</div>
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade workflowControlSections" id="addCalculationModalByProcess">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<input type="hidden" value="@ViewBag.intnPkProduct" id="intnPkProduct">
+				<div class="modal-body addByProcess">
+					<input type="hidden" value="@ViewBag.intnPkProduct" id="intnPkProduct">
+					@{ await Html.RenderPartialAsync("../Calculation/ByProcessPartialView.cshtml", new CalculationModel
+						{
+							intnPkProduct = ViewBag.intnPkProduct,
+							boolnIsWorkflow = true
+						});
+					}
+				</div>
+
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<!-- Paper transformation modal -->
+	<div class="modal fade workflowControlSections" id="paperTransforModal">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h3 class="modal-title">Paper transformation</h3>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body" id="paperTransBlocked">
+					<div class="alert alert-danger"></div>
+				</div>
+
+				<!-- Modal body -->
+				<form id="frmPaper">
+					<div class="modal-body">
+						<div class="row" style="margin: 0px !important;">
+							<div class="col-sm-4">
+								<input type="hidden" id="intnPkPaTrans" name="intnPkPaTrans" />
+								<input type="hidden" id="boolIsEleetI" name="boolIsEleetI">
+								<input type="hidden" id="intPkEleetOrEleeleI" name="intPkEleetOrEleeleI">
+								<input type="hidden" id="intPkResourceI" name="intPkResourceI">
+								<input type="hidden" id="intPkResource" name="intPkResource">
+								<input type="hidden" id="boolIsEleetO" name="boolIsEleetO">
+								<input type="hidden" id="intPkEleetOrEleeleO" name="intPkEleetOrEleeleO">
+								<input type="hidden" id="intPkResourceO" name="intPkResourceO">
+								<input type="hidden" id="intPkProcessInWorkflow" name="intPkProcessInWorkflow">
+								<input type="hidden" id="intnPkCalculation" name="intnPkCalculation" />
+
+								<div class="form-row">
+									<div class="col">
+										<div class="custom-control custom-checkbox">
+											<input type="checkbox" class="custom-control-input" id="boolIsOptimized" name="boolIsOptimized" checked="" value="true">
+											<label class="custom-control-label checkbox-label" for="boolIsOptimized">Minimize waste when possible</label>
+										</div>
+									</div>
+								</div>
+								<div class="form-row mt-4">
+									<div class="col">
+										<div class="checkbox-switch switchPaperTrans" data-intpk="">
+											<div class="switch-plate"
+												 style="width: 120px;">
+												<div class="switch@(" on")"
+													 id="switchPaperTrans" data-on="Cut" data-off="Fold">
+												</div>
+												<input id="boolCut" name="boolCut" type="hidden" value="true" />
+											</div><label>Cut</label>
+										</div>
+									</div>
+								</div>
+								<label class="font-bold mt-3">Original size</label>
+								<div class="form-row">
+									<div class="col">
+										<label class="input-label">Width</label>
+										<input type="number" class="form-control form-control-sm input-with-dropdowns
+                                           calculateCuts calculateCutsRequired" min="0" step="0.0001" id="numWidth"
+											   name="numWidth" required />
+									</div>
+									<div class="col">
+										<label class="input-label">Length</label>
+										<input type="number" class="form-control form-control-sm input-with-dropdowns
+                                           calculateCuts" min="0" step="0.0001" id="numnHeight"
+											   name="numnHeight" required />
+									</div>
+									<div class="col">
+										<div>
+											<label class="input-label">Unit</label>
+										</div>
+										<span class="select">
+											<select id="strUnit" name="strUnit" required>
+												<option value="in">in</option>
+												<option value="cm">cm</option>
+											</select>
+										</span>
+									</div>
+								</div>
+								<div class="row">
+                                    <div class="col">
+                                        <label class="input-label" id="OriginalSizeJobNote" hidden>*Original size is taken from job specifications.</label>
+                                        <label class="input-label" id="OriginalSizeMediaNote" hidden>*Original size is taken from media.</label>
+                                    </div>
+								</div>
+								<label class="font-bold mt-3">Finished size</label>
+								<div class="form-row">
+									<div class="col">
+										<label class="input-label">Width</label>
+										<input type="number" class="form-control form-control-sm input-with-dropdowns
+                                           calculateCuts calculateCutsRequired" min="0" step="0.0001" id="numCutWidth"
+											   name="numCutWidth" />
+									</div>
+									<div class="col">
+										<label class="input-label">Length</label>
+										<input type="number" class="form-control form-control-sm input-with-dropdowns
+                                           calculateCuts calculateCutsRequired" min="0" step="0.0001" id="numCutHeight"
+											   name="numCutHeight" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="col">
+										<label class="input-label" id="FinishedSizeNote" hidden>*Finished size is taken from job specifications.</label>
+									</div>
+								</div>
+								<label class="font-bold mt-3">Margin</label>
+								<div class="form-row">
+									<div class="col">
+										<label class="input-label">Top</label>
+										<input type="number" class="form-control form-control-sm input-with-dropdowns
+                                           calculateCuts" min="0" step="0.0001" id="numnMarginTop"
+											   name="numnMarginTop" />
+									</div>
+									<div class="col">
+										<label class="input-label">Bottom</label>
+										<input type="number" class="form-control form-control-sm input-with-dropdowns
+                                           calculateCuts" min="0" step="0.0001" id="numnMarginBottom"
+											   name="numnMarginBottom" />
+									</div>
+								</div>
+								<div class="form-row">
+									<div class="col">
+										<label class="input-label">Left</label>
+										<input type="number" class="form-control form-control-sm input-with-dropdowns
+                                           calculateCuts" min="0" step="0.0001" id="numnMarginLeft"
+											   name="numnMarginLeft" />
+									</div>
+									<div class="col">
+										<label class="input-label">Right</label>
+										<input type="number" class="form-control form-control-sm input-with-dropdowns
+                                           calculateCuts" min="0" step="0.0001" id="numnMarginRight"
+											   name="numnMarginRight" />
+									</div>
+								</div>
+								<div class="form-row">
+									<div class="col">
+										<label class="input-label">Vertical Gap</label>
+										<input type="number" class="form-control form-control-sm input-with-dropdowns
+                                           calculateCuts" min="0" step="0.0001" id="numnVerticalGap"
+											   name="numnVerticalGap" />
+									</div>
+									<div class="col">
+										<label class="input-label">Horizontal Gap</label>
+										<input type="number" class="form-control form-control-sm input-with-dropdowns
+                                           calculateCuts" min="0" step="0.0001" id="numnHorizontalGap"
+											   name="numnHorizontalGap" />
+									</div>
+								</div>
+								<div class="form-row mt-2">
+									<div class="col">
+										<div class="alert alert-warning font-bold paperAlertSize" hidden="">
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-8 text-center" id="parentGraphContainer">
+								<div class="alert alert-warning font-bold paperAlert" hidden="">
+									<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+									Cut direction was reversed to minimize waste.
+								</div>
+								<canvas id="paperTransGraph"></canvas>
+								@*<div id="paperTransGraph"></div>*@
+							</div>
+						</div>
+					</div>
+
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button class="btn btn-primary savePaperTrans" type="submit">Save</button>
+						<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	@section Scripts {
+		<script>
+			subGetProcessesResourcesAndAccounts();
+		</script>
+	}
+}
+else
+{
+
+}

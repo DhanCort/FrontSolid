@@ -1,0 +1,194 @@
+﻿@model Odyssey2Frontend.Models.CalculationModel
+@{
+	String strAction = "/Calculation/AddCalculation";
+	String strTitle = "New Cost Settings";
+	if (
+		Model != null
+		)
+	{
+		strAction = "/Calculation/ModifyCalculation";
+		strTitle = "Edit Cost Settings";
+	}
+
+	bool boolDisableBaseInputs = false;
+	if (
+		Model != null &&
+		Model.strCalculationType == "PQ"
+		)
+	{
+		boolDisableBaseInputs = true;
+	}
+}
+
+<div class="row">
+	<div class="col-12 pl-0">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/PrintshopProductTemplate">Products</a></li>
+			<li class="breadcrumb-item active">@ViewBag.strTypeId</li>
+		</ol>
+	</div>
+	<div class="col-8">
+		<h2>@strTitle</h2>
+		<h5>of @ViewBag.strTypeId</h5>
+		<h5>
+			This optional section is intended to help you document and assign high-level estimates for print production.
+			They are cost estimates independent of the cost of the processes or resources involved, e.g. if you want to
+			charge for express turnaround times or if you want to consider an extra expense because of an extra tax.
+		</h5>
+	</div>
+</div>
+<hr class="greenHrUx" />
+<input id="strUrlForRedirection" type="hidden"
+	   value="/Calculation/CostSettings?intPk=@ViewBag.intProductPk&strTypeId=@ViewBag.strTypeId" />
+<form class="col-md-12 addNewCalculation" action="@strAction">
+	<input name="intnPkProduct" type="hidden" value="@ViewBag.intProductPk" id="intPkProduct">
+	<input asp-for="intPk" type="hidden" value="@ViewBag.intPkCost">
+	<input asp-for="strBy" type="hidden" value="@CalculationModel.strByProduct">
+	<input type="hidden" id="strConditionToApply" name="condition" value="" />
+	<div>
+		<h3>Base Information</h3>
+		<hr style="border: 1px solid #58595B" />
+	</div>
+	<div>
+		<label class="input-label">Name of cost calculation</label>
+		<input type="text" class="form-control input-with-dropdowns resize-input-width"
+			   asp-for="strDescription" style="width: 350px" autocomplete="off" required />
+	</div>
+	<div class="checkbox-switch genericSwitch mt-3">
+		<div class="switch-plate resAvailability" style="width: 120px;">
+			<div class="switch @if(Model != null && Model.boolIsEnable) {<text>on</text>}" id="boolnAreaSwitch">
+			</div>
+		</div>
+		<label>
+			@if (Model != null && Model.boolIsEnable)
+			{<text>Enabled</text>}
+		else
+		{<text>Disabled </text>}
+		</label>
+		<input type="hidden" asp-for="boolIsEnable">
+	</div>
+	<div>
+		<label class="input-label">Account</label>
+		<div>
+			<span class="select resize-input-width" style="width: 350px">
+				<select asp-items="@ViewBag.darrselectlistitemOfAccounts" asp-for="intnPkAccount" required>
+					<option value="">Pick one</option>
+				</select>
+			</span>
+		</div>
+	</div>
+	<div class="mt-4">
+		<h3>Cost</h3>
+		<h4>Choose the type of cost you would like to set</h4>
+		<hr style="border: 1px solid #58595B" />
+	</div>
+	<div class="">
+		<div class="custom-control custom-radio">
+			<input name="strCalculationType" type="hidden" value="@CalculationModel.strBase" disabled="@boolDisableBaseInputs">
+			<input type="radio" class="custom-control-input base" id="baseCalculationRadio" name="example1" checked>
+			<label class="custom-control-label" for="baseCalculationRadio">Base cost</label>
+			<input class="form-control input-with-dropdowns resize-input-width" asp-for="numnCost"
+				   style="width: 100px" type="number" min=".01" step=".01" disabled="@boolDisableBaseInputs" required />
+		</div>
+		<div class="custom-control custom-radio mt-3">
+			<input name="strCalculationType" type="hidden" value="@CalculationModel.strPerQuantity" disabled="@(!boolDisableBaseInputs)">
+			<input type="radio" class="custom-control-input" id="perQuantityCalculationRadio" name="example1">
+			<label class="custom-control-label" for="perQuantityCalculationRadio">Cost per quantity</label>
+			<div class="row mt-0">
+				<div class="col-sm-2">
+					<label class="input-label">Cost</label>
+					<div class="input-group mb-3" style="">
+						<input asp-for="numnCost" class="form-control form-control-sm resize-input-width"
+							   type="number" min=".01" step=".01"
+							   style="border-radius: 10px" required disabled="@(!boolDisableBaseInputs)">
+						<div class="input-group-append ">
+							<span class="input-group-text" style="background: none !important; border: none;">
+								per
+							</span>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-2">
+					<label class="input-label">Quantity</label>
+					<div class="input-group mb-3" style="">
+						<input asp-for="numnQuantity" class="form-control form-control-sm resize-input-width"
+							   type="number" min=".01" step=".01"
+							   style="border-radius: 10px" required
+							   disabled="@(!boolDisableBaseInputs)">
+						<div class="input-group-append ">
+							<span class="input-group-text text-right" style="background: none !important; border: none;">
+								units
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="mt-4">
+		<h3>Minimum Production Quantity (optional)</h3>
+		<hr style="border: 1px solid #58595B" />
+	</div>
+	<div>
+		<label class="input-label">Quantity</label>
+		<div class="input-group mb-3 resize-input-width" style="width: 300px">
+			<input asp-for="numnMin" type="number" step=".01" placeholder="1" min="0"
+				   class="form-control form-control-sm resize-input-width perQuantity"
+				   style="border-radius: 10px" disabled="@(!boolDisableBaseInputs)">
+			<div class="input-group-append ">
+				<span class="input-group-text" style="background: none !important; border: none;">
+					@ViewBag.strTypeId
+				</span>
+			</div>
+		</div>
+	</div>
+	<div class="mt-4">
+		<h3>Unit Per Block (optional)</h3>
+		<h4>In blocks of how many units do you need to produce?</h4>
+		<hr style="border: 1px solid #58595B" />
+	</div>
+	<div>
+		<label class="input-label">Quantity</label>
+		<div class="input-group mb-3 resize-input-width" style="width: 300px">
+			<input asp-for="numnBlock" type="number" step=".01" placeholder="1" min="0"
+				   class="form-control form-control-sm resize-input-width perQuantity"
+				   style="border-radius: 10px"
+				   disabled="@(!boolDisableBaseInputs)">
+			<div class="input-group-append ">
+				<span class="input-group-text" style="background: none !important; border: none;">
+					@ViewBag.strTypeId
+				</span>
+			</div>
+		</div>
+	</div>
+	<div class="mt-4">
+		<h3>Conditions (optional)</h3>
+		<h4>Would you like to add a condition for this cost?</h4>
+		<hr style="border: 1px solid #58595B" />
+	</div>
+	<button type="submit" class="btn btn-primary" hidden></button>
+</form>
+<div class="ml-3 mr-3">
+	<div>
+		@{
+			await Html.RenderPartialAsync("~/Views/Calculation/ConditionToApply.cshtml");
+		}
+	</div>
+	<div class="mt-5">
+		<a href="/Calculation/CostSettings?intPk=@ViewBag.intProductPk&strTypeId=@ViewBag.strTypeId"
+		   class="btn btn-secondary mr-3"><i class="fa fa-arrow-left"></i> Back</a>
+		<button id="newCostBtn" type="button" class="btn btn-primary">Save Calculation</button>
+	</div>
+</div>
+@section Scripts {
+	<script>
+		$(document).ready(function () {
+			darrattr = @Json.Serialize(ViewBag.darrattr);
+			@if (ViewBag.ConditionObject != null) {
+				<text>
+					funCreateConditionForm(@Html.Raw(ViewBag.ConditionObject), "false", "true", 0)
+				</text>
+			}
+		});
+	</script>
+}

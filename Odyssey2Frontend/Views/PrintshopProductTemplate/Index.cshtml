@@ -1,0 +1,236 @@
+﻿@model Odyssey2Frontend.Models.PrintshopProductTemplateModel
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "My Products";
+
+    String strPrintshopName = HttpContextAccessor.HttpContext.Session.GetString("strPrintshopName");
+    String strPrintshopId = HttpContextAccessor.HttpContext.Session.GetString("strPrintshopId");
+    bool boolIsAccountant = bool.Parse(HttpContextAccessor.HttpContext.Session.GetString("boolIsAccountant") ?? "false");
+
+    List<SelectListItem> qwerty = new List<SelectListItem>();
+}
+
+@if (String.IsNullOrEmpty(strPrintshopId))
+{
+    <div class="col-md-12">
+        <div class="alert alert-info text-center">
+            The Printshop needs to be selected.
+        </div>
+    </div>
+}
+else if (
+//														    //Verify if the view contains the data.
+(bool)ViewBag.boolContainProducts == false
+)
+{
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <div class="alert alert-danger">There are no records to show.</div>
+        </div>
+    </div>
+}
+else if (
+ //														//Verify if the view contains the data.
+ (bool)ViewBag.boolContainProducts == true
+ )
+{
+	<div class="row" style="height: 4vh">
+		<div class="col-sm-3"><h2>My Products</h2></div>
+		<div class="col-sm-9">
+			<h2 class="orderTypeTitle">
+				@if (ViewBag.intnOrderType == 1)
+				{
+					<i class='fa fa-eye' aria-hidden='true'></i><text> Public</text>
+				}
+				else if (ViewBag.intnOrderType == 2)
+				{
+					<i class='fa fa-eye-slash' aria-hidden='true'></i><text> Private</text>
+				}
+				else if (ViewBag.intnOrderType == 3)
+				{
+					<i class='fa fa-road' aria-hidden='true'></i><text> Guided</text>
+				}
+				else
+				{
+					<text>All</text>
+				}
+			</h2>
+		</div>
+	</div>
+	<div class="row" style="height: 4vh">
+		<div class="col-sm-3 border-right">
+			<div style="display: block; overflow-y: scroll; height: 65vh; width: 100%">
+				<div class="form-group mr-5">
+					<label class="input-label">Order Form</label>
+					<div>
+						<span class="select" style="width:206px">
+							<select class="filterOderType" asp-items="@ViewBag.optionList">
+							</select>
+						</span>
+					</div>
+				</div>
+				<div class="form-group mr-5">
+					<label class="input-label">Keyword</label>
+					<div class="input-group mb-3">
+						<span class="search-box" style="width:206px">
+							<input type="text" class="search filterKeywordInput" placeholder="Search Products...">
+							<a class="fa fa-search btnFilterKeywordInput" href="#"></a>
+						</span>
+					</div>
+				</div>
+
+				<div class="form-group mr-5">
+					<div>
+						<label class="input-label">Category</label>
+					</div>
+					<span class="select">
+						<select class="filterCategory" asp-items="@ViewBag.darrCatergories">
+							<option value="">All</option>
+						</select>
+					</span>
+				</div>
+				<div class="filter-container" style="display: none">
+					<div class="form-group filter-company-container mr-5">
+						<label class="input-label">Company</label>
+						<div>
+							<span class="select" style="width:206px">
+								<select class="filterCompany">
+								</select>
+							</span>
+						</div>
+					</div>
+					<div class="form-group filter-branch-container mr-5" style="display: none">
+						<label class="input-label">Branch</label>
+						<div>
+							<span class="select" style="width:206px">
+								<select class="filterBranch">
+								</select>
+							</span>
+						</div>
+					</div>
+					<div class="form-group filter-contact-container mr-5" style="display: none">
+						<label class="input-label">Contact</label>
+						<div>
+							<span class="select" style="width:206px">
+								<select class="filterContact">
+								</select>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="productsBody col-sm-9">
+			<div style="display: block; overflow-y: scroll; height: 70vh; width: 100%">
+				<div class="table-responsive">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>
+									Category
+								</th>
+								<th>
+									Product Name
+								</th>
+								<th></th>
+								<th>
+									Account
+								</th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var item in (List<PrintshopProductTemplateModel>)ViewBag.darrstrCustomTemplateId)
+							{
+								<tr>
+									<td>
+										@Html.DisplayFor(modelItem => item.strCategory)
+									</td>
+									<td>
+										@Html.DisplayFor(modelItem => item.strTypeId)
+									</td>
+									<td>
+										<a class="btn btn-info text-white" href="@item.strGuidedLink" target="_blank">Order form</a>
+									</td>
+									<td>
+										@{
+											String strDisabled = "";
+											if (
+												!boolIsAccountant
+												)
+											{
+												strDisabled = "disabled='true'";
+											}
+										}
+										<span class="select">
+											<select class="selectAccount" required @strDisabled>
+												<option value="">Pick one</option>
+												@foreach (AccountModel account in ViewBag.darraccRevenueAccounts)
+												{
+													if (
+														account.intPk == item.intnPkAccount
+														)
+													{
+														<option data-intpkproduct="@item.intPk" value="@account.intPk" selected>@account.strName</option>
+													}
+													else
+													{
+														<option data-intpkproduct="@item.intPk" value="@account.intPk">@account.strName</option>
+													}
+												}
+											</select>
+										</span>
+									</td>
+									<td>
+										@Html.ActionLink("Profit Settings", "ProfitSettings", "Calculation", new { intPk = item.intPk, strTypeId = item.strTypeId },
+											new { @class = "btn btn-sm btn-info" })
+									</td>
+									<td>
+										@Html.ActionLink("Cost Settings", "CostSettings", "Calculation", new { intPk = item.intPk, strTypeId = item.strTypeId },
+											new { @class = "btn btn-sm btn-info" })
+									</td>
+									<td>
+										<button class="btn btn-sm btn-info btn-wf-modal" data-intpkproduct="@item.intPk" data-strTypeId="@item.strTypeId">Workflows</button>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+    <!--Modal that shows all the workflows from a selected product-->
+    <div class="modal fade" id="WorkflowsModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                            <h4 class="modal-title" id="workflowsModalProductTitle"></h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body" id="product-workflow-section">
+
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

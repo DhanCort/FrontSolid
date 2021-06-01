@@ -1,0 +1,247 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    bool boolIsAccountant = bool.Parse(HttpContextAccessor.HttpContext.Session.GetString("boolIsAccountant") ?? "false");
+    bool? boolnIsEstimate = ViewBag.boolIsEstimate;
+}
+
+<div id="costModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog xjdfDialog modal-xs modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title cost-title"></h3>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body autoHeight pt-0">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form id="newCost">
+                            <input type="hidden" name="boolIsEstimate" value="@(boolnIsEstimate.ToString())" />
+                            <input type="hidden" name="intEstimationId" />
+                            <input type="hidden" id="intPkResourceCost" name="intPkResource"
+                                   class="form-control isChangeable" value="">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label class="input-label" for="numCost">Cost</label>
+                                        <input id="numCost" name="numnCost" class="form-control input-with-dropdowns
+                                               isChangeable" step=".00001" type="number">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label class="input-label" for="numQuantity">Quantity</label>
+                                        <input id="numQuantity" name="numnQuantity" class="form-control
+                                               input-with-dropdowns isChangeable" type="number">
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="input-label" for="strUnit">Unit of Measurement:</label>
+                                        <br />
+                                        <label id="strUnit" class="checkbox-label border pl-2 pr-2 font-bold">-</label>
+                                    </div>
+                                    <div class="col-sm-6" style="display: none;">
+										<label class="input-label" for="strDimesionUnit">Unit of Measurement:</label>
+                                        <br />
+                                        <label id="strDimensionUnit" class="checkbox-label border pl-2 pr-2 font-bold">AAAA</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label class="input-label" for="numnMin">Min to Use</label>
+                                        <input id="numnMin" name="numnMin" class="form-control input-with-dropdowns
+                                               isChangeable" step=".0001" min="0" type="number">
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="input-label" for="boolIsBlock">In blocks of</label><br />
+                                        <input id="numnBlock" name="numnBlock" class="form-control input-with-dropdowns
+                                               isChangeable" step=".0001" min="0" type="number">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label class="input-label" for="numnHourlyRate">Hourly Rate</label>
+                                        <input id="numnHourlyRate" name="numnHourlyRate" class="form-control
+                                               input-with-dropdowns isChangeable" step=".01" type="number">
+                                    </div>
+                                    <div class="col-sm-6 mt-4">
+                                        <label class="input-label">
+                                            *Hourly rate not affected by profit calculations.
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div>
+                                            <label class="input-label" for="intnPkAccount">Account</label>
+                                        </div>
+                                        <span class="select" style="width:195px;">
+                                            <select class="isChangeable" id="intnPkAccount" name="intnPkAccount"
+                                                    @(boolIsAccountant ? "" : "disabled")>
+                                            </select>
+                                        </span>
+                                    </div>
+                                    <div class="col-sm-6" id="costModalAreaSwitch" style="display: none;">
+                                        <div>
+                                            <label class="input-label">By Area</label>
+                                        </div>
+										<div class="checkbox-switch boolAreaSwitch" style="margin-top: 5px">
+											<div class="switch-plate resAvailability" style="width: 120px;">
+												<div class="switch" id="boolnAreaSwitch" data-on="Yes" data-off="No">
+												</div>
+											</div>
+                                            <input type="hidden" value="" name="boolnArea" />
+										</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12 text-center mt-2">
+                                    <button type="submit" class="btn btn-primary saveCost isChangeable">
+                                        <i class="fa fa-floppy-o" aria-hidden="true"></i> Save
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="timeModal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title time-title"></h3>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body" style="overflow-y:scroll;">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form id="newResourceTimeForm">
+                            <input type="hidden" name="intPkTime" class="form-control" value="">
+                            <input type="hidden" name="intPkResource" class="form-control" value="">
+                            <input type="hidden" name="boolIsEstimate" value="@boolnIsEstimate" />
+                            <input type="hidden" name="intEstimationId" />
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <label class="input-label" for="numCost">Quantity</label>
+                                        <div class="input-group">
+                                            <input name="numQuantity" class="form-control input-with-dropdowns"
+                                                   min="0.01" step=".01" type="number" required>
+                                            <div class="input-group-append" style="height:29px;">
+                                                <span id="lbl-unit-time-form" class="input-group-text checkbox-label p-1">
+                                                    um
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <label class="input-label" for="numnMinThickness">Minimum Thickness</label>
+                                        <input name="numnMinThickness" class="form-control input-with-dropdowns"
+                                               min="0.01" step=".01" type="number">
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <label class="input-label" for="numnMaxThickness">Maximum Thickness</label>
+                                        <input name="numnMaxThickness" class="form-control input-with-dropdowns"
+                                               min="0.01" step=".01" type="number">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div>
+                                            <label class="input-label">Thickness Unit</label>
+                                        </div>
+                                        <span class="select">
+                                            <select id="strThicknessUnit" name="strThicknessUnit">
+                                                <option value="">Pick one</option>
+                                            </select>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <div>
+                                            <label class="input-label" for="intHours">Hours</label>
+                                        </div>
+                                        <span class="select" style="width:200px;">
+                                            <select name="intHours" required>
+                                                @for (int i = 0; i < 24; i = i + 1)
+                                                {
+                                                    <option value="@i">@i</option>
+                                                }
+                                            </select>
+                                        </span>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div>
+                                            <label class="input-label" for="intMinutes">Minutes</label>
+                                        </div>
+                                        <span class="select" style="width:200px;">
+                                            <select name="intMinutes" required>
+                                                @for (int i = 0; i < 60; i = i + 1)
+                                                {
+                                                    <option value="@i">@i</option>
+                                                }
+                                            </select>
+                                        </span>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div>
+                                            <label class="input-label" for="intSeconds">Seconds</label>
+                                        </div>
+                                        <span class="select" style="width:200px;">
+                                            <select name="intSeconds" required>
+                                                @for (int i = 0; i < 60; i = i + 1)
+                                                {
+                                                    <option value="@i">@i</option>
+                                                }
+                                            </select>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-12 text-center">
+                                        <button type="submit" class="btn btn-primary saveTime">
+                                            <i class="fa fa-floppy-o" aria-hidden="true"></i> Save
+                                        </button>
+                                        <button type="submit" class="btn btn-primary updateTime" hidden>
+                                            <i class="fa fa-floppy-o" aria-hidden="true"></i> Update
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <div>
+                            <div id="ResourceTimeTable" class="text-center">
+                                <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                                <span class="sr-only"></span>
+                            </div>
+                            <div id="resource-PerQuantity-table-default" class="text-center">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>

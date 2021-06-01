@@ -1,0 +1,39 @@
+﻿@model List<BankDepositsInARangeModel>
+
+<div class="table-responsive overflow-auto" style="height: 400px">
+    <table class="table table-hover">
+        <thead>
+            <tr class="tr-calculation-header">
+                <th>Date</th>
+                <th colspan="2"></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr class="tr-calculation-row">
+                        <td>@item.strDate</td>
+                        <td>$</td>
+                        <td class="text-right">@item.numAmount.ToString("n2")</td>
+                        <td>
+                            <button class="btn btn-info btn-sm print-deposit-summary" type="button" 
+                                    data-strDate="@item.strDate"
+                                    data-intPkBankDeposit="@item.intPkBankDeposit">
+                                <i class="fa fa-print" aria-hidden="true"></i> Print
+                            </button>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr class="tr-calculation-row">
+                    <td colspan="2">Nothing to show</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,257 @@
+﻿#addXJDFResourceMenu {
+    z-index: 999 !important;
+}
+
+#chkResources {
+    margin-top: 130px;
+}
+
+@media only screen and (max-width: 575px) {
+    #chkResources {
+        margin-top: 280px;
+    }
+}
+
+.modal-scroll {
+    height: 100%;
+}
+
+.modal-content-scroll {
+    max-height: 30vh;
+    overflow-y: auto;
+}
+
+.modal-content-scroll-screen-height {
+    overflow-y: auto;
+    max-height: 70vh;
+}
+
+.content {
+    display: none;
+}
+
+.preload {
+    width: 100px;
+    height: 100px;
+    position: fixed;
+    top: 35%;
+    left: 45%;
+}
+
+.saveNewProcessName {
+    width: 50%;
+    margin-top: 15px;
+}
+
+@media only screen and (max-width: 575px) {
+    .saveNewProcessName {
+        width: 100%;
+        margin-top: 15px;
+    }
+}
+
+.modal-dialog-sm {
+    max-width: 300px !important;
+}
+
+.form-control[type="number"]::-webkit-inner-spin-button,
+.form-control[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+
+/*Start Odyssey's button style */
+/*btn Inactive Action*/
+.btn:disabled, a.disabled {
+    background-color: #d1d2d4 !important;
+    border-color: #d1d2d4 !important;
+    font-weight: bolder
+}
+
+    .btn:disabled:hover, a.disabled:hover {
+        background-color: #d1d2d4 !important;
+        border-color: #d1d2d4 !important;
+        font-weight: bolder !important;
+        color: #FFFFFF !important;
+        cursor: not-allowed;
+    }
+
+/*Btn Tertiary */
+.btn-info {
+    background-color: #78cdd2;
+    border-color: #78cdd2;
+    color: white;
+    font-weight: bolder
+}
+
+    .btn-info:hover {
+        background-color: #94d7da;
+        border-color: #94d7da;
+        color: white !important;
+        font-weight: bolder
+    }
+
+    .btn-info:active {
+        background-color: #bce4e6;
+        border-color: #bce4e6;
+        color: white;
+        font-weight: bolder
+    }
+
+    .btn-info:focus {
+        background-color: #94d7da !important;
+        border-color: #94d7da !important;
+        color: white !important;
+        font-weight: bolder
+    }
+
+/*Btn Secondary Action */
+.btn-secondary {
+    background-color: #bcbec0;
+    border-color: #bcbec0;
+    color: white;
+    font-weight: bolder
+}
+
+    .btn-secondary:hover {
+        background-color: #c9cacc;
+        border-color: #c9cacc;
+        color: white;
+        font-weight: bolder
+    }
+
+    .btn-secondary:active {
+        background-color: #efeff0 !important;
+        border-color: #efeff0 !important;
+        color: white !important;
+        font-weight: bolder
+    }
+
+    .btn-secondary:focus {
+        background-color: #c9cacc !important;
+        border-color: #c9cacc !important;
+        color: white !important;
+        font-weight: bolder
+    }
+
+/*btn Primary Action*/
+.btn-primary {
+    background-color: #b3d450;
+    border-color: #b3d450;
+    color: #FFFFFF;
+    font-weight: bolder
+}
+
+    .btn-primary:hover {
+        background-color: #c2db76;
+        border-color: #c2db76;
+        color: white;
+        font-weight: bolder
+    }
+
+    .btn-primary:active {
+        background-color: #d7e7a7 !important;
+        border-color: #d7e7a7 !important;
+        color: #FFFFFF !important;
+        font-weight: bolder
+    }
+
+    .btn-primary:focus {
+        background-color: #c2db76;
+        border-color: #c2db76;
+        color: white;
+        font-weight: bolder
+    }
+
+/*btn Warning Action*/
+.btn-tertiary {
+    background-color: #74aeb2;
+    border-color: #74aeb2;
+    color: #FFFFFF;
+    font-weight: bolder
+}
+
+    .btn-tertiary:hover {
+        background-color: #74aeb2CC;
+        border-color: #74aeb2CC;
+        color: white;
+        font-weight: bolder
+    }
+
+    .btn-tertiary:active {
+        background-color: #74aeb2 !important;
+        border-color: #74aeb2 !important;
+        color: #FFFFFF !important;
+        font-weight: bolder
+    }
+
+    .btn-tertiary:focus {
+        background-color: #74aeb2;
+        border-color: #74aeb2;
+        color: white;
+        font-weight: bolder
+    }
+
+/*End Odyssey's button style */
+
+.table-primary,
+.table-primary > th,
+.table-primary > td {
+    background-color: #c2db76 !important;
+}
+
+
+.table-hover .table-primary:hover > td,
+.table-hover .table-primary:hover > th {
+    background-color: #b3d450 !important;
+}
+
+/**/
+i.fa-spinner {
+    font-size: 300%;
+    color: #d1d2d4
+}
+
+/**/
+@media (min-width: 501px) {
+    .resize-input-width {
+        /*width: 50% !important*/
+    }
+}
+
+@media (max-width: 500px) {
+    .resize-input-width {
+        width: 100% !important
+    }
+}
+
+.modal-content {
+    border: 0px !important;
+    border-radius: 0px !important;
+    box-shadow: 1px 2px 12px 1px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    border-bottom: 0px !important;
+/*    display: block !important;*/
+}
+
+.modal-footer {
+    border-top: 0px !important;
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1040;
+    background-color: transparent;
+}
+
+    .modal-backdrop.in {
+        filter: alpha(opacity=100);
+        opacity: .5;
+    }

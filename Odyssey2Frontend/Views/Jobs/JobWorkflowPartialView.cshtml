@@ -1,0 +1,643 @@
+﻿@model WorkflowModel
+
+@{
+	String strButtonClassForAutomaticallySet = "btn-secondary";
+
+	String strProcessTime = "";
+
+	if (Model.intHours > 0)
+	{
+		if (Model.intSeconds > 0)
+		{
+			Model.intMinutes++;
+
+			if (Model.intMinutes >= 60)
+			{
+				Model.intMinutes = Model.intMinutes - 60;
+				Model.intHours++;
+			}
+		}
+
+		strProcessTime = strProcessTime + Model.intHours.ToString() +
+			(Model.intMinutes > 0 ? (":" + Model.intMinutes.ToString("00")) : null) + " hrs.";
+	}
+	else if (Model.intMinutes > 0)
+	{
+		if (Model.intSeconds > 0)
+		{
+			Model.intMinutes++;
+
+			if (Model.intMinutes >= 60)
+			{
+				Model.intMinutes = Model.intMinutes - 60;
+				Model.intHours++;
+			}
+		}
+
+		strProcessTime = (Model.intHours > 0 ? (Model.intHours.ToString() +
+			(Model.intMinutes > 0 ? ":" : null)) : null) +
+			(Model.intMinutes > 0 ? Model.intMinutes.ToString("00") : null) +
+			(Model.intHours > 0 ? " hrs." : " min.");
+	}
+	else if (Model.intSeconds > 0)
+	{
+		strProcessTime = "1 min.";
+	}
+}
+
+<div class="col-sm-4">
+	<div class="table-responsive" style="border-radius: 10px">
+		<table class="table table-bordered table-sm round">
+			<thead style="background-color: #ebf1fa">
+				@if (
+ViewBag.strStage == "In Progress."
+)
+				{
+					<tr>
+						@if (Model.intStage == 0 && Model.boolnCanStartProcess == true)
+						{
+							<td colspan="2" class="text-center"><button class="btn btn-primary btn-sm btn-block btn-process-stage elementToDisable" data-intStage="1" data-intPkProcessInWorkflow="@Model.intPkProcessInWorkflow">Start</button></td>
+						}
+						else if (Model.intStage == 1)
+						{
+							<td colspan="2" class="text-center">
+								<button class="btn btn-secondary btn-sm btn-block btn-process-stage elementToDisable" @if (!Model.boolnCanBeCompleted.GetValueOrDefault()) { <text> disabled</text> } else { <text>data-intStage="2" data-intPkProcessInWorkflow="@Model.intPkProcessInWorkflow" </text> }>
+									Finish
+								</button>
+							</td>
+						}
+						else if (Model.intStage == 2)
+						{
+							<td colspan="2">
+								<button aria-disabled="true" class="btn btn-secondary btn-sm btn-block completedButton elementToDisable" disabled>Completed</button>
+							</td>
+						}
+					</tr>
+				}
+				<tr>
+					<td class="pl-3 pt-2 font-bold text-left">
+						<i class="fa fa-cog fa-1x" aria-hidden="true"></i>
+						<span id="procesNameSpan_@Model.intPkProcessInWorkflow">@Model.strName</span>
+						<button class="btn btn-sm btn-tertiary btnTaskNotes pull-right"
+								data-strJobId="@ViewBag.strJobId"
+								data-intnPkProcessInWorkflow="@Model.intPkProcessInWorkflow"
+								data-intnPkPeriod=""
+								data-boolFromWfJobs="True"
+								data-boolFromMyEmployees="False">
+							<span class="fa fa-sticky-note" aria-hidden="true"></span>
+						</button>
+					</td>
+					<td class="pr-3 pt-2 font-bold text-right">
+						@if (Model.intStage == 2)
+						{
+							<button class="btn btn-sm btn-primary finalCostModal" data-intPkProcessInWorkflow="@Model.intPkProcessInWorkflow" data-strName="@Model.strName"><span class="fa fa-dollar"></span></button>
+						}
+						<button type="button" class="btn btn-tertiary btn-sm mr-2 modalToSetPeriodToJobProcess elementToDisable"
+								data-to-getcalendar="@ViewBag.strJobId|@ViewBag.intPkWorkflow"
+								data-boolIsInformative="@false.ToString()">
+							<i class="fa fa-calendar" aria-hidden="true"></i>
+						</button>
+						<button type="button" class="btn btn-info btn-sm btnAddCalculationByProcess mr-2 elementToDisable"
+								data-intPkProcess="@Model.intPkProcess"
+								data-intnPkProcessInWorkflow="@Model.intPkProcessInWorkflow">
+							<i class="fa fa-calculator" aria-hidden="true"></i>
+						</button>
+						@if (!String.IsNullOrEmpty(strProcessTime))
+						{
+							<label style="font-size: smaller"><span class="fa fa-clock-o" aria-hidden="true"></span> @strProcessTime</label>
+						}
+						<label style="font-size: smaller">@Model.numCostByProcess.ToString("c2")</label>
+					</td>
+				</tr>
+			</thead>
+			<thead style="background-color: #fff">
+				<tr class="text-center">
+					<td class="font-bold">Input</td>
+					<td class="font-bold">Output</td>
+				</tr>
+			</thead>
+			<tbody>
+				@{
+					int intCountInputArray = Model.arrresortypInput.Count;
+					int intCountOutputArray = Model.arrresortypOutput.Count;
+					int intCount = 0;
+
+					if (intCountInputArray > intCountOutputArray)
+					{
+						intCount = intCountInputArray;
+					}
+					else if (intCountInputArray < intCountOutputArray)
+					{
+						intCount = intCountOutputArray;
+					}
+					else if (intCountInputArray == intCountOutputArray)
+					{
+						intCount = intCountInputArray;
+					}
+
+					for (int i = 0; i < intCount; i = i + 1)
+					{
+						bool boolButtonDisable = true;
+						if (
+							//Pending, with link but the process can not start.
+							(ViewBag.strStage != "Completed." &&
+							Model.intStage != 2 &&
+							(!Model.boolIsPostProcess || (Model.boolIsPostProcess && Model.arrresortypInput[i].strLink == null)) &&
+							!Model.boolnCanStartProcess.GetValueOrDefault()) ||
+							//Pending, without link
+							(ViewBag.strStage != "Completed." &&
+							Model.intStage != 2 &&
+							(!Model.boolIsPostProcess || (Model.boolIsPostProcess && Model.arrresortypInput[i].strLink == null))) ||
+							//Has resource set and receive calculations.
+							(String.IsNullOrEmpty(Model.arrresortypInput[i].strResource) &&
+							Model.arrresortypInput[i].boolIsPhysical &&
+							(!Model.boolIsPostProcess || (Model.boolIsPostProcess && Model.arrresortypInput[i].strLink == null))) ||
+							//Has not resource set.
+							(String.IsNullOrEmpty(Model.arrresortypInput[i].strResource)) ||
+							//Has resource, is calendar, pending.
+							(Model.arrresortypInput[i].intnPkResource != null &&
+							Model.arrresortypInput[i].boolnIsCalendar != null &&
+							Model.arrresortypInput[i].boolnIsCalendar == true &&
+							ViewBag.strStage != "Completed." &&
+							Model.intStage != 2))
+						{
+							boolButtonDisable = false;
+						}
+						<tr>
+							<td>
+								@if (i <= Model.arrresortypInput.Count - 1)
+								{
+									if (Model.arrresortypInput[i].boolAutomaticallySet)
+									{
+										strButtonClassForAutomaticallySet = "btn-primary";
+									}
+									else
+									{
+										strButtonClassForAutomaticallySet = "btn-info";
+									}
+									<table class="table table-sm font-sm table-borderless">
+										<thead>
+											<tr>
+												<td rowspan="2">
+													@if (Model.arrresortypInput[i].strLink == null)
+													{
+														<span>
+															<input type="checkbox" class="wkflwCheck-I elementToDisable" name="name" value="@Model.intPkProcessInWorkflow|@Model.arrresortypInput[i].intPkEleetOrEleele|@Model.arrresortypInput[i].boolIsEleet" style="display: none" />
+														</span>
+													}
+													else
+													{
+														<span class="badge badge-pill badge-success badge-font-lg">@Model.arrresortypInput[i].strLink</span>
+													}
+												</td>
+												<td>@Model.arrresortypInput[i].strTypeAndTemplate</td>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>
+													@if (
+													 (Model.arrresortypInput[i].boolMedia && Model.arrresortypInput[i].boolThickness) ||
+													 (Model.arrresortypInput[i].boolnIsFinalProduct == true)
+													 )
+													{
+														@if (
+														Model.arrresortypInput[i].boolnIsFinalProduct == true
+														)
+														{
+															<span class="badge k-badge-pill badge-danger badge-font-lg">F</span>
+														}
+
+														@if (
+														Model.arrresortypInput[i].boolMedia && Model.arrresortypInput[i].boolThickness
+														)
+														{
+															<span class="badge k-badge-pill badge-secondary badge-font-lg">M</span>
+														}
+													}
+												</td>
+												<td>
+													<div class="dropdown job-wkflwResource" data-intJobId="@ViewBag.intJobId">
+														@{
+															string icon, color;
+															if (Model.arrresortypInput[i].boolnIsCalendar != null && Model.arrresortypInput[i].boolnIsCalendar == true)
+															{
+																icon = "fa fa-calendar";
+																if (Model.arrresortypInput[i].boolnIsAvailable == true)
+																{
+																	color = "bg-success";
+																}
+																else
+																{
+																	color = "bg-warning";
+																}
+
+															}
+															else if ((Model.arrresortypInput[i].boolnIsAvailable != null && Model.arrresortypInput[i].boolnIsCalendar == false) || (Model.arrresortypInput[i].boolnIsAvailable == null && Model.arrresortypInput[i].boolnIsCalendar == null))
+															{
+																icon = "fa fa-database";
+																if (Model.arrresortypInput[i].boolnIsAvailable == true)
+																{
+																	color = "bg-success";
+																}
+																else
+																{
+																	color = "bg-danger";
+																}
+															}
+															else { icon = "fa fa-database"; color = "bg-danger"; }
+														}
+														@if (Model.arrresortypInput[i].intnPkResource != null && Model.arrresortypInput[i].boolIsPhysical)
+														{
+															<label class="@color rounded" id="@Model.intPkProcessInWorkflow-@Model.arrresortypInput[i].intPkEleetOrEleele">
+																<i class="@icon m-2" id="availabilityIndicatorIcon"></i>
+															</label>
+														}
+														<button class="btn @strButtonClassForAutomaticallySet btn-sm @(boolButtonDisable ? "" :"dropdown-toggle") elementToDisable" type="button" id="dropdownMenuButton_@i" data-toggle="@(boolButtonDisable ? "" :"dropdown")" aria-haspopup="true" aria-expanded="false"
+																value="@Model.arrresortypInput[i].intPkEleetOrEleele|@Model.arrresortypInput[i].boolIsEleet|@Model.intPkProcessInWorkflow" data-intJobId="@ViewBag.intJobId">
+															@if (String.IsNullOrEmpty(Model.arrresortypInput[i].strResource))
+															{
+																<text>Resource</text>
+															}
+															else
+															{
+																@Model.arrresortypInput[i].strResource
+															}
+														</button>
+														<div class="dropdown-menu elementToDisable" aria-labelledby="dropdownMenuButton_@i" data-intJobId="@ViewBag.intJobId">
+															<form class="px-2 py-1 wfjSelectResource" asp-action="SetResourceForAJob">
+																@if (
+													//Pending, not link, can not start.
+													(ViewBag.strStage != "Completed." &&
+													Model.intStage != 2 &&
+													Model.arrresortypInput[i].strLink != null &&
+													!Model.boolnCanStartProcess.GetValueOrDefault()) ||
+													//Pending, not link.
+													(ViewBag.strStage != "Completed." &&
+													Model.intStage != 2 &&
+													Model.arrresortypInput[i].strLink == null)
+													)
+																{
+																	@if (
+														!Model.arrresortypInput[i].boolIsOneResource
+														)
+																	{
+																		<div class="form-group">
+																			<span class="select">
+																				<select class="input-with-dropdowns font-sm wkflwResource-dropdown elementToDisable" name="intnPkResource">
+																					<option value="">Pick one</option>
+																				</select>
+																			</span>
+																		</div>
+																	}
+																	@if (
+														Model.arrresortypInput[i].boolHasNotResource
+														)
+																	{
+																		<div class="form-group">
+																			<button type="button" class="col-sm-12 btn btn-info btn-sm wkflwNewResource elementToDisable"
+																					data-boolIsCustom="@Model.arrresortypInput[i].boolIsCustom"
+																					data-to-resource="@Model.arrresortypInput[i].intPkEleetOrEleele|@Model.arrresortypInput[i].strTypeAndTemplate|@Model.arrresortypInput[i].intPkType|@Model.arrresortypInput[i].intnPkTemplate|@Model.arrresortypInput[i].boolIsPhysical">
+																				<i class="fa fa-plus-circle"></i> New Resource
+																			</button>
+																		</div>
+																	}
+																}
+																@if (
+													(!String.IsNullOrEmpty(Model.arrresortypInput[i].strResource) &&
+													Model.arrresortypInput[i].boolIsPhysical) &&
+													(!Model.boolIsPostProcess || (Model.boolIsPostProcess && Model.arrresortypInput[i].strLink == null))
+													)
+																{
+																	<div class="form-group">
+																		<button type="button" class="btn btn-info btn-sm btnAddCalculationByResource elementToDisable"
+																				data-boolIsInPostProcess="@Model.boolIsPostProcess"
+																				data-intnPkResource="@Model.arrresortypInput[i].intnPkResource"
+																				data-intnPkProcessInWorkflow="@Model.intPkProcessInWorkflow"
+																				data-intnPkEleetOrEleele="@Model.arrresortypInput[i].intPkEleetOrEleele"
+																				data-boolnIsEleet="@Model.arrresortypInput[i].boolIsEleet.ToString()"
+																				data-boolIsPaper="@Model.arrresortypInput[i].boolIsPaper"
+																				data-boolIsDeviceOrMiscConsumable="@Model.arrresortypInput[i].boolnIsDeviceOrMiscConsumable">
+																			<i class="fa fa-calculator" aria-hidden="true"></i> @if (ViewBag.strStage == "Pending.")
+																			{<text> Add</text>} Calculations
+																		</button>
+																	</div>
+																}
+																@if (Model.arrresortypInput[i].intnPkResource != null && Model.arrresortypInput[i].boolnIsCalendar != null && Model.arrresortypInput[i].boolnIsCalendar == true && ViewBag.strStage != "Completed." && Model.intStage != 2)
+																{
+																	<div class="form-group">
+																		<button type="button" class="btn btn-tertiary btn-sm periodModal elementToDisable"
+																				data-strResource="@Model.arrresortypInput[i].strResource"
+																				data-job-info="@Model.strName|@Model.arrresortypInput[i].intnPkResource|@Model.intPkProcessInWorkflow|@Model.arrresortypInput[i].intPkEleetOrEleele|@Model.arrresortypInput[i].boolIsEleet.ToString().ToLower()|@ViewBag.strJobId">
+																			<i class="fa fa-calendar"></i> Set Period
+																		</button>
+																	</div>
+																}
+																@if (Model.arrresortypInput[i].boolAutomaticallySet)
+																{
+																	<button class="btn btn-sm btn-primary btnConfirmResource elementToDisable" type="button"><span class="fa fa-check-circle"></span> Confirm Resource</button>
+																}
+																<input type="hidden" name="intPkProcessInWorkflow" value="@Model.intPkProcessInWorkflow" />
+																<input type="hidden" name="intPkEleetOrEleele" value="@Model.arrresortypInput[i].intPkEleetOrEleele" />
+																<input type="hidden" name="boolIsEleet" value="@Model.arrresortypInput[i].boolIsEleet.ToString()" />
+																<input type="hidden" name="intJobId" value="@ViewBag.strJobId" />
+															</form>
+														</div>
+													</div>
+												</td>
+											</tr>
+											<tr>
+												@if (!String.IsNullOrEmpty(Model.arrresortypInput[i].strResource))
+												{
+													<td></td>
+													<td class="font-bold">
+														@if (Model.arrresortypInput[i].boolIsPhysical)
+														{
+															@if (
+															   !Model.boolIsPostProcess
+															   )
+															{
+																<a href="#">
+																	<i class="fa fa-info-circle showQuantityInfo" aria-hidden="true"
+																	   data-io="@Model.intPkProcessInWorkflow|@Model.arrresortypInput[i].intPkEleetOrEleele|@Model.arrresortypInput[i].boolIsEleet">
+																	</i>
+																</a>
+															}
+															<label><span>@Model.arrresortypInput[i].numQuantity @Model.arrresortypInput[i].strUnit</span></label>
+														}
+														@if (
+												  Model.arrresortypInput[i].intHours > 0 ||
+												  Model.arrresortypInput[i].intMinutes > 0 ||
+												  Model.arrresortypInput[i].intSeconds > 0
+												  )
+														{
+															String strResourceTime = "";
+															<label>
+																&emsp;<span class="fa fa-clock-o"></span>
+																@if (Model.arrresortypInput[i].intHours > 0)
+																{
+																	if (Model.arrresortypInput[i].intSeconds > 0)
+																	{
+																		Model.arrresortypInput[i].intMinutes++;
+
+																		if (Model.arrresortypInput[i].intMinutes >= 60)
+																		{
+																			Model.arrresortypInput[i].intMinutes = Model.arrresortypInput[i].intMinutes - 60;
+																			Model.arrresortypInput[i].intHours++;
+																		}
+																	}
+																	strResourceTime = Model.arrresortypInput[i].intHours +
+																		(Model.arrresortypInput[i].intMinutes > 0 ? (":" +
+																		Model.arrresortypInput[i].intMinutes.ToString("00")) : null) + " hrs.";
+																}
+																else if (Model.arrresortypInput[i].intMinutes > 0)
+																{
+																	if (Model.arrresortypInput[i].intSeconds > 0)
+																	{
+																		Model.arrresortypInput[i].intMinutes++;
+
+																		if (Model.arrresortypInput[i].intMinutes >= 60)
+																		{
+																			Model.arrresortypInput[i].intMinutes = Model.arrresortypInput[i].intMinutes - 60;
+																			Model.arrresortypInput[i].intHours++;
+																		}
+																	}
+																	strResourceTime = (Model.arrresortypInput[i].intHours > 0 ?
+																		(Model.arrresortypInput[i].intHours.ToString() +
+																		(Model.arrresortypInput[i].intMinutes > 0 ? ":" : null)) : null) +
+																		(Model.arrresortypInput[i].intMinutes > 0 ?
+																		(Model.arrresortypInput[i].intMinutes.ToString("00")) : null) +
+																		(Model.arrresortypInput[i].intHours > 0 ? " hrs." : " min.");
+																}
+																else if (Model.arrresortypInput[i].intSeconds > 0)
+																{
+																	strResourceTime = "1 min.";
+																}
+
+																@strResourceTime
+															</label>
+														}
+
+														@if (String.IsNullOrEmpty(Model.arrresortypInput[i].strLink) && Model.arrresortypInput[i].boolIsPhysical)
+														{
+															<label>&emsp;@Model.arrresortypInput[i].numCostByResource.ToString("c2")</label>
+														}
+													</td>
+												}
+												else
+												{
+													<td colspan="2"><br /></td>
+												}
+											</tr>
+											@if (!string.IsNullOrEmpty(Model.arrresortypInput[i].strDimensions))
+											{
+												<tr>
+													<td></td>
+													<td>
+														<label class="font-bold">
+															<i class="fa fa-file-o" aria-hidden="true"></i>
+															@Model.arrresortypInput[i].strDimensions
+														</label>
+													</td>
+												</tr>
+											}
+										</tbody>
+									</table>
+								}
+							</td>
+							<td>
+								@if (i <= Model.arrresortypOutput.Count - 1)
+								{
+									if (Model.arrresortypOutput[i].boolAutomaticallySet)
+									{
+										strButtonClassForAutomaticallySet = "btn-primary";
+									}
+									else
+									{
+										strButtonClassForAutomaticallySet = "btn-info";
+									}
+									<table class="table table-sm font-sm table-borderless">
+										<thead>
+											<tr>
+												<td>@Model.arrresortypOutput[i].strTypeAndTemplate</td>
+												<td rowspan="2" class="pull-right">
+													@if (Model.arrresortypOutput[i].strLink == null)
+													{
+														<span>
+															<input type="checkbox" class="wkflwCheck-O elementToDisable" name="name" value="@Model.intPkProcessInWorkflow|@Model.arrresortypOutput[i].intPkEleetOrEleele|@Model.arrresortypOutput[i].boolIsEleet" style="display: none" />
+														</span>
+													}
+													else
+													{
+														<span class="badge badge-pill badge-success badge-font-lg">@Model.arrresortypOutput[i].strLink</span>
+													}
+												</td>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>
+													<div class="dropdown job-wkflwResource" data-intJobId="@ViewBag.intJobId">
+														@{bool boolButtonOutputDisable = true;
+															if (
+																ViewBag.strStage != "Completed." && Model.intStage != 2 &&
+																(Model.arrresortypOutput[i].boolAutomaticallySet ||
+																!Model.arrresortypOutput[i].boolIsOneResource ||
+																(!String.IsNullOrEmpty(Model.arrresortypOutput[i].strResource) &&
+																Model.arrresortypOutput[i].boolnIsFinalProduct != true &&
+																((!Model.boolIsPostProcess && Model.arrresortypOutput[i].strLink == null) ||
+																(Model.boolIsPostProcess))) ||
+																Model.arrresortypOutput[i].boolHasNotResource)
+																)
+															{
+																boolButtonOutputDisable = false;
+															}
+														}
+														<button class="btn @strButtonClassForAutomaticallySet btn-sm @(boolButtonOutputDisable ? "" :"dropdown-toggle") elementToDisable" type="button" id="dropdownMenuButton_@i" data-toggle="@(boolButtonOutputDisable ? "" :"dropdown")" aria-haspopup="true" aria-expanded="false"
+																value="@Model.arrresortypOutput[i].intPkEleetOrEleele|@Model.arrresortypOutput[i].boolIsEleet.ToString().ToLower()|@Model.intPkProcessInWorkflow">
+															@if (String.IsNullOrEmpty(Model.arrresortypOutput[i].strResource))
+															{
+																<text>Resource</text>
+															}
+															else
+															{
+																@Model.arrresortypOutput[i].strResource
+															}
+														</button>
+														<div class="dropdown-menu elementToDisable" aria-labelledby="dropdownMenuButton_@i">
+															<form class="px-2 py-1" asp-action="SetResourceForAJob">
+																@if (
+												ViewBag.strStage != "Completed." && Model.intStage != 2
+												)
+																{
+																	@if (
+												   !Model.arrresortypOutput[i].boolIsOneResource
+												   )
+																	{
+																		<div class="form-group">
+																			<span class="select">
+																				<select class="font-sm wkflwResource-dropdown elementToDisable" name="intnPkResource">
+																					<option value="">Pick one</option>
+																				</select>
+																			</span>
+																		</div>
+																	}
+																	@if (
+												   Model.arrresortypOutput[i].boolHasNotResource
+												   )
+																	{
+																		<div class="form-group">
+																			<button type="button" class="col-sm-12 btn btn-info btn-sm wkflwNewResource elementToDisable"
+																					data-boolIsCustom="@Model.arrresortypOutput[i].boolIsCustom"
+																					data-to-resource="@Model.arrresortypOutput[i].intPkEleetOrEleele|@Model.arrresortypOutput[i].strTypeAndTemplate|@Model.arrresortypOutput[i].intPkType|@Model.arrresortypOutput[i].intnPkTemplate|@Model.arrresortypOutput[i].boolIsPhysical">
+																				<i class="fa fa-plus-circle"></i> New Resource
+																			</button>
+																		</div>
+																	}
+																}
+
+																@if (Model.arrresortypOutput[i].boolAutomaticallySet)
+																{
+																	<button class="btn btn-sm btn-primary btnConfirmResource elementToDisable" type="button"><span class="fa-check-circle"></span> Confirm Resource</button>
+																}
+
+																@if (
+													  !String.IsNullOrEmpty(Model.arrresortypOutput[i].strResource) &&
+													  Model.arrresortypOutput[i].boolnIsFinalProduct != true &&
+													  ((!Model.boolIsPostProcess && Model.arrresortypOutput[i].strLink == null) ||
+													  (Model.boolIsPostProcess))
+													  )
+																{
+																	bool boolIsAbleToSave = false;
+																	if (ViewBag.strStage == "Pending.")
+																	{
+																		boolIsAbleToSave = true;
+																	}
+
+																	<button class="btn btn-info btn-sm edit-transform-calculation" type="button"
+																			data-placement="top"
+																			data-intnPkResource="@Model.arrresortypOutput[i].intnPkResource"
+																			data-intPkProcessInWorkflow="@Model.intPkProcessInWorkflow"
+																			data-strUnit="@Model.arrresortypOutput[i].strUnit"
+																			data-strTypeTemplateAndResource="@("(" + Model.arrresortypOutput[i].strTypeAndTemplate + ") "
+                                                                            + Model.arrresortypOutput[i].strResource)"
+																			data-intPkEleetOrEleele="@Model.arrresortypOutput[i].intPkEleetOrEleele"
+																			data-boolIsEleet="@Model.arrresortypOutput[i].boolIsEleet.ToString()"
+																			data-boolIsAbleToSave="@boolIsAbleToSave">
+																		<i class="fa fa-calculator" aria-hidden="true"></i> Calculation
+																	</button>
+																}
+
+																<input type="hidden" name="intPkProcessInWorkflow" value="@Model.intPkProcessInWorkflow" />
+																<input type="hidden" name="intPkEleetOrEleele" value="@Model.arrresortypOutput[i].intPkEleetOrEleele" />
+																<input type="hidden" name="boolIsEleet" value="@Model.arrresortypOutput[i].boolIsEleet.ToString()" />
+																<input type="hidden" name="intJobId" value="@ViewBag.strJobId" />
+															</form>
+														</div>
+													</div>
+												</td>
+												<td>
+													@if (Model.arrresortypOutput[i].boolnIsFinalProduct == true)
+													{
+														<span class="badge k-badge-pill badge-danger badge-font-lg">F</span>
+													}
+												</td>
+												<td>
+													@if (Model.arrresortypOutput[i].boolnSize == true)
+													{
+														<span class="badge k-badge-pill badge-secondary badge-font-lg">S</span>
+													}
+												</td>
+											</tr>
+											<tr>
+												@if (
+								 !String.IsNullOrEmpty(Model.arrresortypOutput[i].strUnit)
+							  )
+												{
+													<td class="font-bold">
+														@if (
+															Model.arrresortypOutput[i].strLink == null && 
+															Model.arrresortypOutput[i].boolnIsFinalProduct != true &&
+															!Model.boolIsPostProcess
+															)
+														{
+															<a href="#">
+																<i class="fa fa-info-circle showQuantityInfo" aria-hidden="true"
+																   data-io="@Model.intPkProcessInWorkflow|@Model.arrresortypOutput[i].intPkEleetOrEleele|@Model.arrresortypOutput[i].boolIsEleet">
+																</i>
+															</a>
+														}
+														@Model.arrresortypOutput[i].numQuantity @Model.arrresortypOutput[i].strUnit
+													</td>
+												}
+												<td></td>
+											</tr>
+											@if (!string.IsNullOrEmpty(Model.arrresortypOutput[i].strDimensions))
+											{
+												<tr>
+													<td>
+														<label class="font-bold">
+															<i class="fa fa-file-o" aria-hidden="true"></i>
+															@Model.arrresortypOutput[i].strDimensions
+														</label>
+													</td>
+													<td></td>
+												</tr>
+											}
+											@*<tr>
+													<td class="font-bold">$ @Model.arrresortypOutput[i].numCostByResource</td>
+													<td></td>
+												</tr>*@
+										</tbody>
+
+									</table>
+
+								}
+							</td>
+						</tr>
+					}
+				}
+			</tbody>
+		</table>
+	</div>
+</div>

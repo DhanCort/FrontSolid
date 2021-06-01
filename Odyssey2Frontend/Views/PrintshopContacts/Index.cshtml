@@ -1,0 +1,109 @@
+﻿@model JsonResponseModel
+@{
+    List<PrintshopCustomerModel> darrCustomers = (List<PrintshopCustomerModel>)Model.objResponse;
+    List<PrintshopCustomerModel> darrCustomersWithoutCompany = darrCustomers.Where(w => w.intnCompanyId == null && w.intnBranchId == null).ToList();
+    var darrCompanyId = darrCustomers.Where(w => w.intnCompanyId != null)
+        .Select(s => new { intCompanyId = s.intnCompanyId, strCompanyName = s.strCompanyName }).Distinct().ToList();
+}
+
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    String strCustomerUrl = HttpContextAccessor.HttpContext.Session.GetString("strCustomerUrl");
+}
+
+@if (Model.intStatus == 200)
+{
+    <div class="row">
+        <h2>My Customers</h2>
+        <a class="btn btn-info text-white ml-4" href="@strCustomerUrl" target="_blank">
+            <i class="fa fa-pencil" aria-hidden="true"></i> Edit Customers
+        </a>
+    </div>
+    <div class="row">
+        <div class="col-sm-12" style="display: block; height: 100%; width: 100%">
+            <div class="card" style="margin-bottom: 1%;">
+                <div class="card-header" style="background-color: white">
+                    <h3>
+                        <i class="fa fa-building-o" aria-hidden="true"></i> No company
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr class="d-flex">
+                                    <td class="col-1"></td>
+                                    <td class="font-bold col-2">Name</td>
+                                    <td class="font-bold col-5">Email</td>
+                                    <td class="font-bold col-2">Phone</td>
+                                    <td class="font-bold col-2">Mobile</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var customer in darrCustomersWithoutCompany.OrderBy(o => o.strLastName))
+                                {
+                                <tr class="d-flex">
+                                    <td class="text-center col-1"><i class="fa fa-user-o" aria-hidden="true"></i></td>
+                                    <td class="col-2">@customer.strFirstName @customer.strLastName</td>
+                                    <td class="col-5">@customer.strEmail</td>
+                                    <td class="col-2">@customer.strPhone</td>
+                                    <td class="col-2">@customer.strCellPhone</td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            @foreach (var company in darrCompanyId)
+            {
+                var darrCustomerByCompany = darrCustomers.Where(w => w.intnCompanyId == company.intCompanyId).ToList();
+                <div class="card" style="margin-bottom: 1%;">
+                    <div class="card-header" style="background-color: white">
+                        <h3>
+                            <i class="fa fa-building-o" aria-hidden="true"></i>
+                            @company.strCompanyName
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr class="d-flex">
+                                        <td class="col-1"></td>
+                                        <td class="font-bold col-2">Name</td>
+                                        <td class="font-bold col-3">Email</td>
+                                        <td class="font-bold col-2">Phone</td>
+                                        <td class="font-bold col-2">Mobile</td>
+                                        <td class="font-bold col-2">Branch</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var customer in darrCustomerByCompany.OrderBy(o => o.strLastName))
+                                    {
+                                        <tr class="d-flex">
+                                            <td class="text-center col-1"><i class="fa fa-user-o" aria-hidden="true"></i></td>
+                                            <td class="col-2">@customer.strFirstName @customer.strLastName</td>
+                                            <td class="col-3">@customer.strEmail</td>
+                                            <td class="col-2">@customer.strPhone</td>
+                                            <td class="col-2">@customer.strCellPhone</td>
+                                            <td class="col-2">@customer.strBranchName</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-danger">
+        @Model.strUserMessage
+    </div>
+}

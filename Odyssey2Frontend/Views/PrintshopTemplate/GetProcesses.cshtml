@@ -1,0 +1,352 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@model IEnumerable<Odyssey2Frontend.Models.PrintshopProcessTemplateModel>
+
+@{
+    String strPrintshopName = HttpContextAccessor.HttpContext.Session.GetString("strPrintshopName");
+    String strPrintshopId = HttpContextAccessor.HttpContext.Session.GetString("strPrintshopId");
+
+    ViewBag.boolDefaultCalculationProcess = true;
+
+    List<PrintshopProcessTemplateModel> darrprintshopXJDFProcess = ViewBag.PrintshopXJDFProcess;
+
+    List<String> darrstrXJDFProcessClassification = ViewBag.darrstrXJDFProcessClassification;
+
+    List<SelectListItem> darrselectlistitemClassification = null;
+
+    if (darrstrXJDFProcessClassification != null)
+    {
+        darrselectlistitemClassification = darrstrXJDFProcessClassification
+           .Select(process => new SelectListItem
+           {
+               Text = process,
+               Value = process
+           }).ToList();
+
+        darrselectlistitemClassification.Add(new SelectListItem
+        {
+            Text = "See all",
+            Value = "See all",
+            Selected = true
+        });
+    }
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <h2 class="float-left">My Processes</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <h3 class="float-left">@ViewBag.strTypeId</h3>
+        <a class="btn btn-secondary btn-sm float-right goToProcessOrWf">
+            <i class="fa fa-angle-left" aria-hidden="true"></i> Back
+        </a>
+    </div>
+</div>
+
+<div class="myProcessBody">
+    <input type="hidden" id="intPkType" value="@ViewBag.intPkProcessType" />
+    <input type="hidden" id="strTypeId" value="@ViewBag.strTypeId" />
+    <div class="row">
+        <div class="col-sm-12 accordion" id="myProcessAccordion">
+            @{
+                if (String.IsNullOrEmpty(strPrintshopName))
+                {
+                    <div class="alert alert-info text-center">
+                        The Printshop needs to be selected.
+                    </div>
+                }
+                else if (Model.Any())
+                {
+                    int intElement = 1;
+                    foreach (var item in Model)
+                    {
+                        <div class="card">
+                            <div class="card-header">
+                                <div>
+                                    <a class="btn btn-link btn-sm process-collapse-link Process@(item.intPk)" data-toggle="collapse" href="#collapse_@intElement" id="@item.intPk" data-strTypeId-text="Process@(item.intPk)">
+                                        @(item.strElementName)
+                                    </a>
+                                    <button class="btn btn-danger btn-sm pull-right deleteProcess Process@(item.intPk)" value="@item.intPk" data-strTypeId-text="Process@(item.intPk)" style="margin-left: 3px"><i class="fa fa-trash-o"></i></button>
+                                    <button class="btn btn-secondary btn-sm pull-right editProcessName Process@(item.intPk)" value="@item.intPk" data-strTypeId-text="Process@(item.intPk)" style="margin-left: 3px"><i class="fa fa-pencil"></i></button>
+                                    <button class="btn btn-info pull-right btn-sm addProcessDefaultCalculation Process@(item.intPk)" value="@item.intPk" data-intPkProcess="@item.intPk" data-strTypeId="Process@(item.intPk)" data-toggle="modal" data-target="#defaulCalculationModal">Default Calculations</button>
+                                </div>
+                                <form class="saveNewProcessName" hidden>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control form-control-sm" name="strProcessName" value="@item.strElementName">
+										<input type="hidden" class="Process@(item.intPk)" name="intPkProcess" value="@item.intPk" />
+                                        <div class="input-group-append">
+                                            <button class="btn btn-sm btn-primary" type="submit"><span class="fa fa-save"></span></button>
+                                            <button class="btn btn-sm btn-secondary cancelEditProcessName" type="button"><span class="fa fa-times"></span></button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div id="collapse_@intElement" class="collapse" data-parent="#myProcessAccordion">
+                                <input value="@(item.intPk)" id="Process@(item.intPk)" class="Process@(item.intPk)" type="hidden" />
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <form class="form-horizontal form-process-resources" id="form_@intElement" data-strTypeId-text="Process@(item.intPk)" asp-action="AddTypeOrTemplateToProcess">
+                                                <div class="row">
+                                                    <br />
+                                                    <div class="form-group col-sm-4" style="padding-top: 33px">
+                                                        <div class="dropdown">
+                                                            <button type="button" id="process-filter-dropdown"
+                                                                    class="btn btn-info btn-block dropdown-toggle"
+                                                                    style="height:29px; font-size: 14px; 
+                                                                        padding: 0 30px 0 10px; border-radius: 0.5em;"
+                                                                    data-toggle="dropdown">
+                                                                Filter
+                                                            </button>
+                                                            <div class="dropdown-menu col-sm-12 dropdown-process-filter" id="filter-section">
+                                                                <input type="hidden" class="Process@(item.intPk)" name="intPkProcess" value="@item.intPk" />
+                                                                <input type="hidden" name="intPkType" value="@ViewBag.intPkProcessType" />
+                                                                <div class="media border p-1">
+                                                                    <div class="row">
+                                                                        <div class="col-sm-6">
+                                                                            <div class="custom-control custom-checkbox">
+                                                                                <input type="checkbox" value="true" class="custom-control-input type-template-checkbox" id="boolIsType-@item.intPk" name="boolIsType" checked>
+                                                                                <label class="custom-control-label checkbox-label" for="boolIsType-@item.intPk">Type</label>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <div class="custom-control custom-checkbox">
+                                                                                <input type="checkbox" value="true" class="custom-control-input type-template-checkbox" id="boolIsTemplate-@item.intPk" name="boolIsTemplate" checked>
+                                                                                <label class="custom-control-label checkbox-label" for="boolIsTemplate-@item.intPk">Template</label>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="media border p-1">
+                                                                    <div class="row">
+                                                                        <div class="col-sm-5">
+                                                                            <div class="custom-control custom-checkbox">
+                                                                                <input type="checkbox" value="true" class="custom-control-input physical-checkbox" id="boolIsPhysical-@item.intPk" name="boolIsPhysical" checked>
+                                                                                <label class="custom-control-label checkbox-label" for="boolIsPhysical-@item.intPk">Physical</label>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-7">
+                                                                            <div class="custom-control custom-checkbox">
+                                                                                <input type="checkbox" value="true" class="custom-control-input physical-checkbox" id="boolIsNotPhysical-@item.intPk" name="boolIsNotPhysical" checked>
+                                                                                <label class="custom-control-label checkbox-label" for="boolIsNotPhysical-@item.intPk">Not Physical</label>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    @if (item.boolIsXJDF)
+                                                                    {
+                                                                        <div class="col-sm-6">
+                                                                            <div class="custom-control custom-checkbox">
+                                                                                <input type="checkbox" value="true" class="custom-control-input" id="boolIsSuggested-@item.intPk" name="boolIsSuggested">
+                                                                                <label class="custom-control-label checkbox-label" for="boolIsSuggested-@item.intPk">Suggested</label>
+                                                                            </div>
+                                                                        </div>
+                                                                    }
+                                                                    <div class="col-sm-2">
+                                                                    </div>
+                                                                    <div class="col-sm-4 text-center">
+                                                                        <button class="btn btn-primary process-filter-btn ml-3 mr-0" style="font-size:14px" type="button">Apply</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group col-sm-4 ml-2 mt-1">
+                                                        <label class="input-label" for="intPkResource">Type of Resource or Template</label>
+                                                        <div id="myResources_@intElement">
+                                                            <span class="select" style="width:400px;">
+                                                                <select id="intPkTypeOrTemp" name="intPkTypeOrTemp" asp-items="@ViewBag.PrintshopXJDFResources" class="intPkTypeOrTemp intPkResource_@intElement" required>
+                                                                    <option value="">Pick one</option>
+                                                                </select>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group col-sm-1" style="padding-top: 33px;">
+                                                        <div class="custom-control custom-radio">
+                                                            <input type="radio" class="custom-control-input mr-2" id="inputRadio_@intElement" name="resourceType" value="Input" required>
+                                                            <label class="custom-control-label" for="inputRadio_@intElement">Input</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group col-sm-1" style="padding-top: 33px;">
+                                                        <div class="custom-control custom-radio">
+                                                            <input type="radio" class="custom-control-input" id="outputRadio_@intElement" name="resourceType" value="Output" required>
+                                                            <label class="custom-control-label" for="outputRadio_@intElement">Output</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group col-sm-12">
+                                                        <label class="control-label col-sm-2" for="strInputOrOutput"></label>
+                                                        <div class="text-center">
+                                                            <button type="submit" class="btn btn-primary" id="add_@intElement"><b>Add</b></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div style="padding-bottom: 10px">
+                                                <form class="form-custom-resources" asp-action="AddCustomTypeToProcess" data-strTypeId-text="Process@(item.intPk)">
+                                                    <input type="hidden" value="Input" name="strInputOrOutput" />
+                                                    <input type="hidden" class="Process@(item.intPk)" name="intPkProcess" id="intPkProcess" value="@item.intPk" />
+                                                    <button class="btn btn-primary btn-block" type="submit">Add Custom Input</button>
+                                                </form>
+                                            </div>
+                                            <div class="card">
+                                                <div class="card-header">Input</div>
+                                                <div class="card-body row input" id="input_Process@(item.intPk)" style="max-height: 200px; overflow: auto">
+
+                                                </div>
+                                            </div><br />
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div style="padding-bottom: 10px">
+                                                <form class="form-custom-resources" asp-action="AddCustomTypeToProcess" data-strTypeId-text="Process@(item.intPk)">
+                                                    <input type="hidden" value="Output" name="strInputOrOutput" />
+                                                    <input type="hidden" class="Process@(item.intPk)" name="intPkProcess" id="intPkProcess" value="@item.intPk" />
+                                                    <button class="btn btn-primary btn-block" type="submit">Add Custom Output</button>
+                                                </form>
+                                            </div>
+                                            <div class="card">
+                                                <div class="card-header">Output</div>
+                                                <div class="card-body row output" id="output_Process@(item.intPk)" style="max-height: 200px; overflow: auto">
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        intElement = intElement + 1;
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-danger text-center">
+                        No process added.
+                    </div>
+                }
+            }
+        </div>
+
+        @if (
+!String.IsNullOrEmpty(strPrintshopId)
+)
+        {
+            if (ViewBag.strTypeId != "Custom Processes")
+            {
+                <div class="w-100"></div>
+                <div class="col text-center">
+                    <br />
+                    <button type="button" value="xjdf" class="btn btn-info btn addProcessTemplate" data-toggle="modal" data-target="#xjdfTemplateModal"><i class="fa fa-plus-circle"></i> Add Process</button>
+                </div>
+                <div class="w-100"></div>
+            }
+            else
+            {
+                <div class="w-100"></div>
+                <div class="col text-center">
+                    <br />
+                    <button type="button" value="custom" class="btn btn-info btn addProcessTemplate" data-toggle="modal" data-target="#xjdfTemplateModal"><i class="fa fa-plus-circle"></i> Add Custom Process</button>
+                </div>
+                <div class="w-100"></div>
+            }
+        }
+    </div>
+</div>
+
+<!-- Add default calculations Modal -->
+<div id="defaulCalculationModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog xjdfDialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add Process Default Calculation</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        @{ await Html.RenderPartialAsync("../Calculation/ByProcessPartialView.cshtml", new CalculationModel
+                            {
+                                intnPkProcess = ViewBag.intnPkProcess,
+                                intnPkProduct = null
+                            });
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary text-dark btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Add process Modal -->
+<div id="xjdfTemplateModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered xjdfDialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="process-modal-title">Add Process</h2>
+                <button type="button" class="close dismissXJDFProcess" data-dismiss="modal">
+                    <i class="fa fa-close"></i>
+                </button>
+            </div>
+            <div class="modal-body autoHeight modal-content-scroll-screen-height">
+                <div id="addXJDFProcessSection" hidden>
+                    <form id="add-new-process-instance-form" data-page-process-element="true">
+                        <div class="row" id="xjdf-instance-section">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <input type="hidden" name="intPkType" id="intPkType" value="@ViewBag.intPkProcessType" />
+                                    <div class="form-group">
+                                        <label class="input-label">Process Name</label>
+                                        <input type="text" name="strProcessName" class="input-with-dropdowns form-control" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-sm btn-primary pull-right"><i class="fa fa-save"></i> Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div id="addCustomProcessSection" class="row" hidden>
+                    <div class="col-sm-12">
+                        <form asp-action="AddCustomProcessToPrintshop" id="addCustomProcessForm">
+                            <div class="form-group">
+                                <label for="strName" class="input-label">Process Name: </label>
+                                <input name="strProcessName" class="input-with-dropdowns form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm pull-right"><i class="fa fa-save"></i> Save</button>
+                        </form><br />
+                    </div>
+                    <div class="col-sm-12" id="processNotify"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-sm" id="add-new-process-next-btn" hidden>Next</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="add-new-process-back-btn" hidden>Back</button>
+                <button type="button" class="btn btn-secondary text-dark dismissXJDFProcess" data-dismiss="modal">Close</button>    
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        subGetAllProcess("All");
+        subGetAllAccounts();
+    </script>
+}

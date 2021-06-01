@@ -1,0 +1,103 @@
+﻿@model List<Odyssey2Frontend.Models.ResourceModel>
+@{
+	ViewData["Title"] = "My Resources";
+
+	ViewBag.PrintshopResource = new SelectList(Model, "intPk", "strTypeId");
+
+	ViewBag.boolDefaultCalculationResource = true;
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <h2 class="float-left">My Resources</h2>
+    </div>
+</div>
+<div class="">
+	<!--Pill tabs for physical and not physical resources-->
+    <div class="col-sm-12 mt-3">
+        <ul class="nav">
+            <li class="res-phisical-nav">
+                <a class="nav-link active" data-toggle="pill" href="#physical" id="physical-pill">Physical</a>
+            </li>
+            <li class="res-phisical-nav">
+                <a class="nav-link" data-toggle="pill" href="#notPhysical" id="notPhysical-pill">Not Physical</a>
+            </li>
+        </ul>
+    </div>
+	<!--Pill tabs content-->
+	<div class="tab-content">
+		<div class="tab-pane fade show active" id="physical">
+			@{
+				await Html.RenderPartialAsync("ResourceTypesPartialView", Model);
+			}
+		</div>
+		<div class="tab-pane fade show" id="notPhysical">
+		</div>
+	</div>
+
+    <div class="row">      
+
+        @if (!String.IsNullOrEmpty(ViewBag.strPrintshopId))
+        {
+            <div class="w-100"></div>
+            <div class="col text-center">
+                <br /><a id="addResource" value="xjdf" class="btn btn-info" href="/PrintshopResourcesTemplate/AddXJDF" data-boolIsPhysical="true"><i class="fa fa-plus-circle"></i> Add Resource</a>
+            </div>
+			<div class="col text-center" id="resource-btn-custom-modal">
+				<br /><button id="addResource" value="custom" class="btn btn-info addResourceTemplate" data-toggle="modal" data-target="#xjdfTemplateModal"><i class="fa fa-plus-circle"></i> Add Custom Resource</button>
+			</div>
+        }
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="xjdfTemplateModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="res-modal-title">Add Custom Resource</h3>
+                <button class="btn-sm close" type="button" data-dismiss="modal">
+                    <i class="fa fa-close"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="res-modal-body">
+                <div id="addCustomResourceSection" hidden></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="resPreviousStep" style="display: none">Back</button>
+                <button type="button" class="btn btn-primary" id="resNextStep" hidden>Next</button>
+                <button type="button" class="btn btn-primary" id="saveResForm" style="display: none">Save</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Add default calculations Modal -->
+<div id="defaulCalculationModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog xjdfDialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add Calculation</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        @{ await Html.RenderPartialAsync("../Calculation/ByResourcePartialView.cshtml", new CalculationModel
+                            {
+                                intnPkProduct = null
+                            });
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-light text-dark" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>

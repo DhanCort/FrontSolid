@@ -1,0 +1,193 @@
+﻿<!--Modal Set Period-->
+<div class="modal fade" id="setPeriodModal">
+    <div class="modal-dialog calendar-dialog modal-sxl">
+        <div class="modal-content calendar-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                @*<h4 class="modal-title">Needed resources and unlink processes.</h4>*@
+                <h4 id="modalPeriodTitle"></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row modal-row">
+                    <div class="col-sm-4">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <button class="col-sm-12 btn btn-secondary btn-sm" type="button" id="refreshWeek">
+                                    <i class="fa fa-refresh" aria-hidden="true"></i> Refresh week
+                                </button>
+                            </div>
+                            <div class="col-sm-6">
+                                <button class="col-sm-12 btn btn-info btn-sm" type="button" id="gotoCurrentWeek">
+                                    <i class="fa fa-calendar" aria-hidden="true"></i> Go to now
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <button class="btn btn-info btn-sm prevWeek" data-toggle="tooltip" data-placement="top" title="Previous week"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+                            </div>
+                            <div class="col-sm-6 font-bold text-center periodMonth"></div>
+                            <div class="col-sm-3">
+                                <button class="btn btn-info btn-sm pull-right nextWeek" data-toggle="tooltip" data-placement="top" title="Next week"><i class="fa fa-chevron-circle-right" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                        <div class="row" id="textDay">
+                            <div class="col-md-1-5 text-center"></div>
+                            <div class="col-md-1-5">Sun</div>
+                            <div class="col-md-1-5">Mon</div>
+                            <div class="col-md-1-5">Tue</div>
+                            <div class="col-md-1-5">Wed</div>
+                            <div class="col-md-1-5">Thu</div>
+                            <div class="col-md-1-5">Fri</div>
+                            <div class="col-md-1-5">Sat</div>
+                            <div></div>
+                        </div>
+                        <div class="row" id="textNumber">
+                            <div class="col-md-1-5 text-center"></div>
+                            <div class="col-md-1-5" data-day-of-week="1"><button id="dayOfWeek_1" type="button" class="btn btn-info btn-sm font-bold getDay" style="width:30px"></button></div>
+                            <div class="col-md-1-5" data-day-of-week="2"><button id="dayOfWeek_2" type="button" class="btn btn-info btn-sm font-bold getDay" style="width:30px"></button></div>
+                            <div class="col-md-1-5" data-day-of-week="3"><button id="dayOfWeek_3" type="button" class="btn btn-info btn-sm font-bold getDay" style="width:30px"></button></div>
+                            <div class="col-md-1-5" data-day-of-week="4"><button id="dayOfWeek_4" type="button" class="btn btn-info btn-sm font-bold getDay" style="width:30px"></button></div>
+                            <div class="col-md-1-5" data-day-of-week="5"><button id="dayOfWeek_5" type="button" class="btn btn-info btn-sm font-bold getDay" style="width:30px"></button></div>
+                            <div class="col-md-1-5" data-day-of-week="6"><button id="dayOfWeek_6" type="button" class="btn btn-info btn-sm font-bold getDay" style="width:30px"></button></div>
+                            <div class="col-md-1-5" data-day-of-week="7"><button id="dayOfWeek_7" type="button" class="btn btn-info btn-sm font-bold getDay" style="width:30px"></button></div>
+                        </div>
+                        <div id="calendarCells" style="display: block; overflow-y: scroll; height: 460px">
+                            @for (int i = 1; i < 25; i++)
+                            {
+                                int h = i - 1;
+                                <div class="row" style="margin-top: 0% !important">
+                                    <div class="col-md-1-5 text-center hour" data-hour="@h">@h:00</div>
+                                    @for (int j = 1; j < 8; j++)
+                                    {
+                                        string hour = h.ToString();
+                                        <div class="parentCell col-md-1-5">
+                                            <div class="task-cell cell-@hour-@j" style="border: 0.5px solid #dee2e6">
+                                                @*@for (int m = 0; m < 60; m++)
+                                                    {
+                                                        <div class="task-cell-child minute-@hour-@j-@m" style="height: 0.8333px"></div>
+                                                    }*@
+                                            </div>
+                                        </div>
+                                        @*<div class="col-md-1-5 task-cell" style="border: 0.5px solid #dee2e6"><div class="p-3" data-coord-cell="@h,@j" style="color: white">*</div></div>*@
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <span class="select" style="width: 100%">
+                                    <select class="" id="resourcePeriodSelect">
+                                        <option value="">Pick one</option>
+                                    </select>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12" id="periodsOfDay"></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 col-sm-3-m">
+                        <form id="resourcePeriodForm">
+                            <input id="intPkPeriod" type="hidden" class="form-control" value="" readonly />
+                            <input id="intPkResourceModal" type="hidden" class="form-control" value="" readonly />
+                            <div class="row">
+                                <div class="col-sm-10">
+                                    <div>
+                                        <label for="" class="input-label">Job Number</label>
+                                    </div>
+                                    <div>
+                                        <input name="strJobNumber" type="text" class="form-control input-with-dropdowns" value="@ViewBag.strJobNumber" readonly />
+                                        <input name="intJobId" type="hidden" class="form-control input-with-dropdowns" value="@ViewBag.strJobId" readonly />
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <div>
+                                        <label for="" class="input-label">Job Name</label>
+                                    </div>
+                                    <div>
+                                        <input id="strName" type="text" class="form-control input-with-dropdowns" value="@ViewBag.strJobName" readonly />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-sm-10 text-center">
+                                    <button class="btn btn-sm btn-tertiary getAvailableTimes" type="button">
+                                        <i class="fa fa-calendar" aria-hidden="true"></i> Get Available Times
+                                    </button>
+                                </div>
+                            </div>
+                            @*<div class="row mt-3">
+                                <div class="col-sm-10 font-bold border-bottom">Start</div>
+                            </div>*@
+                            <div class="row">
+                                <div class="col-sm-10">
+                                    <div>
+                                        <label for="" class="input-label">Start Date</label>
+                                    </div>
+                                    <div>
+                                        <input id="strStartDate" class="form-control input-with-dropdowns" data-toggle="datetimepicker" data-target="#strStartDate" />
+                                    </div>
+                                </div>
+                            </div>
+                            @*<div class="row">
+                                <div class="col-sm-10 font-bold border-bottom">End</div>
+                            </div>*@
+                            <div class="row">
+                                <div class="col-sm-10">
+                                    <div>
+                                        <label for="" class="input-label">End Date</label>
+                                    </div>
+                                    <div>
+                                        <input id="strEndDate" class="form-control input-with-dropdowns" data-toggle="datetimepicker" data-target="#strEndDate" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-10">
+                                    <div>
+                                        <label class="input-label">Employee</label>
+                                    </div>
+                                    <div>
+                                        <span class="select" style="width: 100%">
+                                            <select class="" id="strEmployee">
+                                                <option>-</option>
+                                            </select>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-10">
+                                    <div>
+										<label class="input-label">Schedule Reset Allowance</label>
+                                    </div>
+                                    <div>
+                                        <input class="form-control input-with-dropdowns" min="0" step="1" type="number" id="intMinsBeforeDelete" pattern="^[0-9]$"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-sm-10 text-center">
+                                    <button class="btn btn-sm btn-primary col-sm-5" type="button" id="addNewPeriod"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,106 @@
+﻿@model JobProcessAndResourcesInWorkflowModel
+@if (
+Model.arrproper.Length > 0
+)
+{
+    <h3 class="font-bold ml-3">Process Periods</h3>
+    @foreach (ProcessPeriodsModel proper in Model.arrproper)
+    {
+        var strStartDateTime = proper.strStartDate + " " + proper.strStartTime;
+        var strEndDateTime = proper.strEndDate + " " + proper.strEndTime;
+        <div class="row border-bottom text-center" style="margin-top: 10px !important; padding-bottom: 10px">
+            <div class="col-sm-2 mt-4 font-bold">@proper.strDescription</div>
+            <div class="col-sm-3">
+                <div class="row">
+                    <label class="font-bold">Start date: </label>
+                </div>
+                <div class="row mt-0 pt-1">
+                    <label>@strStartDateTime</label>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="row">
+                    <label class="font-bold">End date:</label>
+                </div>
+                <div class="row mt-0 pt-1">
+                    <label>@strEndDateTime</label>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="row">
+                    <label class="font-bold">Employee:</label>
+                </div>
+                <div class="row mt-0 pt-1">
+                    <label>@proper.strLastName</label>
+                </div>
+            </div>
+            <div class="col-sm-1 text-center">
+                <div class="row">
+                    <label class="font-bold">Status:</label>
+                </div>
+                <div class="row mt-0 pt-1">
+                    <label>@proper.strStatus</label>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <h3 class="font-bold ml-3">Process Periods</h3>
+    <div class="row border-bottom text-center" style="margin-top: 10px !important; padding-bottom: 10px">
+        <div class="col-sm-12">Nothing to show</div>
+    </div>
+}
+
+@if (Model.arrresper.Length > 0)
+{
+    <h3 class="font-bold ml-3">Resource Periods</h3>
+    @foreach (ProcessPeriodsModel proper in Model.arrresper)
+    {
+        var strStartDateTime = proper.strStartDate + " " + proper.strStartTime;
+        var strEndDateTime = proper.strEndDate + " " + proper.strEndTime;
+        <div class="row border-bottom text-center" style="margin-top: 10px !important; padding-bottom: 10px">
+            <div class="col-sm-2 font-bold mt-2">@proper.strResource</div>
+            <div class="col-sm-3">
+                <div class="row">
+                    <label class="font-bold">Start date:</label>
+                </div>
+                <div class="row mt-0 pt-1">
+                    <label>@strStartDateTime</label>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="row">
+                    <label class="font-bold">End date:</label>
+                </div>
+                <div class="row mt-0 pt-1">
+                    <label>@strEndDateTime</label>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="row">
+                    <label class="font-bold">Employee:</label>
+                </div>
+                <div class="row mt-0 pt-1">
+                    <label>@proper.strFirstName @proper.strLastName</label>
+                </div>
+            </div>
+            <div class="col-sm-1 text-center">
+                <div class="row">
+                    <label class="font-bold">Status:</label>
+                </div>
+                <div class="row mt-0 pt-1">
+                    <label>@proper.strStatus</label>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <h3 class="font-bold ml-3">Resource Periods</h3>
+    <div class="row border-bottom text-center" style="margin-top: 10px !important; padding-bottom: 10px">
+        <div class="col-sm-12">Nothing to show</div>
+    </div>
+}

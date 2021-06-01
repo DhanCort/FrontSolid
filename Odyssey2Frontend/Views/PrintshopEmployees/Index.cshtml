@@ -1,0 +1,121 @@
+﻿@model PrintshopSupervisorEmployeeModel
+<div class="row">
+    <div class="col-sm-3">
+        <h2>My Employees</h2>
+    </div>
+    <div class="col-sm-8">
+		<form asp-action="Index" id="frmSearchEmployee">
+			<div class="input-group mb-3">
+				<span class="search-box" style="width:100%">
+					<input type="text" class="search" placeholder="Search..." name="strEmployee"
+						   value="@ViewBag.strSearch">
+					<a class="fa fa-search searchEmployee" href="#"></a>
+				</span>
+			</div>
+		</form>
+    </div>
+</div>
+<div class="row mt-0">
+    <div class="col-sm-3">
+    </div>
+    <div class="col-sm-2">
+        <span class="fa-stack" style="color:#808284;">
+            <i class="fa fa-circle fa-stack-2x" style="font-size:160%;"></i>
+            <i class="fa fa-users fa-stack-1x fa-inverse mt-sm-2" style="font-size:75%;"></i>
+        </span>
+        <label>Supervisor</label>
+    </div>
+    <div class="col-sm-2">
+        <span class="fa-stack" style="color:#808284;">
+            <i class="fa fa-circle fa-stack-2x" style="font-size:160%;"></i>
+            <i class="fa fa-line-chart fa-stack-1x fa-inverse mt-sm-2" style="font-size:75%;"></i>
+        </span>
+        <label>Accounting</label>
+    </div>
+</div>
+<hr />
+<div class="row">
+    @foreach (var item in Model.arrEmployee)
+    {
+        <div class="col-sm-4 m-0 p-0">
+            <div class="row">
+                <div class="col-sm-3 text-center">
+                    @if (string.IsNullOrEmpty(@item.strPhotoUrl))
+                    {
+                        <i class="fa fa-user-circle-o pt-2" aria-hidden="true" style="font-size:550%;color:#BCBEC0;"></i>
+                    }
+                    else
+                    {
+                        <img src="@item.strPhotoUrl" class="profile-img mt-2 mr-2" style="border-color:#BCBEC0; border-style:solid; border-width:thick;">
+                    }
+                </div>
+                <div class="col-sm-9">
+                    <div class="card">
+                        <div class="card-body" style="padding-left:1.25rem; padding-top:1.25rem; padding-right:0.50rem; 
+                                @((item.boolIsSupervisor || item.boolIsAccountant) ? "padding-bottom:0.25rem" : 
+                                    "padding-bottom:1.25rem")">
+                            <h5 class="card-title">@item.strFirstName @item.strLastName</h5>
+                            <div class="row">
+                                <button class="btn btn-tertiary btn-sm ml-2 employeeRules" data-contactId="@item.intContactId"
+                                        data-employee-name="@item.strFirstName @item.strLastName">
+                                    <span class="fa fa-calendar"></span> Rules
+                                </button>
+                                <button class="btn btn-info btn-sm ml-2 showMyCalendar" data-contactId="@item.intContactId"
+                                        data-boolIsFromMyEmployees="true"
+                                        data-employee-name="@item.strFirstName @item.strLastName's Calendar">
+                                    <span class="fa fa-calendar-check-o"></span>
+                                </button>
+                                <button class="btn btn-secondary btn-sm ml-2 dropdown-toggle drpdwnSetRole" type="button"
+                                        id="dropdownSetRole" data-toggle="dropdown">
+                                    Roles
+                                </button>
+                                <div class="dropdown-menu">
+                                    <div class="custom-control custom-checkbox ml-2">
+                                        <input type="checkbox" class="custom-control-input chkSupervisor"
+                                                id="boolIsSupervisor_@item.intContactId" name="boolIsSupervisor_@item.intContactId"
+                                                data-intContactId="@item.intContactId"
+                                                @(item.boolIsSupervisor == true ? "checked" : "")>
+                                        <label class="custom-control-label checkbox-label" for="boolIsSupervisor_@item.intContactId">
+                                            Supervisor
+                                        </label>
+                                    </div>
+                                    <div class="custom-control custom-checkbox ml-2">
+                                        <input type="checkbox" class="custom-control-input chkAccountant"
+                                                id="boolIsAccountant_@item.intContactId" name="boolIsAccountant_@item.intContactId"
+                                                data-intContactId="@item.intContactId"
+                                                @(item.boolIsAccountant == true ? "checked" : "")>
+                                        <label class="custom-control-label checkbox-label" for="boolIsAccountant_@item.intContactId">
+                                            Accountant
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pull-right mt-0">
+                                <div>
+                                    @if (
+                                        item.boolIsSupervisor
+                                        )
+                                    {
+                                        <span class="fa-stack m-0 p-0" style="color:#808284;">
+                                            <i class="fa fa-circle fa-stack-2x" style="font-size:160%;"></i>
+                                            <i class="fa fa-users fa-stack-1x fa-inverse mt-sm-2" style="font-size:75%;"></i>
+                                        </span>
+                                    }
+                                    @if (
+                                        item.boolIsAccountant
+                                        )
+                                    {
+                                        <span class="fa-stack m-0 p-0" style="color:#808284;">
+                                            <i class="fa fa-circle fa-stack-2x" style="font-size:160%;"></i>
+                                            <i class="fa fa-line-chart fa-stack-1x fa-inverse mt-sm-2" style="font-size:75%;"></i>
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

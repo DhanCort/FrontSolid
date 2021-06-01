@@ -1,0 +1,80 @@
+﻿@model List<linkModel>
+
+<table class="table table-sm table-hover">
+	<thead>
+		<tr class="tr-calculation-header">
+			<th colspan="2">From</th>
+			<th colspan="2">To</th>
+			<th colspan="5"></th>
+		</tr>
+		<tr class="tr-calculation-header">
+			<th>Process</th>
+			<th>Output</th>
+			<th>Process</th>
+			<th>Input</th>
+			@*<th>Condition To Apply</th>*@
+			@*<th></th>*@
+			@*<th>Minimum</th>
+			<th>Maximum</th>*@
+			<th colspan="2"></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (linkModel link in Model)
+		{
+			//							//Calculation has condition to apply and minimum or maximum.
+			bool boolHasConditionOperator = ((link.strConditionToApply != null) && (link.strConditionToApply != "")) &&
+				((link.numnMinQty != null) || (link.numnMaxQty != null));
+
+			String strOperator = "";
+			/*CASE*/
+			if (
+				//						//Has operator and the operator is AND.
+				boolHasConditionOperator && link.boolConditionAnd
+				)
+			{
+				strOperator = "AND";
+			}
+			else if (
+				//						//Has operator and the operator is OR.
+				boolHasConditionOperator && !link.boolConditionAnd
+				)
+			{
+				strOperator = "OR";
+			}
+			/*END-CASE*/
+
+			<tr class="tr-calculation-row">
+				<td>@link.strProcessFrom</td>
+				<td>@link.strOut</td>
+				<td>@link.strProcessTo</td>
+				<td>@link.strIn</td>
+				@*<td style="min-width: 50vh !important">@link.strConditionToApply </td>*@
+				@*<td>@strOperator</td>*@
+				@*<td class="text-center">@link.numnMinQty</td>
+				<td class="text-center">@link.numnMaxQty</td>*@
+				<td>
+					@if (
+						link.boolSetCondition
+						)
+					{
+						<button type="button" class="btn btn-secondary btn-sm openConditionToApplyModal pull-right" title="Change condition to apply"
+								data-boolIsLink="@true"
+								data-boolSetCondition="@true"
+								data-intPkOut="@link.intPkOut"
+								data-intPkIn="@link.intPkIn"
+								data-toggle="modal"
+								data-target="#conditionToApplyModal">
+							<i class="fa fa-edit"></i>
+						</button>
+					}
+				</td>
+				<td class="">
+					<button class="btn btn-sm btn-danger wkflwUnlink pull-right ml-1" type="button" data-intPkOut="@link.intPkOut" data-intPkIn="@link.intPkIn">
+						<i class="fa fa-trash"></i>
+					</button>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

@@ -1,0 +1,131 @@
+﻿@model List<AccountModel>
+
+<h2>Chart of Accounts</h2>
+<div class="row">
+	<h3>New account</h3>
+	<div class="col-sm-12">
+		<form class="form-group" autocomplete="off" id="accountForm">
+			<div class="row">
+				<div class="col-md-4">
+					<label class="input-label mr-sm-2">Number:</label>
+					<input type="text" class="form-control input-with-dropdowns mb-2 mr-sm-2" id="strNumber" name="strNumber">
+				</div>
+				<div class="col-md-4">
+					<label class="input-label mr-sm-2">Name:</label>
+					<input type="text" class="form-control input-with-dropdowns mb-2 mr-sm-2" id="strName" name="strName">
+				</div>
+				<div class="col-md-2">
+					<label class="input-label mr-sm-2">Type:</label>
+					<span class="select" style="width: 100%">
+						<select class="mb-2 mr-sm-2" id="intPkType" name="intPkType" asp-items="@ViewBag.darrType">
+							<option value="">Pick one</option>
+						</select>
+					</span>
+				</div>
+				<div class="col-md-2">
+					<button type="button" class="btn btn-sm btn-primary saveAccount" style="margin-top: 27px">
+						<i class="fa fa-floppy-o"></i> Save
+					</button>
+                    <button type="button" class="btn btn-sm btn-primary mb-2 ml-3 updateAccount" style="margin-top: 27px" data-intpk="" hidden>Update</button>
+                    <button type="button" class="btn btn-sm btn-secondary mb-2 ml-3 cancelUpdateAccount" style="margin-top: 27px" hidden>Cancel</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="table-responsive overflow-auto" style="height: 400px">
+            <table class="table table-hover">
+                <thead>
+                    <tr class="tr-calculation-header">
+                        <th>Number</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.strNumber</td>
+                                <td>@item.strName</td>
+                                <td>@item.strTypeName</td>
+                                <td>
+                                    @{
+                                        if (
+                                            item.boolIsGeneric != true
+                                            )
+                                        {
+                                            <div class="checkbox-switch switchAccounting" data-intpk="@item.intPk">
+                                                <div class="switch-plate"
+                                                     style="width: 120px;">
+                                                    <div class="switch@(item.boolEnabled == true ? " on" : "")"
+                                                         id="switch_@item.intPk" data-on="Enabled" data-off="Disabled">
+                                                    </div>
+                                                </div><label>Enabled</label>
+                                            </div>
+                                        }
+                                    }
+                                </td>
+                                <td>
+                                    @{
+                                        if (
+                                            item.boolIsGeneric != true
+                                            )
+                                        {
+                                            <button class="btn btn-secondary btn-sm editAccount" data-intPk="@item.intPk">
+                                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                                            </button>
+                                        }
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-info showAccountDetails"
+                                            data-intPk="@item.intPk" data-strAccountName="@item.strName">
+                                        <i class="fa fa-file-text-o" aria-hidden="true"></i> Account Details
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5">Nothing to show</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade show" id="accountMovementsModal">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>

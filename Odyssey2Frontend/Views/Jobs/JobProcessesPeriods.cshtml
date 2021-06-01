@@ -1,0 +1,32 @@
+﻿@model JobProcessInWorkflowModel[]
+@{
+    String[] arrstrTimeDefault = { "00", "00", "00" };
+}
+<div id="accordion">
+    @{ int intproc = 0; }
+    @foreach (var process in Model)
+    {
+        <div class="card " style="margin: 0.5% !important;">
+            <div class="card-header" id="heading_@intproc">
+                <h5 class="mb-0">
+                    <button class="btn btn-sm btn-link" 
+                            data-toggle="collapse" 
+                            data-target="#collapse_@intproc" 
+                            aria-expanded="true" 
+                            aria-controls="collapse_@intproc">
+                        @process.strName
+                    </button>
+                </h5>
+            </div>
+            <div id="collapse_@intproc" class="collapse collapse-get-job-process-calculation" 
+                 aria-labelledby="heading_@intproc" 
+                 data-parent="#accordion" 
+                 data-intPk="@process.intPk" data-intJobId="@ViewBag.intJobId" data-boolIsInformative="@(ViewBag.boolIsInformative)">
+                <div class="card-body" style="padding: 0.25rem !important">
+                    
+                </div>
+            </div>
+        </div>
+        intproc = intproc + 1;
+    }
+</div>

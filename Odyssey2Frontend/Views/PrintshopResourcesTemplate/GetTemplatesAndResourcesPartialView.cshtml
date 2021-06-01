@@ -1,0 +1,103 @@
+﻿@model Odyssey2Frontend.Models.ObjTemplatesAndResourcesResponse
+
+@if (Model.intStatus == 0)
+{
+    <ul class="breadcrumb">
+        @foreach (var item in Model.objResponse.arrpePathElement)
+        {
+            <li class="breadcrumb-item">
+                <a class="cursor-pointer my-resources">
+                    @if (item.boolIsResource)
+                    {
+                        <span class="font-bold">@item.strName</span>
+                    }
+                    else
+                    {
+                        @item.strName
+                    }
+                </a><input type="hidden" value="@item.intPk|@item.boolIsType" id="intPkResource" />
+            </li>
+        }
+    </ul>
+    if (Model.objResponse.arrattr.Count > 0)
+    {
+        <h3>Attributes</h3>
+        <div class="table-responsive">
+            <table class="table" style="text-align: center">
+                <thead>
+                    <tr>
+                        <th style="text-align: center; font-size:16px;">Attribute</th>
+                        <th style="text-align: center; font-size:16px;">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.objResponse.arrattr)
+                    {
+                        <tr>
+                            <td>@item.strName</td>
+                            <td>@item.strValue</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    @*<hr/>*@
+    @if (Model.objResponse.arrtem.Count > 0)
+    {
+        <h3>Templates</h3>
+        <ul class="list-group">
+            @foreach (var item in Model.objResponse.arrtem)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center 
+                    list-group-item-action cursor-pointer">
+                    <a class="col-sm-9 pt-3 pb-3 my-resources">@item.strName</a>
+                    <input type="hidden" value="@item.intPk|@item.boolIsType" id="intPkResource" />
+                    <span class="">
+                        <button class="btn btn-danger btn-sm pull-right ml-3 deleteResource">
+                            <i class="fa fa-trash-o"></i>
+                        </button>
+                        <input type="hidden" value="All|@item.intPk" id="intPkTemplate" />
+                        <span></span>
+                        <button class="btn btn-secondary btn-sm pull-right ml-3 editResourceOrTemplate">
+                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                        </button>
+                    </span>
+                </li>
+            }
+        </ul>
+        @*<hr/>*@
+        <br />
+    }
+    if (Model.objResponse.arrres.Count > 0)
+    {
+        <h3>Resources</h3>
+        <ul class="list-group">
+            @foreach (var item in Model.objResponse.arrres)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center 
+                    list-group-item-action cursor-pointer">
+                    <a class="col-sm-9 pt-3 pb-3 my-resources">@item.strName</a>
+                    <input type="hidden" value="@item.intPk|@item.boolIsType" id="intPkResource" />
+                    <span class="">
+                        <button class="btn btn-danger btn-sm pull-right ml-3 deleteResource">
+                            <i class="fa fa-trash-o"></i></button>
+                        <input type="hidden" value="All|@item.intPk" id="intPkResource" />
+                        <button class="btn btn-info btn-sm addResourceDefaultCalculation" 
+                                data-toggle="modal" data-target="#defaulCalculationModal">Default Calculations</button>
+                        <button class="btn btn-secondary btn-sm pull-right ml-3 editResourceOrTemplate">
+                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                        </button>
+                    </span>
+                </li>
+            }
+        </ul>
+    }
+
+}
+else
+{
+    <div class="alert alert-danger" role="alert">
+        @Model.strUserMessage
+    </div>
+}

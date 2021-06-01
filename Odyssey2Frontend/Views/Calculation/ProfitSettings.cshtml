@@ -1,0 +1,71 @@
+﻿@model List<CalculationModel>
+
+<div class="row">
+	<div class="col-12 pl-0">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/PrintshopProductTemplate">Products</a></li>
+			<li class="breadcrumb-item active">@ViewBag.strTypeId</li>
+		</ol>
+	</div>
+	<div class="col-7">
+		<h2>Profit settings</h2>
+		<h5>of @ViewBag.strTypeId</h5>
+	</div>
+	<div class="col-5 pt-2">
+		<a href="/PrintshopProductTemplate" class="btn btn-sm btn-primary pull-right">Return to Products</a>
+	</div>
+</div>
+<hr class="greenHrUx" />
+<div class="row">
+	<div class="table-responsive" style="max-height: 50vh">
+		<table class="table table-hover">
+			<thead>
+				<tr class="tr-calculation-header">
+					<th style="min-width: 50%">NAME</th>
+					<th class="text-right pr-5" style="min-width: 10%">%</th>
+					<th style="min-width: 30%">STATUS</th>
+					<th style="min-width: 10%"></th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (CalculationModel calculation in Model)
+				{
+					<tr class="tr-calculation-row" id="row_@calculation.intPk">
+						<td>@calculation.strDescription</td>
+						<td class="text-right pr-5">@(calculation.numnProfit.GetValueOrDefault().ToString("n2")) %</td>
+						<td>
+							@if (
+								calculation.boolIsEnable
+								)
+							{
+								<span class="badge badge-success">Default</span>
+							}
+						</td>
+						<td class="dropdown">
+							<a class="" href="#" data-toggle="dropdown">
+								<i class="fa fa-ellipsis-v pull-right p-1"></i>
+							</a>
+							<div class="dropdown-menu">
+								<a class="dropdown-item" 
+								   href="/Calculation/EditProfit?intPk=@ViewBag.intPk&strTypeId=@ViewBag.strTypeId&intPkProfit=@calculation.intPk">
+									<i class="fa fa-edit"></i> Edit
+								</a>
+								<a class="dropdown-item delete-calculation" id="@calculation.intPk" href="#">
+									<i class="fa fa-trash"></i> Delete
+								</a>
+							</div>
+						</td>
+					</tr>
+				}
+				<tr class="tr-calculation-row">
+					<td colspan="4">
+
+						<a href="/Calculation/NewProfit?intPk=@ViewBag.intPk&strTypeId=@ViewBag.strTypeId">
+							<i class="fa fa-plus-circle"></i> Add new profit calculation
+						</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

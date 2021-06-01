@@ -1,0 +1,9 @@
+﻿@model List<Odyssey2Frontend.Models.JDFAttributeModel>
+
+<h2>Attributes</h2>
+@foreach (var item in Model)
+{
+    <div class="checkbox">
+        <label><input type="checkbox" value="@item.intPk" name="strAttribute[]" checked>@item.strCustomName</label>
+    </div>
+}

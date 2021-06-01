@@ -1,0 +1,100 @@
+﻿@model List<CompletedOrderModel>
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+	ViewData["Title"] = "Invoices";
+
+	String strPrintshopName = HttpContextAccessor.HttpContext.Session.GetString("strPrintshopName");
+	String strPrintshopId = HttpContextAccessor.HttpContext.Session.GetString("strPrintshopId");
+}
+
+<h2>Invoices</h2>
+
+@if (!String.IsNullOrEmpty(strPrintshopId))
+{
+	<div class="table-responsive">
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th>Order Number</th>
+					<th>Jobs</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				@if (
+			 Model.Count > 0
+			 )
+				{
+					foreach (CompletedOrderModel completedOrder in Model)
+					{
+						String strJobs = "";
+						<tr>
+							<td>@(completedOrder.intnOrderNumber)</td>
+							<td>
+								<ul class="list-unstyled">
+									@foreach (JobInfoModel jobinfoModel in completedOrder.darrjobsinfo)
+									{
+										strJobs = strJobs + jobinfoModel.intJobId + ",";
+										<li>
+											<span class="label label-primary">
+												@jobinfoModel.strJobNumber. @jobinfoModel.strJobTicket 
+												@if(
+													jobinfoModel.boolIsCompleted
+													)
+												{
+													<text>(Completed)</text>
+												}
+											</span>
+										</li>
+									}
+								</ul>
+							</td>
+							<td>
+								@if (
+									completedOrder.intnPkInvoice != null
+								   )
+								{
+									<a class="btn btn-sm btn-secondary" href="/Invoice/EditInvoice?intPkInvoice=@completedOrder.intnPkInvoice.ToString()">
+										<i class="fa fa-pencil"></i> Edit Invoice
+									</a>
+									<button class="btn btn-sm btn-info downloadInvoice"
+											data-intOrderId="@completedOrder.intOrderId"
+											data-intnPkInvoice="@completedOrder.intnPkInvoice">
+										<i class="fa fa-print"></i> Print Invoice
+									</button>
+								}
+								else if (
+									completedOrder.boolAllJobsAreCompleted
+									)
+								{
+									<button class="btn btn-sm btn-info generateInvoice"
+											data-intOrderId="@completedOrder.intOrderId"
+											data-intnPkInvoice="@completedOrder.intnPkInvoice"
+											data-jobIds="@(strJobs.Substring(0, (strJobs.Length - 1)))">
+										<i class="fa fa-file-text-o"></i> Generate Invoice
+									</button>
+								}
+							</td>
+						</tr>
+					}
+				}
+				else
+				{
+					<tr>
+						<td colspan="3" class="text-center">There are no records to show</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}
+else
+{
+	<div class="col-md-12">
+		<div class="alert alert-info text-center">
+			The Printshop needs to be selected.
+		</div>
+	</div>
+}

@@ -1,0 +1,326 @@
+﻿@model WorkflowModel
+<div class="col-md-4">
+	<div class="table-responsive" style="border-radius: 20px">
+		<table class="table table-bordered table-sm">
+			<thead style="background-color: #ebf1fa">
+				<tr>
+					<td class="pl-3 pt-2 font-bold text-left">
+						<i class="fa fa-cog fa-1x" aria-hidden="true"></i>
+						<span id="procesNameSpan_@Model.intPkProcessInWorkflow">@Model.strName</span>
+					</td>
+					<td class="pr-2 pt-2 font-bold">
+						@if (Model.boolHasCalculations)
+						{
+							<button class="btn btn-danger btn-sm pull-right removeProcess elementToDisable" data-toggle="tooltip" title="This process has calculations" data-placement="top" data-pkProduct="@ViewBag.intPkProduct" value="@Model.intPkProcessInWorkflow">
+								<i class="fa fa-trash-o" aria-hidden="true"></i>
+							</button>
+						}
+						else
+						{
+							<button class="btn btn-danger btn-sm pull-right removeProcess elementToDisable" value="@Model.intPkProcessInWorkflow" data-pkProduct="@ViewBag.intPkProduct">
+								<i class="fa fa-trash-o" aria-hidden="true"></i>
+							</button>
+						}
+						<button class="btn btn-secondary btn-sm pull-right mr-1 editInputsAndOutputs elementToDisable"
+								data-intPkProcessType="@Model.intPkProcessType"
+								data-strName="@Model.strName"
+								data-strNameProcessType="@Model.strNameProcessType"
+								data-toggle="tooltip" title="Edit" data-placement="top">
+							<i class="fa fa-pencil" aria-hidden="true"></i>
+						</button>
+						<button type="button" class="btn btn-info btn-sm btnAddCalculationByProcess pull-right mr-1 elementToDisable" data-intPkProcess="@Model.intPkProcess" data-intnPkProcessInWorkflow="@Model.intPkProcessInWorkflow">
+							<i class="fa fa-calculator" aria-hidden="true"></i>
+						</button>
+					</td>
+				</tr>
+			</thead>
+			<thead style="background-color: #fff">
+				<tr class="text-center">
+					<td class="font-bold">Input</td>
+					<td class="font-bold">Output</td>
+				</tr>
+			</thead>
+			<tbody>
+				@{
+					int intCountInputArray = Model.arrresortypInput.Count;
+					int intCountOutputArray = Model.arrresortypOutput.Count;
+					int intCount = 0;
+
+					if (intCountInputArray > intCountOutputArray)
+					{
+						intCount = intCountInputArray;
+					}
+					else if (intCountInputArray < intCountOutputArray)
+					{
+						intCount = intCountOutputArray;
+					}
+					else if (intCountInputArray == intCountOutputArray)
+					{
+						intCount = intCountInputArray;
+					}
+
+					for (int i = 0; i < intCount; i = i + 1)
+					{
+						<tr>
+							<td>
+								@if (i <= Model.arrresortypInput.Count - 1)
+								{
+									<table class="table table-sm font-sm table-borderless">
+										<thead>
+											<tr>
+												<td rowspan="2">
+													@if (Model.arrresortypInput[i].strLink == null)
+													{
+														<span>
+															<input type="checkbox" class="wkflwCheck-I" name="name" value="@Model.intPkProcessInWorkflow|@Model.arrresortypInput[i].intPkEleetOrEleele|@Model.arrresortypInput[i].boolIsEleet" style="display: none" />
+														</span>
+													}
+													else
+													{
+														<span class="badge badge-pill badge-success badge-font-lg">@Model.arrresortypInput[i].strLink</span>
+													}
+												</td>
+												<td>@Model.arrresortypInput[i].strTypeAndTemplate</td>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>
+													@if (
+													  (Model.arrresortypInput[i].boolMedia)
+													  )
+													{
+														@*<span class="badge k-badge-pill badge-secondary badge-font-lg">M</span>*@
+														<span class="custom-control custom-checkbox">
+															<input type="checkbox" class="wkflwCheckThickness custom-control-input thickness-@Model.intPkProcessInWorkflow"
+																   id="thickness-@Model.intPkProcessInWorkflow-@Model.arrresortypInput[i].intPkEleetOrEleele"
+																   data-intPkEleetOrEleele="@Model.arrresortypInput[i].intPkEleetOrEleele"
+																   data-boolIsEleet="@Model.arrresortypInput[i].boolIsEleet"
+																   data-intPkProcessInWorkflow="@Model.intPkProcessInWorkflow"
+																   data-asd="@Model.arrresortypInput[i].intPkEleetOrEleele"
+																   @if (Model.arrresortypInput[i].boolThickness) { <text> checked</text> } />
+															<label class="custom-control-label checkbox-label badge k-badge-pill badge-secondary badge-font-sm"
+																   for="thickness-@Model.intPkProcessInWorkflow-@Model.arrresortypInput[i].intPkEleetOrEleele"
+																   style="color:white !important; font-size: smaller !important">M</label>
+														</span>
+													}
+												</td>
+												<td class="dropdown job-wkflwResource">
+													@{
+														bool boolAddCalculationsInput = true;
+														if (
+															!Model.arrresortypInput[i].boolIsPhysical ||
+															(!Model.boolIsNormal &&
+															(Model.arrresortypInput[i].strLink != null))
+															)
+														{
+															boolAddCalculationsInput = false;
+														}
+
+													}
+													<button class="btn btn-info btn-sm dropdown-toggle elementToDisable" type="button" id="dropdownMenuButton_@i" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+															value="@Model.arrresortypInput[i].intPkEleetOrEleele|@Model.arrresortypInput[i].boolIsEleet|@Model.intPkProcessInWorkflow" data-intJobId="@ViewBag.intJobId">
+														@if (String.IsNullOrEmpty(Model.arrresortypInput[i].strResource))
+														{
+															<text>Resource</text>
+														}
+														else
+														{
+															@Model.arrresortypInput[i].strResource
+														}
+													</button>
+													<div class="dropdown-menu elementToDisable" aria-labelledby="dropdownMenuButton_@i" data-intJobId="@ViewBag.intJobId">
+														<form class="px-2 py-1 wfjSelectResource" asp-action="SetResourceForAJob">
+															<div class="form-group">
+																<span class="select">
+																	<select class="input-with-dropdowns font-sm wkflwEstimateResource-dropdown elementToDisable" name="intPkResource">
+																		<option value="">Pick one</option>
+																	</select>
+																</span>
+															</div>
+															<div class="form-group">
+																<button type="button" class="col-sm-12 btn btn-info btn-sm wkflwNewResource elementToDisable"
+																		data-boolIsCustom="@Model.arrresortypInput[i].boolIsCustom"
+																		data-to-resource="@Model.arrresortypInput[i].intPkEleetOrEleele|@Model.arrresortypInput[i].strTypeAndTemplate|@Model.arrresortypInput[i].intPkType|@Model.arrresortypInput[i].intnPkTemplate|@Model.arrresortypInput[i].boolIsPhysical">
+																	<i class="fa fa-plus-circle"></i> New Resource
+																</button>
+															</div>
+
+															@if (
+															   (!String.IsNullOrEmpty(Model.arrresortypInput[i].strResource) &&
+															   Model.arrresortypInput[i].boolIsPhysical) &&
+															   (Model.boolIsNormal || (!Model.boolIsNormal && Model.arrresortypInput[i].strLink == null))
+															   )
+															{
+																<div class="form-group">
+																	<button type="button" class="btn btn-info btn-sm btnAddCalculationByResource elementToDisable"
+																			data-boolIsInPostProcess="@(!Model.boolIsNormal)"
+																			data-intnPkResource="@Model.arrresortypInput[i].intnPkResource"
+																			data-intnPkProcessInWorkflow="@Model.intPkProcessInWorkflow"
+																			data-intnPkEleetOrEleele="@Model.arrresortypInput[i].intPkEleetOrEleele"
+																			data-boolnIsEleet="@Model.arrresortypInput[i].boolIsEleet.ToString()"
+																			data-boolIsPaper="@Model.arrresortypInput[i].boolIsPaper"
+																			data-boolIsDeviceOrMiscConsumable="@Model.arrresortypInput[i].boolnIsDeviceOrMiscConsumable.ToString()">
+																		<i class="fa fa-calculator" aria-hidden="true"></i>
+																		Add Calculations
+																	</button>
+																</div>
+															}
+															<input type="hidden" name="intPkProcessInWorkflow" value="@Model.intPkProcessInWorkflow" />
+															<input type="hidden" name="intPkEleetOrEleele" value="@Model.arrresortypInput[i].intPkEleetOrEleele" />
+															<input type="hidden" name="boolIsEleet" value="@Model.arrresortypInput[i].boolIsEleet.ToString()" />
+															<input type="hidden" name="intJobId" value="@ViewBag.intJobId" />
+														</form>
+													</div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								}
+							</td>
+							<td>
+								@if (i <= Model.arrresortypOutput.Count - 1)
+								{
+									bool boolAddCalculations = true;
+									if (
+										!Model.arrresortypOutput[i].boolIsPhysical ||
+										(Model.boolIsNormal && Model.arrresortypOutput[i].strLink != null) ||
+										(Model.arrresortypOutput[i].boolnIsFinalProduct == true)
+										)
+									{
+										boolAddCalculations = false;
+									}
+									<table class="table table-sm font-sm table-borderless">
+										<thead>
+											<tr>
+												<td>@Model.arrresortypOutput[i].strTypeAndTemplate</td>
+												<td rowspan="2">
+													@if (Model.arrresortypOutput[i].strLink == null)
+													{
+														<span>
+															<input type="checkbox" class="wkflwCheck-O" name="name" value="@Model.intPkProcessInWorkflow|@Model.arrresortypOutput[i].intPkEleetOrEleele|@Model.arrresortypOutput[i].boolIsEleet" style="display: none" />
+														</span>
+													}
+													else
+													{
+														<span class="badge badge-pill badge-success badge-font-lg">@Model.arrresortypOutput[i].strLink</span>
+													}
+												</td>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td class="dropdown job-wkflwResource">
+													<button class="btn btn-info btn-sm dropdown-toggle elementToDisable" type="button" id="dropdownMenuButton_@i" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+															value="@Model.arrresortypOutput[i].intPkEleetOrEleele|@Model.arrresortypOutput[i].boolIsEleet.ToString().ToLower()|@Model.intPkProcessInWorkflow">
+														@if (String.IsNullOrEmpty(Model.arrresortypOutput[i].strResource))
+														{
+															<text>Resource</text>
+														}
+														else
+														{
+															@Model.arrresortypOutput[i].strResource
+														}
+													</button>
+													<div class="dropdown-menu elementToDisable" aria-labelledby="dropdownMenuButton_@i">
+														<form class="px-2 py-1" asp-action="SetResourceForAJob">
+															<div class="form-group">
+																<span class="select">
+																	<select class="font-sm wkflwEstimateResource-dropdown elementToDisable" name="intPkResource">
+																		<option value="">Pick one</option>
+																	</select>
+																</span>
+															</div>
+															<div class="form-group">
+																<button type="button" class="col-sm-12 btn btn-info btn-sm wkflwNewResource elementToDisable"
+																		data-boolIsCustom="@Model.arrresortypOutput[i].boolIsCustom"
+																		data-to-resource="@Model.arrresortypOutput[i].intPkEleetOrEleele|@Model.arrresortypOutput[i].strTypeAndTemplate|@Model.arrresortypOutput[i].intPkType|@Model.arrresortypOutput[i].intnPkTemplate|@Model.arrresortypOutput[i].boolIsPhysical">
+																	<i class="fa fa-plus-circle"></i> New Resource
+																</button>
+															</div>
+
+															@if (
+																 !String.IsNullOrEmpty(Model.arrresortypOutput[i].strResource) &&
+																 Model.arrresortypOutput[i].boolnIsFinalProduct != true &&
+																 ((Model.boolIsNormal && Model.arrresortypOutput[i].strLink == null) ||
+																 (!Model.boolIsNormal))
+																)
+															{
+																<button class="btn btn-info btn-sm edit-transform-calculation" type="button"
+																		data-placement="top"
+																		data-boolCustomWorkflow="@true"
+																		data-intnPkResource="@Model.arrresortypOutput[i].intnPkResource"
+																		data-intPkProcessInWorkflow="@Model.intPkProcessInWorkflow"
+																		data-strUnit="@Model.arrresortypOutput[i].strUnit"
+																		data-strTypeTemplateAndResource="@("(" + Model.arrresortypOutput[i].strTypeAndTemplate + ") "
+																			+ Model.arrresortypOutput[i].strResource)"
+																		data-intPkEleetOrEleele="@Model.arrresortypOutput[i].intPkEleetOrEleele"
+																		data-boolIsEleet="@Model.arrresortypOutput[i].boolIsEleet.ToString()"
+																		data-boolIsAbleToSave="@true">
+																	<i class="fa fa-calculator" aria-hidden="true"></i> Calculation
+																</button>
+															}
+															<input type="hidden" name="intPkProcessInWorkflow" value="@Model.intPkProcessInWorkflow" />
+															<input type="hidden" name="intPkEleetOrEleele" value="@Model.arrresortypOutput[i].intPkEleetOrEleele" />
+															<input type="hidden" name="boolIsEleet" value="@Model.arrresortypOutput[i].boolIsEleet.ToString()" />
+															<input type="hidden" name="intJobId" value="@ViewBag.intJobId" />
+														</form>
+													</div>
+												</td>
+												<td class="pull-left">
+													@if (
+													   (Model.arrresortypOutput[i].boolComponent == true && Model.boolIsNormal == true)
+													   )
+													{
+														<div class="custom-control custom-checkbox mb-3">
+															<input type="checkbox" class="custom-control-input wkflwCheckSize" id="chkSize_@Model.arrresortypOutput[i].intPkEleetOrEleele"
+																   value="@Model.intPkProcessInWorkflow|@Model.arrresortypOutput[i].intPkEleetOrEleele|@Model.arrresortypOutput[i].boolIsEleet"
+																   @(Model.arrresortypOutput[i].boolSize ? "checked" : "")>
+															<label class="custom-control-label checkbox-label" for="chkSize_@Model.arrresortypOutput[i].intPkEleetOrEleele">
+																<span class="badge k-badge-pill badge-secondary badge-font-lg">S</span>
+															</label>
+														</div>
+													}
+												</td>
+												<td class="pull-left">
+													@if (
+														 (Model.arrresortypOutput[i].boolnIsFinalProduct != true && Model.boolIsNormal == true)
+														 )
+													{
+														<div class="custom-control custom-checkbox mb-3">
+															<input type="checkbox" class="custom-control-input wkflwCheckFinal" id="chkFinal_@Model.arrresortypOutput[i].intPkEleetOrEleele"
+																   value="@Model.intPkProcessInWorkflow|@Model.arrresortypOutput[i].intPkEleetOrEleele|@Model.arrresortypOutput[i].boolIsEleet"
+																   @(Model.boolContainsFinalProduct == true ? "disabled" : "")>
+															<label class="custom-control-label checkbox-label" for="chkFinal_@Model.arrresortypOutput[i].intPkEleetOrEleele">
+																<span class="badge k-badge-pill badge-danger badge-font-lg">F</span>
+															</label>
+														</div>
+													}
+													else if (
+														(Model.arrresortypOutput[i].boolnIsFinalProduct == true && Model.boolIsNormal == true)
+														)
+													{
+														<div class="custom-control custom-checkbox mb-3">
+															<input type="checkbox" class="custom-control-input wkflwCheckFinal" id="chkFinal_@Model.arrresortypOutput[i].intPkEleetOrEleele"
+																   value="@Model.intPkProcessInWorkflow|@Model.arrresortypOutput[i].intPkEleetOrEleele|@Model.arrresortypOutput[i].boolIsEleet" checked>
+															<label class="custom-control-label checkbox-label" for="chkFinal_@Model.arrresortypOutput[i].intPkEleetOrEleele">
+																<span class="badge k-badge-pill badge-danger badge-font-lg">F</span>
+															</label>
+														</div>
+													}
+												</td>
+											</tr>
+
+										</tbody>
+
+									</table>
+
+								}
+							</td>
+						</tr>
+					}
+				}
+			</tbody>
+		</table>
+	</div>
+</div>

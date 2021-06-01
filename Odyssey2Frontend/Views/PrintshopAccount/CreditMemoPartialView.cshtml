@@ -1,0 +1,128 @@
+﻿<div class="modal fade" id="creditMemoModal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h2 class="modal-title">Credit Memos</h2>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body add-payment" id="paymentModalBody">
+				<!--Credit memo table-->
+				<div class="form-group col-sm-12" id="creditMemoTableSection" hidden>
+					<div class="row">
+						<div class="col-md-12">
+							<button class="btn btn-secondary pull-right" id="backToNewCreditMemo">Back</button>
+						</div>
+						<div class="col-md-12">
+							<div class="mb-3">
+								<label class="input-label">Customer:</label>
+								<span class="select" style="width: 100%">
+									<select id="filterCreditMemoByCustomer">
+										<option>Pick one</option>
+									</select>
+								</span>
+							</div>
+							<div class="responsive-table">
+								<table class="table table-hover" id="creditMemoTable">
+									<thead>
+										<tr class="tr-calculation-header">
+											<th>Credit Memo #</th>
+											<th>Customer</th>
+											<th></th>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--Credit memo form-->
+				<div class="col-sm-12" id="creditMemoDivForm">
+					<form id="creditMemoForm">
+						<div class="row">
+							<div class="col-md-4">
+								<label class="input-label">Customer:</label>
+								<span class="select" style="width: 100%">
+									<select name="intContactId" id="customerForOverpaidInvoices" required>
+										<option>Pick one</option>
+									</select>
+									<input name="strCustomerFullName" value="" type="hidden" />
+								</span>
+							</div>
+							<div class="col-md-4">
+								<label class="input-label">Credit Memo Date:</label>
+								<input class="input-with-dropdowns form-control" value="" name="strDate" id="creditMemoDate"
+									   data-toggle="datetimepicker" data-target="#creditMemoDate" required />
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-8">
+								<label class="input-label">Billed To:</label>
+								<textarea class="input-with-dropdowns form-control" name="strBilledTo" rows="5" required></textarea>
+							</div>
+						</div>
+						<div class="table-responsive mt-4" style="max-height: 30vh; overflow: auto">
+							<table class="table table-striped">
+								<thead>
+									<tr class="tr-calculation-header">
+										<th>Description</th>
+										<th>Account</th>
+										<th>Amount</th>
+										<th class="text-center">Taxable</th>
+									</tr>
+								</thead>
+								<tbody id="">
+									<tr class="tr-calculation-row">
+										<td>
+											<input class="input-with-dropdowns form-control form-control-sm" name="strDescription" required />
+										</td>
+										<td>
+											<span class="select" style="width: 100%">
+												<select name="intPkRevenueAccount" required>
+													<option>Pick one</option>
+												</select>
+											</span>
+										</td>
+										<td>
+											<input class="input-with-dropdowns form-control form-control-sm" type="number" min="0" step="0.01"
+												   name="numAmount" required />
+										</td>
+										<td class="text-center">
+											<div class="custom-control custom-checkbox">
+												<input id="creditMemoboolIsExempt" name="boolIsExempt" class="custom-control-input" value="true" type="checkbox" />
+												<label class="custom-control-label checkbox-label" for="creditMemoboolIsExempt"></label>
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div class="row">
+							<div class="col-md-12">
+								<button class="btn btn-sm btn-info pull-left" id="viewCreditMemosButton" type="button">
+									<span class="fa fa-money"></span> View Credit Memos
+								</button>
+								<button class="btn btn-sm btn-primary pull-right save-CreditMemo ml-2" type="submit" data-boolPrint="@false">
+									<span class="fa fa-save"></span> Save
+								</button>
+								<button class="btn btn-sm  btn-primary pull-right save-CreditMemo" data-boolPrint="@true" type="submit">
+									<span class="fa fa-print"></span> Save and print
+								</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<!-- Modal footer -->
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>

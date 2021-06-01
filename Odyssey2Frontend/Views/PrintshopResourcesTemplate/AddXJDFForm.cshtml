@@ -1,0 +1,386 @@
+﻿@model EditResourceModel
+@{
+    ViewData["Title"] = "AddXJDF";
+}
+
+<div class="xjdfAttributesForm">
+    <div class="row">
+        <div class="col-sm-12">
+            <h2 id="res-modal-title" class="pull-left">@Model.strTypeName</h2>
+            <a href="" class="btn btn-secondary btn-sm pull-right btnBackToScreen">
+                <i class="fa fa-angle-left" aria-hidden="true"></i> Back
+            </a>
+        </div>
+    </div>
+    <div id="addXJDFForm">
+        <input type="hidden" name="intPkType" id="intPkType" value="@Model.intPkType" />
+        <input type="hidden" name="intPkResource" id="intPkResource" value="@Model.intPkResource" />
+        <div id="addXJDFResourceSection" class="autoHeight">
+            <div class="autoHeight" id="addAscendantElements">
+                <div class="row">
+                    <div class="col-sm-3 border-right" id="divResAttr">
+                        <div class="form-group">
+                            <label class="input-label">Resource Name</label>
+                            <input class="form-control input-with-dropdowns" name="strResName" id="strResName" 
+                                   value="@Model.strResourceName" placeholder="Resource Name">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="input-label">Inherited from</label>
+                            <div class="row mt-0">
+                                <span class="select" style="width:242px;">
+                                    <select id="intnInheritedPk" asp-items="@ViewBag.darrTemplates">
+                                        <option value="">Pick one</option>
+                                    </select>
+                                </span>
+                                @if (@Model.boolIsPhysical)
+                                {
+                                    <div class="col-sm-2">
+                                        <button class="btn btn-info btn-sm" id="inheritedBtnModal">
+                                            <i class="fa fa-cog" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        @if (@Model.boolIsPhysical)
+                        {
+                            <div class="form-group mb-4">
+                                <label class="input-label">Unit of Measurement</label>
+                                <div class="row mt-0">
+                                    <input type="text" id="strUnitResourceForm" name="strUnit" autocomplete="off" 
+                                           class="col-sm-6 busca form-control input-with-dropdowns showUnits"
+                                           value="@Model.strUnit" @(Model.boolnIsChangeable == true ? "" : "disabled")/>
+                                    <div id="display" class="col-sm-6 unitsList mt-0 pl-1 pr-0" 
+                                         style="margin-top: 29px !important; font-family: 'Rawline Regular', sans-serif;
+                                                color: #58585b; font-size: 14px; border-radius:0px;"></div>
+                                    <div class="ml-3">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input chkDecimal" id="boolIsDecimal"
+                                                   name="boolIsDecimal" @(Model.boolnIsChangeable == true ? "" : "disabled")
+                                                   @(Model.boolnIsDecimal == true ? "checked" : "")>
+                                            <label class="custom-control-label checkbox-label" for="boolIsDecimal">Use decimals</label>
+                                        </div>
+                                    </div>
+                                </div>
+								<label class="input-label font-bold" style="display: none;">*Will be taken from the length unit.</label>
+                            </div>
+                        }
+                    <div class="form-group">
+                        <div class="row align-top">
+                            <div class="checkbox-switch switchResForm">
+                                <div class="switch-plate" style="width: 120px;">
+                                    <div class="switch" id="boolIsTemplate" data-on="Template" data-off="Resource"
+                                         value="true">
+                                    </div>
+                                </div>
+                            </div>
+                            <label class="checkbox-label">Resource/Template</label>
+                        </div>
+                    </div>
+                        <div class="border-top pt-3">
+                            <label><b>Copy or Inherit Attribute</b></label>
+                            <div class="form-group">
+                                <div>
+                                    <label class="input-label">Template</label>
+                                </div>
+                                <span class="select" style="width:300px">
+                                    <select class="dropdownForAttributes" id="intPkTemplate" 
+                                            asp-items="@ViewBag.darrTemplatesForInherit">
+                                        <option value="">Pick one</option>
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <div>
+                                    <label class="input-label">Resource</label>
+                                </div>
+                                <span class="select" style="width:300px">
+                                    <select class="dropdownForAttributes" id="intPkResource" 
+                                            asp-items="@ViewBag.darrmyResources">
+                                        <option value="">Pick one</option>
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="form-group" id="dropdownCheck">
+                                <div>
+                                    <label class="input-label">Attributes</label>
+                                </div>
+                                <div class="dropdown">
+                                    <span class="select text-left pl-3" id="dropdownAttributes" style="width:300px; 
+                                                font-family: 'Rawline Regular', sans-serif; color: #58585b; 
+                                                font-size: 14px;"
+                                          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Pick attributes
+                                    </span>
+                                    <div class="dropdown-menu col-sm-12 mt-0" aria-labelledby="dropdownAttributes" 
+                                         style="z-index: 1031; border-radius:0px; border-color:#bcbec0; width:300px;">
+                                        <form id="attributesForm"></form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-9">
+                        <label>Attributes</label>
+                        <div class="col-sm-12 card-body" id="dynamicElements" style="overflow-y: scroll; height: 450px">
+                        </div>
+                        <div class="col-sm-12 card-body">
+                            <button type="button" class="btn btn-info btn-sm float-right" id="newForm">
+                                <i class="fa fa-plus-circle" aria-hidden="true"></i> Add attribute
+                            </button>
+                            <button type="button" class="btn btn-primary btn-sm pull-right mr-3" id="saveResForm" 
+                                    style="display: none">
+                                <i class="fa fa-floppy-o" aria-hidden="true"></i>
+                                Save
+                            </button>
+                            <button type="button" class="btn btn-primary btn-sm" id="saveChangesResForm" 
+                                    style="display: none">
+                                <i class="fa fa-floppy-o" aria-hidden="true"></i>
+                                Save changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="inheritedModal">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+                @*<button type="button" class="close" data-dismiss="modal">&times;</button>*@
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-header">Cost</div>
+                    <div class="card-body">
+                        <form id="costinhejson">
+                            <div class="row">
+                                <div class="col-sm-5">
+                                    <input id="numnCost" type="number" min="0" step="0.00001" 
+                                           class="form-control input-with-dropdowns last-element changeableElement" 
+                                           name="numnCost" value="0" required />
+                                </div>
+                                <div class="col-sm-5">
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-info btn-sm dropdown-toggle text-left" 
+                                                data-toggle="dropdown">
+                                            <i class="fa fa-cog" aria-hidden="true"></i> Configuration
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <div class="form-check dropdown-item">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input chkInherit" id="boolnIsInheritedCost"
+                                                           name="boolnIsInheritedCost" checked>
+                                                    <label class="custom-control-label checkbox-label" for="boolnIsInheritedCost">Inherited</label>
+                                                </div>
+                                            </div>
+                                            <div class="form-check dropdown-item">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input chkChangeInherit intnPkInheritedValue" id="boolnIsChangeableCost"
+                                                           name="boolnIsChangeableCost">
+                                                    <label class="custom-control-label checkbox-label" for="boolnIsChangeableCost">Changeable</label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group dropdown-item">
+                                                <button type="button" data-booliscost="true" 
+                                                        data-boolisavailability="false" data-boolIsUnit="false"
+                                                        class="btn btn-secondary btn-sm col-sm-12 
+                                                        btnResetToParentValue">
+                                                    Reset
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-5">
+                                    <label class="input-label" for="numnQuantity">Quantity</label>
+                                    <input id="numnQuantity" name="numnQuantity"  type="number"
+                                           class="form-control input-with-dropdowns changeableElement" required>
+                                </div>
+                                <div class="col-sm-5">
+                                    <label class="input-label" for="numnMin">Min to Use</label>
+                                    <input id="numnMin" name="numnMin" step=".0001" min="0"
+                                           class="form-control input-with-dropdowns changeableElement"  type="number">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-5">
+                                        <label class="input-label" for="boolIsBlock">In blocks of</label><br />
+                                        <input id="numnBlock" name="numnBlock" step=".0001" min="0" type="number"
+                                               class="form-control input-with-dropdowns changeableElement">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-5">
+                                        <label class="input-label" for="numnHourlyRate">Hourly Rate</label>
+                                        <input id="numnHourlyRate" name="numnHourlyRate" step=".01" type="number"
+                                               class="form-control input-with-dropdowns changeableElement">
+                                    </div>
+                                    <div class="col-sm-6 mt-4">
+                                        <h6>*Hourly rate not affected by profit calculations.</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-5">
+                                        <label class="input-label" for="intnPkAccount">Account</label>
+                                        <span class="select">
+                                            <select class="changeableElement" id="intnPkAccount" name="intnPkAccount">
+                                            </select>
+                                        </span>
+                                    </div>
+									<div class="col-sm-5" id="costModalAreaSwitch" style="display: none">
+										<div>
+											<label class="input-label">By Area</label>
+										</div>
+										<div class="checkbox-switch" id="boolAreaSwitchDiv" style="margin-top: 5px">@*boolAreaSwitch*@
+											<div class="switch-plate resAvailability" style="width: 120px;">
+												<div class="switch" id="boolnAreaSwitch" data-on="Yes" data-off="No">
+												</div>
+											</div>
+											<input type="hidden" value="" name="boolnArea">
+										</div>
+									</div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">Unit of measurement</div>
+                    <div class="card-body">
+                        <form id="unitinhejson">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <input type="text" id="strValue" name="strValue" autocomplete="off"
+                                            class="busca form-control input-with-dropdowns showUnits last-element 
+                                           changeableElement"/>
+                                    <div id="display" class="unitsList mt-0 pl-1 pr-0"
+                                         style="font-family: 'Rawline Regular', sans-serif;
+                                                color: #58585b; font-size: 14px; border-radius:0px;"></div>
+                                </div>
+                                <div class="col-sm-3" style="margin-left: 30px;">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input changeableElement chkDecimal" 
+                                               id="boolIsDecimalInhe" name="boolIsDecimalInhe">
+                                        <label class="custom-control-label checkbox-label" for="boolIsDecimalInhe">Use decimals
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-info btn-sm dropdown-toggle text-left" 
+                                                data-toggle="dropdown">
+                                            <i class="fa fa-cog" aria-hidden="true"></i> Configuration
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <div class="form-check dropdown-item">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input chkInherit" id="boolnIsInheritedUnit"
+                                                           name="boolnIsInheritedUnit" checked>
+                                                    <label class="custom-control-label checkbox-label" for="boolnIsInheritedUnit">Inherited</label>
+                                                </div>
+                                            </div>
+                                            <div class="form-check dropdown-item">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input chkChangeInherit intnPkInheritedValue" id="boolnIsChangeableUnit"
+                                                           name="boolnIsChangeableUnit">
+                                                    <label class="custom-control-label checkbox-label" for="boolnIsChangeableUnit">Changeable</label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group dropdown-item">
+                                                <button type="button" data-booliscost="false" 
+                                                        data-boolisavailability="false" data-boolIsUnit="true"
+                                                        class="btn btn-secondary btn-sm col-sm-12 
+                                                        btnResetToParentValue">
+                                                    Reset
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="card" id="inheritAvailability">
+                    <div class="card-header">Availability</div>
+                    <div class="card-body">
+                        <form id="avainhejson">
+                            <div class="row">
+                                <div class="col-sm-5">
+                                    <div class="form-check">
+                                        <label class="form-check-label checkbox-label">
+                                            <input id="boolnIsAvailable" type="radio" name="availability"
+                                                   class="form-check-input changeableElement">Available/Unavailable
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <label class="form-check-label checkbox-label">
+                                            <input id="boolnIsCalendar" type="radio" name="availability"
+                                                   class="form-check-input changeableElement">Calendarized
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-5">
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-info btn-sm dropdown-toggle text-left" 
+                                                data-toggle="dropdown">
+                                            <i class="fa fa-cog" aria-hidden="true"></i> Configuration
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <div class="form-check dropdown-item">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input chkInherit" id="boolnIsInheritedAvailability"
+                                                           name="boolnIsInheritedAvailability" checked>
+                                                    <label class="custom-control-label checkbox-label" for="boolnIsInheritedAvailability">Inherited</label>
+                                                </div>
+                                            </div>
+                                            <div class="form-check dropdown-item">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input chkChangeInherit intnPkInheritedValue" id="boolnIsChangeableAvailability"
+                                                           name="boolnIsChangeableAvailability">
+                                                    <label class="custom-control-label checkbox-label" for="boolnIsChangeableAvailability">Changeable</label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group dropdown-item">
+                                                <button type="button" data-booliscost="false" 
+                                                        data-boolisavailability="true" data-boolIsUnit="false"
+                                                        class="btn btn-secondary btn-sm col-sm-12 
+                                                        btnResetToParentValue">
+                                                    Reset
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary saveInheritedData">
+                    <i class="fa fa-floppy-o" aria-hidden="true"></i> Save
+                </button>
+                @*<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>*@
+            </div>
+
+        </div>
+    </div>
+</div>

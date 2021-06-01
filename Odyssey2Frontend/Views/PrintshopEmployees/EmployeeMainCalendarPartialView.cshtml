@@ -1,0 +1,65 @@
+﻿@model WeekPeriodsModel
+
+<!--Tab Pills-->
+<div class="col-sm-12">
+	<ul class="nav">
+		<li class="res-phisical-nav">
+			<a class="nav-link active" data-toggle="pill" href="#activeTasks" id="activeTasks-pill">Active Tasks</a>
+		</li>
+		<li class="res-phisical-nav">
+			<a class="nav-link" data-toggle="pill" href="#overdueTasks" data-contactid="@ViewBag.intnContactId" id="overdueTasks-pill">Overdue Tasks</a>
+		</li>
+		<li class="res-phisical-nav">
+			<a class="nav-link" data-toggle="pill" href="#allTasks" data-contactid="@ViewBag.intnContactId" id="allTasks-pill">All Tasks</a>
+		</li>
+	</ul>
+</div>
+
+<!--Tab pill sections-->
+<div class="col-sm-12 mt-3">
+	<div class="tab-content">
+		<!--Section for active tasks-->
+		<div class="tab-pane fade show active" id="activeTasks">
+			<div class="row" style="margin: 0px !important;">
+				<div class="col-sm-12 mb-3">
+					<button class="btn btn-info btn-sm col-sm-12 disableIfIsAdmin" id="btnAddTask" data-boolIsOverdue="@false">
+						<i class="fa fa-plus-circle" aria-hidden="true"></i> Add task
+					</button>
+				</div>
+			</div>
+			<div class="row" style="margin: 0px !important;">
+				<div class="col-sm-12">
+					<button class="btn btn-info btn-sm col-sm-12" id="goToJobDateNowEmployee" data-contactid="@ViewBag.intnContactId">
+						<i class="fa fa-calendar" aria-hidden="true"></i> Go to now
+					</button>
+				</div>
+			</div>
+			<div class="row" style="">
+				<div class="col-sm-3">
+					<button id="jobPrevDayEmployee" class="btn btn-info btn-sm" data-contactid="@ViewBag.intnContactId">
+						<i class="fa fa-chevron-circle-left" aria-hidden="true"></i> Prev. day
+					</button>
+				</div>
+				<div class="col-sm-6 font-bold font-md text-center divMonthEmployee"></div>
+				<div class="col-sm-3">
+					<button id="jobNextDayEmployee" class="btn btn-info btn-sm pull-right" data-contactid="@ViewBag.intnContactId">
+						Next day <i class="fa fa-chevron-circle-right" aria-hidden="true"></i>
+					</button>
+				</div>
+			</div>
+			<div class="row" id="employeeCalendar">
+				@{
+					await Html.RenderPartialAsync("EmployeePeriodsPartialView", Model.arrperortask);
+				}
+			</div>
+		</div>
+		<!--Section for overdue tasks-->
+		<div class="tab-pane fade show" id="overdueTasks">
+			
+		</div>
+		<!--Section for all tasks-->
+		<div class="tab-pane fade show" id="allTasks">
+			
+		</div>
+	</div>
+</div>

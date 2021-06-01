@@ -1,0 +1,56 @@
+﻿<div class="row">
+    <div class="col-sm-5">
+        <label class="input-label">Resource Name</label>
+        <input class="form-control input-with-dropdowns" name="strResourceName" id="strResourceName"
+               placeholder="Resource Name">
+    </div>
+    <div class="col-sm-4">
+        <label class="input-label">Unit of Measurement</label>
+        <input type="text" id="strUnitCustomResource" name="strUnit" autocomplete="off"
+               class="busca form-control input-with-dropdowns showUnits" />
+        <div id="display" class="unitsList mt-0 pl-1 pr-0"
+             style="font-family: 'Rawline Regular', sans-serif; color: #58585b; font-size: 14px; border-radius:0px;">
+
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <label class="form-check-label checkbox-label" style="margin-left: 30px; margin-top:30px;">
+            <input type="checkbox" class="form-check-input chkDecimal" id="boolIsDecimal"
+                   name="boolIsDecimal">Use decimals
+        </label>
+    </div>
+    <div class="col-sm-12">
+        <div class="row pull-right">
+            <div>
+                <button type="button" class="btn btn-block btn-sm btn-primary mb-0" id="saveCustomResource" 
+                    style="margin-top: 30px" hidden>Save</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-info btn-sm ml-2 mb-0" id="addNewCustomResourceAttr"
+                        style="margin-top: 30px">
+                    <i class="fa fa-plus-circle" aria-hidden="true"></i> Add attribute
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 card-body" id="dinamicCustomResourceAttributes" style="overflow-y: scroll; height: 53vh">
+        <form class="border p-3" id="customResourceAttribute-1">
+            <div class="form-group row">
+                <div class="col-sm-5">
+                    <label class="input-label">Attribute Name</label>
+                    <input name="strCustomAttrName" class="form-control input-with-dropdowns">
+                </div>
+                <div class="col-sm-5">
+                    <label class="input-label">Value</label>
+                    <input name="strCustomValue" class="form-control input-with-dropdowns">
+                </div>
+                <div class="col-sm-2 text-right p-1">
+                    <br>
+                    <button type="button" class="btn btn-danger btn-sm removeResourceForm" data-res-card="1">
+                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </form><br />
+    </div>
+</div>

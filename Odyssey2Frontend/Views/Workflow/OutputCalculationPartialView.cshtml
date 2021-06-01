@@ -1,0 +1,96 @@
+﻿@model List<TranformationCalculationModel>
+<form id="transform-calculation-form">
+	<input type="hidden" name="intnPk" value="" />
+	<input type="hidden" name="intPkProcessInWorkflow" value="@ViewBag.intPkProcessInWorkflow" />
+	<input type="hidden" name="boolIsEleetI" value="" />
+	<input type="hidden" name="intPkEleetOrEleeleI" value="" />
+	<input type="hidden" name="intPkResourceO" value="@ViewBag.intnPkResourceO" />
+	<input type="hidden" name="boolIsEleetO" value="@ViewBag.boolIsEleetO.ToString()" />
+	<input type="hidden" name="intPkEleetOrEleeleO" value="@ViewBag.intPkEleetOrEleeleO" />
+	<div class="row">
+		<div class="col-6">
+			<div class="form-inline">
+				<label class="checkbox-label"><strong>Input:</strong></label>
+				<span class="select">
+					<select name="intPkResourceI" id="strTypeTemplateAndResourceI"
+							value="" required>
+						<option value=""
+								data-intnPkResourceO="@null"
+								data-intnPkEleetOrEleele="@null"
+								data-boolIsEleet="@null"
+								data-strUnit="@null">
+							Pick one
+						</option>
+						@foreach (WorkflowProcessInputModel WorkflowProcessInputModel in
+						ViewBag.WorkflowProcessInputListItems)
+						{
+							<option value="@WorkflowProcessInputModel.intnPkResource"
+									data-intnPkResource="@WorkflowProcessInputModel.intnPkResource"
+									data-intnPkEleetOrEleele="@WorkflowProcessInputModel.intnPkEleetOrEleele"
+									data-boolIsEleet="@WorkflowProcessInputModel.boolIsEleet"
+									data-strUnit="@WorkflowProcessInputModel.strUnit">
+								@WorkflowProcessInputModel.strTypeTemplateAndResource
+							</option>
+						}
+					</select>
+				</span>
+			</div>
+		</div>
+		<div class="col-6">
+			<label class="checkbox-label"><strong>Output: </strong>@ViewBag.strTypeTemplateAndResourceO</label><br />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-6">
+			<div class="input-group">
+				<input type="number" name="numNeeded" class="form-control input-with-dropdowns"
+					   min=".0001" step="0.0001" value="" required>
+				<div class="input-group-append" style="height:29px;">
+					<span class="input-group-text" id="strTypeTemplateAndResourceILabel"></span>
+				</div>
+			</div>
+		</div>
+		<div class="col-6">
+			<div class="input-group">
+				<input type="number" name="numPerUnit" class="form-control input-with-dropdowns"
+					   min=".0001" step="0.0001" value="" required>
+				<div class="input-group-append" style="height:29px;">
+					<span class="input-group-text">
+						@ViewBag.strUnitO
+					</span>
+				</div>
+			</div>
+		</div>
+		@if (
+			!(bool)ViewBag.boolCustomWorkflow
+		   )
+		{
+			<div class="col-2 mt-3">
+				<input type="hidden" name="condition" id="strConditionToApply" />
+				<button type="button" class="btn btn-info btn-sm openConditionToApplyModal"
+						data-boolIsLink="@true"
+						data-toggle="modal"
+						data-target="#conditionToApplyModal">
+					<b>Conditions To Apply</b>
+				</button>
+			</div>
+			<div class="col-8 mt-2">
+				<div class="alert alert-success text-center" id="translatedCondition" hidden><strong></strong></div>
+			</div>
+			<div class="col-2 mt-3">
+				<button type="button" class="btn btn-secondary btn-sm delete-condition-to-apply pull-right" data-toggle="modal"><b>Remove Conditions</b></button>
+			</div>
+		}
+	</div>
+	<div class="mt-3" id="trasformCalculationTableSection">
+		@{
+			await Html.RenderPartialAsync("TransformCalculationTablePartialView", Model);
+		}
+	</div>
+	@if (
+	 (bool)ViewBag.boolIsAbleToSave
+	 )
+	{
+		<button type="submit" hidden></button>
+	}
+</form>

@@ -1,0 +1,130 @@
+﻿@model WeekPeriodsModel
+@{
+	String[] arrMonth = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+	int month = Convert.ToInt32(Model.strDate.Split("-")[1]) - 1;
+	String day = Model.strDate.Split("-")[2];
+}
+<div class="row">
+	<div class="col-sm-12 text-center font-bold font-md">@arrMonth[month] @day</div>
+</div>
+<div style="display: block; overflow-y: scroll; height: 520px">
+	@if (Model.arrperPeriods.Any())
+	{
+		@foreach (var item in Model.arrperPeriods)
+		{
+			@if (item.boolIsAvailable)
+			{
+				<div class="card card-margin card-free">
+					<div class="card-body">
+						<div class="row font-bold">Free</div>
+						<div class="row">
+							<div class="col-xl-5">Start: @item.strStartTime</div>
+							<div class="col-xl-5">End: @item.strEndTime</div>
+						</div>
+					</div>
+				</div>
+			}
+			else
+			{
+				if (item.intnPkPeriod != null)
+				{
+					<div class="card card-margin card-period">
+                        <div class="card-body">
+                            @if (
+                               (item.boolnIsPeriodDone != null) && (item.boolnIsPeriodDone == true)
+                               )
+                            {
+                                <div class="pull-right">
+                                    <i class="fa fa-2x fa-check-circle" style="color: green"></i>
+                                </div>
+                            }
+                            else if (item.boolPeriodStarted == true)
+                            {
+                                <div class="pull-right">
+                                    <i class="fa fa-2x fa-tasks"></i>
+                                </div>
+                            }
+                            <div class="row font-bold">
+                                <div class="col-sm-10">
+                                    Job: @item.strJobName (@item.strJobNumber)
+                                </div>
+                                <div class="col-sm-2">
+
+                                </div>
+                            </div>
+                            <div class="row font-bold">
+                                <div class="col-sm-12">Process: @item.strProcess</div>
+
+                            </div>
+                            <div class="row font-bold">
+                                <div class="col-sm-6">
+                                    @if (item.strFirstName != null || item.strLastName != null)
+                                    {
+                                        <label class="font-bold">
+                                            <i class="fa fa-user-o" aria-hidden="true"></i>
+                                            @item.strFirstName @item.strLastName
+                                        </label>
+                                    }
+                                    else
+                                    {
+                                        <label class="font-bold">-</label>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xl-5">Start: @item.strStartTime</div>
+                                <div class="col-xl-5">End: @item.strEndTime</div>
+								<div class="col-xl-10">Schedule Reset Allowance: @item.intMinsBeforeDelete min.</div>
+                            </div>
+                            @if (
+                             ((item.boolnIsPeriodDone == null) || (item.boolnIsPeriodDone == false)) &&
+                             (item.boolPeriodStarted == false)
+                             )
+                            {
+                                <div class="row">
+                                    <div class="col-xl-1">
+                                        <button type="button" class="btn btn-secondary btn-sm openOption"
+                                                data-period="@item.intnPkPeriod">
+                                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                    <div class="col-xl-1">
+                                        <button type="button" class="btn btn-danger btn-sm deletePeriod"
+                                                data-date-delete="@Model.strDate"
+                                                data-period="@item.intnPkPeriod">
+                                            <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+					</div>
+				}
+				else
+				{
+					<div class="card card-margin card-rule">
+						<div class="card-body">
+							<div class="row font-bold">Unavailable</div>
+							<div class="row">
+								<div class="col-xl-5">Start: @item.strStartTime</div>
+								<div class="col-xl-5">End: @item.strEndTime</div>
+							</div>
+						</div>
+					</div>
+				}
+			}
+		}
+	}
+	else
+	{
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="card">
+					<div class="card-body">
+						Nothing to show
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+</div>

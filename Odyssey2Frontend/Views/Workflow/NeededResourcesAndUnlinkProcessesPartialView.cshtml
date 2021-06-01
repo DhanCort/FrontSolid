@@ -1,0 +1,100 @@
+﻿@{ 
+    string[] darrtips = Model.objResponse.strTips.Replace("\r\n","|").Split("|");
+    List<String> darrprocess = (List<String>)Model.objResponse.arrstrProcessName;
+}
+
+<div id="accordion">
+    <div class="card">
+        <div class="card-header" id="headingOneTips">
+            <h5 class="mb-0">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOneTips" aria-expanded="true" aria-controls="collapseOneTips">
+                    <i class="fa fa-lightbulb-o" aria-hidden="true"></i> Tips
+                </button>
+            </h5>
+        </div>
+
+        <div id="collapseOneTips" class="collapse" aria-labelledby="headingOneTips" data-parent="#accordion">
+            <div class="card-body">
+                @foreach (var item in darrtips)
+                {
+                    <p>@item</p>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header" id="headingTwoTip">
+            <h5 class="mb-0">
+                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwoTip" aria-expanded="false" aria-controls="collapseTwoTip">
+                    <i class="fa fa-cog" aria-hidden="true"></i> Process
+                </button>
+            </h5>
+        </div>
+        <div id="collapseTwoTip" class="collapse" aria-labelledby="headingTwoTip" data-parent="#accordion">
+            <div class="card-body">
+                @foreach (var item in darrprocess)
+                {
+                    <p>@item</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<div id="accordion">
+    @if (@Model.strUserMessage != "")
+    {
+        <div class="alert alert-info">
+            @Model.strUserMessage
+        </div>
+    }
+
+    @if (Model.objResponse.arrresorprojsonResources != null && Model.objResponse.arrresorprojsonResources.Count > 0)
+    {
+        <div class="card">
+            <div class="card-header">
+                <a class="card-link font-bold" data-toggle="collapse" href="#collapseOne">
+                    @Model.objResponse.strResourcesMessage
+                </a>
+            </div>
+            <div id="collapseOne" class="collapse">
+                <div class="card-body">
+                    <ul>
+                        @foreach (var item in @Model.objResponse.arrresorprojsonResources)
+                        {
+                            <li data-intPk="@item.intPk">@item.strName</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (Model.objResponse.arrresorprojsonProcesses != null && Model.objResponse.arrresorprojsonProcesses.Count > 0)
+    {
+        <div class="card">
+            <div class="card-header">
+                <a class="card-link font-bold" data-toggle="collapse" href="#collapseTwo">
+                    @Model.objResponse.strProcessMessage
+                </a>
+            </div>
+            <div id="collapseTwo" class="collapse">
+                <div class="card-body">
+                    <ul>
+                        @foreach (var item in @Model.objResponse.arrresorprojsonProcesses)
+                        {
+                            <li data-intPk="@item.intPk">@item.strName</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (@Model.objResponse.boolHasCycles)
+    {
+        <div class="alert alert-success">
+            @Model.objResponse.strCyclesMessage
+        </div>
+    }
+</div>*@ 

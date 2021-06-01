@@ -1,0 +1,81 @@
+﻿@model List<JobsModel>
+
+<div class="table-responsive m-0">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>
+                    Job Number
+                </th>
+                <th>
+                    Customer
+                </th>
+                <th>
+                    Job Name
+                </th>
+                <th>
+                    Product Name
+                </th>
+                @if (
+                 ViewBag.boolPending
+                 )
+                {
+                    <th></th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (JobsModel jobmodel in Model)
+            {
+                <tr class="collapsed clpTasksJob" data-toggle="collapse" href="Periods_@jobmodel.intJobId"
+                    id="Job_@jobmodel.intJobId" data-intPkProduct="@jobmodel.intPkProduct"
+                    data-intJobId="@jobmodel.intJobId" data-intPkWorkflow="@jobmodel.intPkWorkflow"
+                    data-pending="@ViewBag.boolPending">
+                    <td>
+                        @jobmodel.strJobNumber
+                    </td>
+                    <td>
+                        @jobmodel.strCustomerName
+                    </td>
+                    <td>
+                        @jobmodel.strJobTicket
+                    </td>
+                    <td>
+                        @jobmodel.strProductName
+                    </td>
+                    @if (
+                      ViewBag.boolPending
+                      )
+                    {
+                        <td>
+                            <div class="dropdown slcWfTask" data-intPkProduct="@jobmodel.intPkProduct" 
+                                 data-intJobId="@jobmodel.intJobId" >
+                                <button type="button" class="btn btn-sm btn-info dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fa fa-code-fork" aria-hidden="true"></i> Workflow
+                                </button>
+                                <div class="dropdown-menu">
+                                    <div class="col-sm-12 text-center">
+                                        <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                                        <span class="sr-only"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            @*<span class="select slcWfTask" style="width:250px;">
+                                <select class="selectWfTask" id="selectWfTask_@jobmodel.intJobId"
+                                        data-intPkProduct="@jobmodel.intPkProduct"
+                                        data-intJobId="@jobmodel.intJobId">
+                                    <option value="">Select one workflow</option>
+                                </select>
+                            </span>*@
+                        </td>
+                    }
+                </tr>
+                <tr>
+                    <td colspan="@(ViewBag.boolPending ? "5" : "4")" class="p-0">
+                        <div id="Periods_@jobmodel.intJobId" class="collapse"></div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

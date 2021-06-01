@@ -1,0 +1,362 @@
+﻿@model EstimateModel
+@if (Model.intEstimationId >= 0)
+{
+	<div class="row" style="margin-top: 1%">
+		<div class="card col-sm-12" style="margin-bottom: 0%; padding-left: 0px; padding-right: 0px; border-radius: 1rem; border: 4px solid #2f6680;">
+			<div class="row" style="margin-top: 0%">
+				<div class="col-sm-6 font-bold text-center border-bottom-custom border-right-custom"><h3 class="card-title mt-2">Anticipated Start Date</h3></div>
+				<div class="col-sm-6 font-bold text-center border-bottom-custom">
+					<div class="input-group input-with-dropdowns mt-2">
+						<input value="@Model.strBaseDate @Model.strBaseTime" id="strBaseDateTimeDefault"
+							   class="input-with-dropdowns form-control col-sm-10 strBaseDateTimeDefault" data-toggle="datetimepicker" data-target="#strBaseDateTimeDefault">
+						<div class="input-group-append input-with-dropdowns">
+							<button class="btn btn-sm btn-info font-weight-lighter sendBaseDateTime" data-estimate="@Model.intEstimationId|@Model.intJobId|@Model.intPkWorkflow|@ViewBag.boolIsConfirmed|@ViewBag.intnCopyNumber">
+								Re-estimate
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+<div class="row">
+	<div class="card col-sm-12" style="margin-bottom: 0%; padding-left: 0px; padding-right: 0px; border-radius: 1rem;">
+		<div class="table-responsive" style="border-radius: 1rem; border: 1px solid #2f6680;">
+			<table class="table table-bordered" style="margin-bottom: 0px">
+				<tbody>
+					<tr>
+						<td class="custom-td"><h3><span class="font-bold">Job:</span> @Model.strJobNumber. @Model.strJobTicket</h3></td>
+						<td class="custom-td"><h3><span class="font-bold">Category:</span> @Model.strProductCategory</h3></td>
+						<td class="custom-td"><h3><span class="font-bold">Delivery Date:</span> @Model.strDeliveryDate @Model.strDeliveryTime</h3></td>
+					</tr>
+					<tr>
+						<td class="custom-td" colspan="3">
+							<h3 class="card-title"><span class="font-bold">Job Specs</span></h3>
+							<ul>
+								<li>
+									<label>
+										Quantity: @Model.intnQuantity
+									</label>
+									@if (
+									(ViewBag.boolIsConfirmed != null) &&
+									((bool)ViewBag.boolIsConfirmed) &&
+									(ViewBag.intnCopyNumber != null)
+									)
+									{
+										<a class="editEstimateQuantity" href="#" style="height: 50%"><span class="fa fa-edit"></span></a>
+										<form class="form-inline estimateQuantityForm" hidden>
+											<input type="hidden" name="intCopyNumber" value="@ViewBag.intnCopyNumber" />
+											<input type="hidden" name="intJobId" value="@Model.intJobId" />
+											<input type="hidden" name="intPkWorkflow" value="@Model.intPkWorkflow" />
+											<input type="hidden" name="intEstimateId" value="@Model.intEstimationId" />
+											<label class="">Quantity: </label>
+											<div class="input-group" style="margin-top: 5px">
+												<input name="intQuantity" type="number" min="0" class="form-control form-control-sm" value="@Model.intnQuantity" required />
+												<div class="input-group-append">
+													<button class="btn btn-sm btn-primary" type="submit">
+														<span class="fa fa-save">
+														</span>
+													</button>
+													<button class="btn btn-sm btn-secondary cancelEditEstimateQuantity" type="button">
+														<span class="fa fa-times"></span>
+													</button>
+												</div>
+											</div>
+										</form>
+									}
+								</li>
+								@if (
+								  (Model.arrattr != null && Model.arrattr.Count > 0)
+								  )
+								{
+									foreach (var attribute in Model.arrattr)
+									{
+										<li>@attribute.strAttributeName: @attribute.strValue</li>
+									}
+								}
+							</ul>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<div class="row" style="margin-top: 1%">
+	<div class="card col-sm-12" style="margin-bottom: 0%; padding-left: 0px; padding-right: 0px; border-radius: 1rem; border: 4px solid #2f6680;">
+		<div class="row" style="margin-top: 0%">
+			<div class="col-sm-6 font-bold text-center border-bottom-custom border-right-custom"><h3 class="card-title">Concept</h3></div>
+			<div class="col-sm-3 font-bold text-center border-bottom-custom border-right-custom"><h3 class="card-title">Quantity</h3></div>
+			<div class="col-sm-3 font-bold text-center border-bottom-custom"><h3 class="card-title">Cost</h3></div>
+		</div>
+		<div class="row" style="margin-top: 0%">
+			<div class="col-sm-6 border-bottom-custom border-right-custom"><span class="font-bold">Product:</span> @Model.strProductName</div>
+			<div class="col-sm-3 border-bottom-custom border-right-custom"></div>
+			<div class="col-sm-3 border-bottom-custom"></div>
+		</div>
+		@foreach (var calculation in Model.arrcal)
+		{
+			<div class="row" style="margin-top: 0%">
+				<div class="col-sm-6 border-bottom-custom border-right-custom pl-5">@calculation.strDescription</div>
+				<div class="col-sm-3 border-bottom-custom border-right-custom"></div>
+				<div class="col-sm-3 border-bottom-custom">
+					<div class="pull-left">
+						$
+					</div>
+					<div class="pull-right">
+						@calculation.numCost.ToString("n2")
+					</div>
+				</div>
+			</div>
+		}
+		<div class="row" style="margin-top: 0%">
+			<div class="col-sm-6 border-bottom-custom border-right-custom pl-5"><span class="font-bold">Processes:</span></div>
+			<div class="col-sm-3 border-bottom-custom border-right-custom"></div>
+			<div class="col-sm-3 border-bottom-custom"></div>
+		</div>
+		@foreach (var process in Model.arrpro)
+		{
+			<div class="row divPkProcessInworkflow" style="margin-top: 0%" data-intPkProcessInworkflow="@process.intPkProcessInWorkflow">
+				<div class="col-sm-6 border-bottom-custom border-right-custom pl-6">@process.strName</div>
+				<div class="col-sm-3 border-bottom-custom border-right-custom"></div>
+				<div class="col-sm-3 border-bottom-custom"></div>
+			</div>
+			@foreach (var proccalculation in process.arrcal)
+			{
+				<div class="row" style="margin-top: 0%">
+					<div class="col-sm-6 border-bottom-custom border-right-custom pl-7">@proccalculation.strDescription</div>
+					<div class="col-sm-3 border-bottom-custom border-right-custom"></div>
+					<div class="col-sm-3 border-bottom-custom">
+						<div class="pull-left">
+							$
+						</div>
+						<div class="pull-right">
+							@proccalculation.numCost.ToString("n2")
+						</div>
+					</div>
+				</div>
+			}
+			<div class="row" style="margin-top: 0%">
+				<div class="col-sm-6 border-bottom-custom border-right-custom pl-7"><span class="font-bold">Resources:</span></div>
+				<div class="col-sm-3 border-bottom-custom border-right-custom"></div>
+				<div class="col-sm-3 border-bottom-custom"></div>
+			</div>
+			@foreach (var procresource in process.arrres)
+			{
+				<div class="row divResource_@process.intPkProcessInWorkflow" style="margin-top: 0%"
+					 data-resource="@procresource.intPkEleetOrEleele|@procresource.boolIsEleet|@procresource.intnPkResource|@procresource.boolHasOption">
+					<div class="col-sm-6 border-bottom-custom border-right-custom pl-8">
+						@if (
+		   procresource.arrstrInfo != null && procresource.arrstrInfo.Length > 0
+		   )
+						{
+							<span class="fa fa-info-circle resource-info-toast" style="color: @(procresource.boolIsCompleted == true ? "yellow" : "red")"
+								  data-id="@(process.intPkProcessInWorkflow.ToString() + procresource.intnPkResource.ToString())">
+							</span>
+							<!--Toast-->
+							<div style="position: absolute; z-index:10; max-width: 70% ">
+								<div class="toast fade hide" data-autohide="false" style="position: relative; background-color: white !important"
+									 aria-live="assertive"
+									 aria-atomic="true"
+									 id="toast-@(process.intPkProcessInWorkflow.ToString() + procresource.intnPkResource.ToString())">
+									<div class="toast-header" style="background-color: #2f6680; color: white">
+										<div class="mt-1" style="width: 90%">
+											<label>Warning</label>
+										</div>
+										<div class="" style="width: 10%">
+											<button class="close pull-right close-resource-info-toast" style="color: white; padding-bottom: 10px">
+												&times;
+											</button>
+										</div>
+									</div>
+									<div class="toast-body">
+										<ul>
+											@foreach (String strInfo in procresource.arrstrInfo)
+											{
+												if (
+													//		//If the resource doesn't have a cost saved.
+													strInfo == "No cost found."
+													)
+												{
+													<li>
+														<a class="addCost"
+														   href="#" data-intEstimationId="@Model.intEstimationId"
+														   data-intpk-strname="@(procresource.intnPkResource + "|" + procresource.strName + "|" + true)"
+														   data-boolIsDeviceToolOrCustom="@procresource.boolnIsDeviceOrMiscConsumable">
+															@strInfo
+														</a>
+													</li>
+												}
+												else if (
+													//		//If the resource doesn't have a time saved
+													//		//		(Only for devices)
+													strInfo == "No time found."
+													)
+												{
+													<li>
+														<a class="addResourceTime"
+														   data-intpk-strname="@(procresource.intnPkResource + "|" +
+																procresource.strName + "|" + procresource.strUnit)"
+														   href="#" data-intEstimationId="@Model.intEstimationId">
+															@strInfo
+														</a>
+													</li>
+												}
+												else if (
+													//		//If the resource doesn't have any calculation.
+													strInfo == "No calculation found."
+													)
+												{
+													<li>
+														<a class="btnAddCalculationByResource" href="#" data-intEstimationId="@Model.intEstimationId"
+														   data-intnpkresource="@procresource.intnPkResource" data-intnpkprocessinworkflow="@process.intPkProcessInWorkflow"
+														   data-intnpkeleetoreleele="@procresource.intPkEleetOrEleele" data-boolniseleet="@procresource.boolIsEleet"
+														   data-boolIsPaper="@procresource.boolIsPaper" data-boolIsDeviceOrMiscConsumable="@procresource.boolnIsDeviceOrMiscConsumable">
+															@strInfo
+														</a>
+													</li>
+												}
+												else
+												{
+													<li>@strInfo</li>
+												}
+
+											}
+										</ul>
+									</div>
+								</div>
+							</div>
+						}
+
+						@if (string.IsNullOrEmpty(procresource.strName))
+						{
+							<text><strong>Selections available in options.</strong></text>
+						}
+						else
+						{
+							@procresource.strName
+						}
+					</div>
+					<div class="col-sm-3 border-bottom-custom border-right-custom">
+						@if (string.IsNullOrEmpty(procresource.strUnit))
+						{
+							<text>-</text>
+						}
+						else
+						{
+							@procresource.numQuantity <text> </text> @procresource.strUnit
+						}
+					</div>
+					<div class="col-sm-3 border-bottom-custom">
+						@if (@procresource.intnPkResource == null)
+						{
+							<text>-</text>
+						}
+						else
+						{
+							<div class="pull-left">
+								$
+							</div>
+							<div class="pull-right">
+								@procresource.numCost.ToString("n2")
+							</div>
+
+						}
+					</div>
+				</div>
+			}
+		}
+		<div class="row" style="margin-top: 0%">
+			<div class="col-sm-6 border-bottom-custom border-right-custom"></div>
+			<div class="col-sm-3 border-bottom-custom border-right-custom pull-right"><span class="font-bold">Total Cost:</span></div>
+			<div class="col-sm-3 border-bottom-custom">
+				@if (@Model.numnJobEstimateCost == null)
+				{
+					<text>-</text>
+				}
+				else
+				{
+					<div class="pull-left">
+						$
+					</div>
+					<div class="pull-right">
+						@Model.numnJobEstimateCost.GetValueOrDefault().ToString("n2")
+					</div>
+				}
+			</div>
+		</div>
+		<div class="row" style="margin-top: 0%">
+			<div class="col-sm-6 border-bottom-custom border-right-custom"></div>
+			<div class="col-sm-3 border-bottom-custom border-right-custom pull-right"><span class="font-bold">Total Price:</span></div>
+			<div class="col-sm-3 border-bottom-custom">
+				<div class="row">
+					<div class="col-sm-8" style="padding-left: 0px">
+						@if (@Model.numnJobEstimatePrice == null)
+						{
+							<text>-</text>
+						}
+						else
+						{
+							<div class="pull-left">
+								$
+							</div>
+							<div class="pull-right">
+								@Model.numnJobEstimatePrice.GetValueOrDefault().ToString("n2")
+							</div>
+						}
+					</div>
+					<button type="button" class="btn btn-secondary btn-sm col-sm-2 showPriceLog"
+							data-intPkWf-EstId="@Model.intPkWorkflow|@ViewBag.intnPkEstimation"
+							data-intnCopyNumber="@ViewBag.intnCopyNumber"
+							data-numactualprice="@Model.numnJobEstimatePrice">
+						<i class="fa fa-pencil" aria-hidden="true"></i>
+					</button>
+					<button class="btn btn-info btn-sm col-sm-2 btn-reset-price"
+							data-intPkWf-EstId="@Model.intPkWorkflow|@ViewBag.intnPkEstimation"
+							data-intnCopyNumber="@ViewBag.intnCopyNumber">
+						<i class="fa fa-repeat" aria-hidden="true"></i>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	@if (
+		!String.IsNullOrEmpty(ViewBag.strUserMessage)
+		)
+	{
+<strong style="vertical-align: top">*@ViewBag.strUserMessage</strong>
+	}
+</div>
+
+<div class="row">
+	<div class="col-sm-12">
+		<div class="btn-group pull-right">
+			@if (
+				 ViewBag.intnPkEstimation == 0
+				 )
+			{
+				<button class="btn btn-sm btn-info pull-right btn-convert-estimate mr-1"
+						data-intnCopyNumber="@ViewBag.intnCopyNumber"
+						data-intjobid="@Model.intJobId"
+						data-intPkWorkflow="@Model.intPkWorkflow"
+						data-intEstimateId="@ViewBag.intnPkEstimation"
+						data-boolIsFromJob="@ViewBag.boolIsFromJob">
+					<i class="fa fa-check-circle-o" aria-hidden="true"></i> Approve by customer
+				</button>
+			}
+			<button class="btn btn-sm btn-info pull-right mr-1 getOptions"
+					data-intPkWorkflow="@Model.intPkWorkflow" data-intJobId="@Model.intJobId"
+					data-intEstimationId="@Model.intEstimationId"
+					data-base="@Model.strBaseDate|@Model.strBaseTime"
+					@(Model.boolHasOption == true ? "" : "disabled")>
+				Options
+			</button>
+			<button class="btn btn-sm btn-info pull-right confirmEstimation"
+					data-intJobId="@Model.intJobId" data-intEstimationId="@ViewBag.intnPkEstimation" @(Model.boolIsConfirmable == true ? "" : "disabled")>
+				Confirm
+			</button>
+		</div>
+	</div>
+</div>

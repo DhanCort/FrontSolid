@@ -1,0 +1,748 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    bool boolIsAdmin = bool.Parse(HttpContextAccessor.HttpContext.Session.GetString("boolIsAdmin") ?? "false");
+    bool boolIsSuperAdmin = bool.Parse(HttpContextAccessor.HttpContext.Session.GetString("boolIsSuperAdmin") ?? "false");
+    bool boolIsOwner = bool.Parse(HttpContextAccessor.HttpContext.Session.GetString("boolIsOwner") ?? "false");
+    String strPrintshopName = HttpContextAccessor.HttpContext.Session.GetString("strPrintshopName");
+    String strPrintshopId = HttpContextAccessor.HttpContext.Session.GetString("strPrintshopId");
+    int intUnreadAlerts = HttpContextAccessor.HttpContext.Session.GetInt32("intUnreadAlerts") ?? 0;
+    int intContactId = HttpContextAccessor.HttpContext.Session.GetInt32("intContactId") ?? 0;
+    bool boolIsAccountant = bool.Parse(HttpContextAccessor.HttpContext.Session.GetString("boolIsAccountant") ?? "false");
+    bool boolOffset = bool.Parse(HttpContextAccessor.HttpContext.Session.GetString("boolOffset") ?? "false");
+    String strSendAProofUrl = HttpContextAccessor.HttpContext.Session.GetString("strSendAProofUrl");
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Odyssey v2.0 Prelaunch</title>
+    <link rel="shortcut icon" type="image/x-icon" href="~/images/favicon.ico" />
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/main.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Odyssey.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/animate.css/animate.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/font-awesome-animation.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/kendo-ui/styles/kendo.common.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/kendo-ui/styles/kendo.bootstrap-v4.min.css" asp-append-version="true" />
+    @*<link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />*@
+
+</head>
+<body @*style="background-color:#f7f8f8;"*@>
+    @if (
+strPrintshopId != null && strPrintshopId != ""
+)
+    {
+        <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top" style="border-bottom:solid; border-color:#b3d450; border-bottom-width:thick;">
+            <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand ml-3 mb-3"><img src="~/images/02-nav-logo.png" /></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+                            Printshop
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-controller="PrintshopProductTemplate" asp-action="Index">My Products</a></li>
+                            <li>
+                                <a class="dropdown-item" asp-controller="PrintshopTemplate" asp-action="Index" asp-route-strResOrPro="Process">My Processes</a>
+                            </li>
+                            <li><a class="dropdown-item" asp-controller="PrintshopResourcesTemplate" asp-action="Index">My Resources</a></li>
+                            @if (boolIsAdmin)
+                            {
+                                <li><a class="dropdown-item" asp-controller="PrintshopEmployees" asp-action="Index">My Employees</a></li>
+                            }
+                            <li><a class="dropdown-item" asp-controller="PrintshopContacts" asp-action="Index">My Customers</a></li>
+                            <li class="dropdown-divider"></li>
+                            <li><a class="btn dropdown-item printshopRulesButton" data-intPkResource="" data-strPrintshopName="@strPrintshopName">My Rules</a></li>
+                            <li class="dropdown-divider"></li>
+                            <li><a class="btn dropdown-item" asp-controller="PrintshopReports" asp-action="Index">My Reports</a></li>
+                            <li><a class="btn dropdown-item" asp-controller="PrintshopWorkflows" asp-action="Index">My Workflows</a></li>
+                            <li class="dropdown-divider"></li>
+                            <li><a class="btn dropdown-item" href="@strSendAProofUrl" target="_blank">Send a proof</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown" id="jobs-dropdown-menu">
+                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">Jobs</a>
+                        <ul class="dropdown-menu" style="min-width: 18rem !important">
+                            <li>
+                                <a class="dropdown-item" href="@Url.Action("Index", "Jobs", new { boolnUnsubmitted = true })">
+                                    <span class="badge badge-primary job-quantity" id="job-quantity-Unsubmitted" style="width: 30px"></span> Unsubmitted
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="@Url.Action("Index", "Jobs", new { boolnInEstimating = true })">
+                                    <span class="badge badge-primary job-quantity" id="job-quantity-In-Estimating" style="width: 30px"></span> In Estimating
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="@Url.Action("Index", "Jobs", new { boolnWaitingForPriceApproval = true })">
+                                    <span class="badge badge-primary job-quantity" id="job-quantity-Waiting-Approval" style="width: 30px"></span> Waiting for price approval
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="@Url.Action("Index", "Jobs", new { boolnPending = true })">
+                                    <span class="badge badge-primary job-quantity" id="job-quantity-Pending" style="width: 30px"></span> Pending
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="@Url.Action("Index", "Jobs", new { boolnInProgress = true })">
+                                    <span class="badge badge-primary text-center job-quantity" id="job-quantity-In-Progress" style="width: 30px"></span> In Progress
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="@Url.Action("Index", "Jobs", new { boolnNotPaid = true })">
+                                    <span class="badge badge-primary text-center job-quantity" id="job-quantity-Not-Paid" style="min-width: 30px"></span> Waiting For Payment
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="@Url.Action("Index", "Jobs", new { boolnCompleted = true })">
+                                    <span class="badge badge-primary text-center job-quantity" id="job-quantity-Completed" style="min-width: 30px"></span> Completed
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Jobs" asp-action="Tasks">Tasks</a>
+                    </li>
+                    <li class="nav-item dropdown" id="estimates-dropdown-menu">
+                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">Estimates</a>
+                        <ul class="dropdown-menu" style="min-width: 11rem !important">
+                            <li>
+                                <a class="dropdown-item"
+                                   href="@Url.Action("Index", "Estimate", new { boolRequested = true })">
+                                    <span class="badge badge-primary text-center job-quantity"
+                                          id="estimate-quantity-Requested" style="min-width: 30px">
+                                    </span>Requested
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item"
+                                   href="@Url.Action("Index", "Estimate", new { boolWaitingForCustResponse = true })">
+                                    <span class="badge badge-primary text-center job-quantity"
+                                          id="estimate-quantity-Waiting-Response" style="min-width: 30px">
+                                    </span>Waiting for Response
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item"
+                                   href="@Url.Action("Index", "Estimate", new { boolRejected = true })">
+                                    <span class="badge badge-primary text-center job-quantity"
+                                          id="estimate-quantity-Rejected" style="min-width: 30px">
+                                    </span>Rejected
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    @if (boolIsAccountant)
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+                                Accounting
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="PrintshopAccount" asp-action="Index">Chart of Accounts</a></li>
+                                <li><a class="dropdown-item" asp-controller="Invoice" asp-action="Index">Invoices</a></li>
+                                <li><a class="btn dropdown-item btnPayments">Receive Payment</a></li>
+                                <li class="dropdown-divider"></li>
+                                <li><a class="btn dropdown-item btnStatement">Statement</a></li>
+                                <li class="dropdown-divider"></li>
+                                <li><a class="btn dropdown-item btnBankDeposit">Bank Deposit</a></li>
+                                <li class="dropdown-divider"></li>
+                                <li><a class="dropdown-item btnCreditMemo" href="#">Credit Memos</a></li>
+                                @if (boolIsSuperAdmin)
+                                {
+                                    <li><a class="dropdown-item cursor-pointer" data-toggle="modal" data-target="#loadFileModal">Load Tax File</a></li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                    @if (
+                     boolIsAdmin || boolIsOwner
+                     )
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+                                Settings
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" id="timeZoneLink" href="#">Time Zone</a></li>
+                            </ul>
+                        </li>
+                    }
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://help.mi4p.com/" target="_blank">Help</a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav ml-auto">
+                    @if (!String.IsNullOrEmpty(strPrintshopName))
+                    {
+                        <li class="nav-item">
+                            <div class="dropdown notification">
+                                <button type="button" class="btnNotif btn bg-gray50"
+                                        data-strPrintshopId="@strPrintshopId" data-intContactId="@intContactId" data-toggle="dropdown">
+                                    <i class="fa fa-bell-o" style="color: white"></i>
+                                    <span class="badge countNotif">@intUnreadAlerts</span>
+                                </button>
+                                <div class="NotifDropdown dropdown-menu" style="min-width:20rem; max-height:20rem; overflow-y:auto"></div>
+                            </div>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-user-o" aria-hidden="true"></i><strong> @strPrintshopName</strong>
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-right" style="width: 220px">
+                                @if (boolIsSuperAdmin)
+                                {
+                                    <li class="">
+                                        <form class="px-4 py-3 submit-form" id="changePrintshopForm">
+                                            <label class="input-label">Change printshop Id:</label>
+                                            <div class="input-group input-with-dropdowns" style="height:31px;">
+                                                <input type="text" class="input-with-dropdowns form-control" placeholder="Printshop Id.."
+                                                       name="strPrintshopId" required autocomplete="off" style="height:31px;">
+                                                <span class="input-group-btn ">
+                                                    <button class="btn btn-sm btn-primary" type="submit">
+                                                        <span class="fa fa-rocket"></span>
+                                                    </button>
+                                                </span>
+                                            </div>
+                                        </form>
+                                    </li>
+                                }
+                                @if (
+                                !boolOffset && boolIsOwner
+                                )
+                                {
+                                    <li>
+                                        <form class="px-4 py-3 submit-form" id="frmOffsetNumber">
+                                            <label class="input-label">Starting Order Number:</label>
+                                            <div class="input-group input-with-dropdowns">
+                                                <input type="number" min="1" step="1" class="input-with-dropdowns form-control" name="intOffset"
+                                                       required autocomplete="off" style="height:31px;">
+                                                <span class="input-group-btn ">
+                                                    <button class="btn btn-sm btn-primary" type="submit">
+                                                        <span class="fa fa-save"></span>
+                                                    </button>
+                                                </span>
+                                            </div>
+                                        </form>
+                                    </li>
+                                }
+                                @if (!boolIsSuperAdmin)
+                                {
+                                    <li><a class="dropdown-item showMyCalendar" data-boolIsFromMyEmployees="false" data-employee-name="My Calendar" href="">My Calendar</a></li>
+                                }
+                                @if (!boolIsOwner)
+                                {
+                                    <li><a class="dropdown-item showMyRules" href="">My Rules</a></li>
+                                }
+                                <li>
+                                    <a class="btn dropdown-item" data-toggle="modal" data-target="#specialPasswordModal">Special Password</a>
+                                </li>
+                                <li class="boolIsLogged" data-boolIsLogged="true">
+                                    <a class="dropdown-item logOut cursor-pointer" @*asp-action="Logout"*@>Log out</a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </nav>
+        <div class="body-content p-3">
+            <div class="container-fluid" style="margin-top: 80px;margin-bottom: 5rem !important;">
+                @RenderBody()
+            </div>
+            <div class="fixed-bottom" style="background-color: white; height:auto;">
+                <footer>
+                    <label class="col-4 input-label ml-3 mb-0">Odyssey v2.0 Prelaunch - &copy; @DateTime.Now.Year</label>
+                    <label class="col-4 input-label mb-0 text-center">&copy; @DateTime.Now.Year Marketing Ideas For Printers</label>
+                </footer>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="body-content">
+            <div class="container-fluid">
+                @RenderBody()
+            </div>
+        </div>
+    }
+
+    @if (String.IsNullOrEmpty(strPrintshopId))
+    {
+        <div class="modal fade" role="dialog" aria-labelledby="" aria-hidden="true" id="login-modal">
+            <div class="modal-dialog modal-dialog-centered ">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="process-modal-title">Sign In</h4>
+                        <button type="button" class="close dismissXJDFProcess" data-dismiss="modal">
+                            <i class="fa fa-close"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body autoHeight">
+                        <form asp-action="GetPrintshops" id="email-form">
+                            <div class="form-group">
+                                <label class="input-label">E-mail:</label>
+                                <input type="text" class="input-with-dropdowns form-control" placeholder="example@@mail.com" name="strEmail" required>
+                            </div>
+                            <div class="col-sm-12 text-center" id="email-loader" hidden>
+                                <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Sign in...</span>
+                            </div>
+                            <button class="btn btn-sm btn-primary text-center pull-right" type="submit">
+                                <span class="fa fa-rocket"></span> Send
+                            </button>
+                        </form>
+                        <div id="login-printshop-list-section" class="px-2 py-2" hidden>
+                            <h6 class="">Select a Printshop</h6>
+                            <div id="login-printshop-list" class="modal-content-scroll border border-light">
+                            </div>
+                        </div>
+                        <form id="printshop-pasword" asp-action="Login" hidden>
+                            <div>
+                                <h6 class="" id="password-for-printshop"></h6>
+                            </div>
+                            <input type="hidden" name="strEmail" />
+                            <div class="form-group" id="login-printsopid" hidden>
+                                <label class="input-label">Printshop Id:</label>
+                                <input type="text" name="strPrintshopId" class="form-control" placeholder="Printshop Id.." required autocomplete="off" />
+                            </div>
+                            <div class="form-group">
+                                <label class="input-label">Password:</label>
+                                <input type="password" class="input-with-dropdowns form-control" placeholder="Password" name="strPassword" required autocomplete="off">
+                            </div>
+                            <div class="col-sm-12 text-center" id="login-loader" hidden>
+                                <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Sign in...</span>
+                            </div>
+                            <button class="btn btn-sm btn-primary pull-right" type="submit">
+                                <span class="fa fa-rocket"></span> Sign in
+                            </button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" id="login-btn-back" hidden>Back</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="confirmation-modal" style="z-index: 1100">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                @*<div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Confirm</h4>
+                    </div>*@
+                <div class="modal-body autoHeight" id="myModalBody"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btnYesNo" id="modal-btn-yes" style="display: none">Yes</button>
+                    <button type="button" class="btn btn-secondary btnYesNo" id="modal-btn-no" style="display: none">No</button>
+                    <button type="button" class="btn btn-primary btnOk" id="modal-btn-ok" style="display: none">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*<div class="alert" role="alert" id="result"></div>*@
+
+    <!-- Master Modal -->
+    <div class="modal fade" id="mi4pMasterModal">
+        <div id="mi4pMasterModalDialog" class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <div class="modal-title" id="mi4pMasterModalTitle">Modal Heading</div>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body" id="mi4pMasterModalBody">
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="mi4pMasterModalSave" hidden disabled>Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Add task Modal -->
+    <div class="modal fade" id="modalAddTask">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Add task</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <form id="formTask" data-boolIsOverdue="@true" class="col-sm-12">
+                            <div class="form-group col-sm-12">
+                                <label class="input-label">Description: </label>
+                                <input class="input-with-dropdowns form-control" type="text" id="strDescription" />
+                            </div>
+                            <div class="form-group col-sm-12 mb-4">
+                                <div class="row">
+                                    <div class="col-sm-6" style="padding-left: 0%">
+                                        <label class="input-label">From:</label>
+                                        <input id="strStartDateTimeTask" class="input-with-dropdowns form-control" data-toggle="datetimepicker" data-target="#strStartDateTimeTask" autocomplete="off" />
+                                    </div>
+                                    <div class="col-sm-6" style="padding-right: 0%">
+                                        <label class="input-label">To:</label>
+                                        <input id="strEndDateTimeTask" class="input-with-dropdowns form-control" data-toggle="datetimepicker" data-target="#strEndDateTimeTask" autocomplete="off" / />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-12 mb-4">
+                                <div class="row">
+                                    <div class="col-sm-12" style="padding-left: 0%">
+                                        <label class="input-label">Customer:</label>
+                                        <span class="select" style="width: 100%">
+                                            <select class="selectCustomer" id="intnContactId">
+                                            </select>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-12">
+                                <div class="row">
+                                    <div class="col-sm-3 custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="boolIsNotifiedable" name="boolIsNotifiedable">
+                                        <label class="custom-control-label input-label" for="boolIsNotifiedable">Notification</label>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input class="input-with-dropdowns form-control" min="0" step="1" type="number" id="intMinutesForNotification" pattern="^[0-9]$" disabled />
+                                    </div>
+                                    <div class="col-sm-1" style="padding-left: 0 !important">
+                                        <label class="input-label">minutes</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group text-center mt-5">
+                                <button type="button" class="btn btn-primary col-sm-3" id="btnSaveTask"><i class="fa fa-floppy-o"></i> Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Printshop's Rule's Modal -->
+    <div class="modal fade" id="printshopRulesModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title" id="printshopRulesModalTitle">Printshop's Unavailability's Rules</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body" id="printshopRulesModalBody">
+
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Payments Modal -->
+    @{
+        await Html.RenderPartialAsync("~/Views/PrintshopAccount/ReceivePaymentPartialView.cshtml");
+    }
+
+    <!-- Credit memo Modal -->
+    @{
+        await Html.RenderPartialAsync("~/Views/PrintshopAccount/CreditMemoPartialView.cshtml");
+    }
+
+    <!-- Special Password Modal -->
+    <div class="modal fade" id="specialPasswordModal">
+        <div class="modal-dialog  modal-sm">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">User´s Special Password</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body autoHeight" id="specialPasswordModalBody">
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <p>Set a password for special confirmations on the application</p>
+                        </div>
+                        <form action="" method="post" id="specialPasswordForm">
+                            <div class="col-md-12">
+                                <label class="input-label" for="strCurrentPassword">Current Password</label>
+                                <input type="password" class="input-with-dropdowns form-control" required name="strCurrentPassword" id="strCurrentPassword" />
+                            </div>
+                            <div class="col-md-12 mt-2">
+                                <label class="input-label" for="strNewPassword">New Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="input-with-dropdowns form-control" required name="strNewPassword" id="strNewPassword" />
+                                    <div class="input-group-append">
+                                        <i class="fa fa-check check-icon my-auto mx-2" style="display:none"></i>
+                                        <i class="fa fa-times times-icon my-auto mx-2" style="display:none"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-2">
+                                <label class="input-label" for="strConfirmNewPassword">Confirm New Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="input-with-dropdowns form-control" required name="strConfirmNewPassword" id="strConfirmNewPassword" />
+                                    <div class="input-group-append">
+                                        <i class="fa fa-check check-icon my-auto mx-2" style="display:none"></i>
+                                        <i class="fa fa-times times-icon my-auto mx-2" style="display:none"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <button type="submit" hidden class="btn btn-primary mt-3" value="Save" id="setPasswordButton">
+                                    <i class="fa fa-floppy-o"></i> Save
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load File modal -->
+    <div class="modal fade" id="loadFileModal">
+        <div class="modal-dialog ">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Load Tax File</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body autoHeight">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="custom-file input-with-dropdowns">
+                                <input type="file" class="custom-file-input" id="taxFile">
+                                <label class="custom-file-label col-sm-12" for="customFile">Choose file</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3 loadFileLoaderModal" style="display: none">
+                        <div class="col-sm-12 text-center">
+                            <span style="color: #d1d2d4;"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i></span>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-sm-12 text-center">
+                            <button class="btn btn-primary uploadTaxFile" type="button">Upload File</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="modal fade" id="taskNotesModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Task Notes</h4>
+                    <button type="button" class="close btnCloseTasksnotes">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body taskNotesModalBody">
+
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btnCloseTasksnotes">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Customer Modal -->
+    <div class="modal fade" id="addCustomerModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">New Customer</h4>
+                    <button type="button" class="close btnCloseaddCustomerModal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body autoHeight">
+                    <form id="frmAddCustomer">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-3 text-right" for="strFirstName">First Name:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="strFirstName" name="strFirstName" required="required">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-3 text-right" for="strLastName">Last Name:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="strLastName" name="strLastName">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-3 text-right" for="strEmail">Email:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="strEmail" name="strEmail" required="required">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-sm-3 text-right" for="strPassword">Password:</label>
+                                <div class="col-sm-9">
+                                    <input type="password" class="form-control" id="strPassword" name="strPassword" required="required">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-12 text-center">
+                                    <button class="btn btn-primary" type="submit">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btnCloseaddCustomerModal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/kendo-ui/js/kendo.all.min.js" asp-append-version="true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="~/lib/signalr/signalr.js"></script>
+    <script src="~/js/js.cookie.js" asp-append-version="true"></script>
+    <script src="~/js/rabbitAlert.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/ByIntent.js" asp-append-version="true"></script>
+    <script src="~/js/CalculationScript.js" asp-append-version="true"></script>
+    <script src="~/js/Process.js" asp-append-version="true"></script>
+    <script src="~/js/ByResource.js" asp-append-version="true"></script>
+    <script src="~/js/Operation.js" asp-append-version="true"></script>
+    <script src="~/js/Clasification.js" asp-append-version="true"></script>
+    <script src="~/js/workflow.js"></script>
+    <script src="~/js/MyResource.js" asp-append-version="true"></script>
+    <script src="~/lib/bootstrap-notify/bootstrap-notify.js"></script>
+    <script src="~/lib/animate.css/gulpfile.js"></script>
+    <script src="~/js/EditResource.js" asp-append-version="true"></script>
+    <script src="~/js/jobWorkflow.js"></script>
+    <script src="~/js/calendar.js"></script>
+    <script src="~/js/rules.js"></script>
+    <script src="~/js/period.js"></script>
+    <script src="~/js/Products.js"></script>
+    <script src="~/js/periodToJob.js"></script>
+    <script src="~/js/employee.js"></script>
+    <script src="~/js/estimate.js"></script>
+    <script src="~/js/filter.js"></script>
+    <script src="~/js/reports.js"></script>
+    <script src="~/js/paper.js"></script>
+    <script src="~/js/accounting.js"></script>
+    <script src="~/js/Invoices.js"></script>
+    <script src="~/js/statement.js"></script>
+    <script src="~/js/bankdeposit.js"></script>
+    <script src="~/js/payment.js"></script>
+    <script src="~/js/CreditMemo.js"></script>
+    <script src="~/js/notes.js"></script>
+    @*<script src="~/js/task.js" asp-append-version="true"></script>*@
+    <script src="~/js/conditiontoapply.js?v=3"></script>
+    @*<script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>*@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.0-alpha14/js/tempusdominus-bootstrap-4.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.0-alpha14/css/tempusdominus-bootstrap-4.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+    <script src="https://kendo.cdn.telerik.com/2020.2.617/js/pako_deflate.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/0.10.0/lodash.min.js"></script>
+
+    <script type="x/kendo-template" id="page-template">
+        <div class="page-template">
+            <div class="header">
+                <div style="float: right">Page #: pageNum # of #: totalPages #</div>
+                Odyssey 2
+            </div>
+            <div class="watermark">Odyssey2</div>
+            <div class="footer">
+                Page #: pageNum # of #: totalPages #
+            </div>
+        </div>
+    </script>
+
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

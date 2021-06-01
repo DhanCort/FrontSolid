@@ -1,0 +1,62 @@
+﻿@model List<Odyssey2Frontend.Models.CalculationModel>
+
+@if (
+    Model.Count > 0 &&
+    Model != null
+    )
+{
+	<div class="container-fluid">
+		<div class="table-responsive">
+			<table class="table" style="text-align: center">
+				<thead>
+					<tr>
+						<th style="text-align: center">
+							Intent
+						</th>
+                        <th style="text-align: center">
+                            Ascendant Name
+                        </th>
+						<th style="text-align: center">
+							XJDF Value
+						</th>
+						<th style="text-align: center">
+							Order Form
+						</th>
+						<th style="text-align: center">
+							Min
+						</th>
+						<th style="text-align: center">
+							Max
+						</th>
+						<th style="text-align: center">
+							Per unit
+						</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach(var calculation in Model)
+					{
+					<tr id="row_@calculation.intPk">
+						<td>@calculation.arrAscendantName[0]</td>
+						<td>
+							<ul class="list-unstyled">
+								@foreach (var name in calculation.arrAscendantName)
+								{
+									<li><h4><span class="label label-primary">@name</span></h4></li>
+								}
+							</ul>
+						</td>
+						<td>@calculation.strValue</td>
+						<td>@calculation.strOrderFormValue</td>
+						<td>@calculation.intnMinAmount</td>
+						<td>@calculation.intnMaxAmount</td>
+						<td>@calculation.numnCost</td>
+						<td><a class="btn btn-danger delete-calculation" id="@calculation.intPk">Delete</a></td>
+					</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+}

@@ -1,0 +1,23 @@
+﻿@model List<JobFilesModel>
+
+<div class="row">
+    <div class="col-sm-12">
+        @if (Model.Any())
+        {
+            <ul class="list-group">
+                @foreach (var item in Model)
+                {
+                    <li class="list-group-item">
+                        <a href="@item.strFileUrl">
+                            <i class="fa fa-file-o" aria-hidden="true"></i> @item.strFileName
+                        </a>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <text>No files to show.</text>
+        }
+    </div>
+</div>

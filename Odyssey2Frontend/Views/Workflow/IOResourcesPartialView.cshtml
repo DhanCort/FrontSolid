@@ -1,0 +1,78 @@
+﻿@model List<InputOutputResourcesModel>
+
+<div class="row">
+    <div class="col-sm-6">
+        <form class="wfAddResourceForm" asp-action="SetResource">
+            <div class="form-group">
+                <span class="select" style="width: 600px;">
+                    <select class="wkflwResource-dropdown" id="intPkResource" name="intPkResource"
+                            data-add-calculations="@ViewBag.boolAddCalculations"
+                            data-boolIsDeviceToolOrCustom="@ViewBag.boolIsDeviceToolOrCustom"
+                            data-boolIsOutput="@ViewBag.boolIsOutput">
+                        <option value="">Pick one</option>
+                    </select>
+                </span>
+            </div>
+            <input type="hidden" name="boolAddCalculations" value="" />
+            <input type="hidden" id="intPkProcessInWorkflow" name="intPkProcessInWorkflow" value="" />
+            <input type="hidden" id="intPkEleetOrEleele" name="intPkEleetOrEleele" value="" />
+            <input type="hidden" id="boolIsEleet" name="boolIsEleet" value="" />
+        </form>
+	</div>
+	<div class="col-sm-3">
+		<button type="button" class="btn btn-info wkflwNewResource" data-boolIsCustom="@ViewBag.boolIsCustom">
+			<i class="fa fa-plus-circle"></i> New Resource
+		</button>
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-12">
+		<ul class="list-group">
+			@foreach (var item in Model)
+			{
+				<li class="list-group-item d-flex justify-content-between align-items-center">
+					@item.strName
+					<span class="badge badge-pill">
+
+						@if (
+                           item.boolIsPhysical && (bool)ViewBag.boolAddCalculations
+                           )
+                        {
+                            string strClass = "btnAddCalculationByResource";
+
+                            if (
+                                (bool)ViewBag.boolIsOutput
+                                )
+                            {
+                                strClass = "edit-transform-calculation";
+                            }
+
+							<button type="button" class="btn btn-info btn-sm @strClass"
+									data-intnPkResource="@item.intPk"
+									data-intPkProcessInWorkflow=""
+									data-intPkEleetOrEleele=""
+									data-boolIsEleet=""
+									data-strUnit="@item.strUnit"
+									data-strtypetemplateandresource="@item.strName"
+									data-boolAvoidReloadPage="@true"
+									data-boolIsAbleToSave="@true"
+									data-boolIsPaper="@item.boolIsPaper"
+									data-boolIsDeviceOrMiscConsumable="@item.boolIsDeviceOrMiscConsumable"
+									data-intJobId="">
+								<i class="fa fa-calculator" aria-hidden="true"></i>
+							</button>
+						}
+						<button type="button" class="btn btn-danger btn-sm btnDeleteResource"
+								data-intnPkResource="@item.intPk"
+								data-boolIsDeviceToolOrCustom="@ViewBag.boolIsDeviceToolOrCustom"
+								data-intnPkProcessInWorkflow=""
+								data-intnPkEleetOrEleele=""
+								data-boolnIsEleet="">
+							<i class="fa fa-trash" aria-hidden="true"></i>
+						</button>
+					</span>
+				</li>
+			}
+		</ul>
+	</div>
+</div>

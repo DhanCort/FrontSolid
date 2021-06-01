@@ -1,0 +1,23 @@
+﻿@model PrintshopSupervisorEmployeeModel
+
+<div class="list-group  list-group-flush autoHeight">
+    <a href="#" class="list-group-item list-group-item-action text-center">Select an employee</a>
+    @foreach (var item in Model.arrEmployee)
+    {
+        <a href="#" class="list-group-item list-group-item-action employee-item" 
+           data-contactid="@item.intContactId"
+           data-fullname="@String.Format("{0}_{1}",item.strFirstName.Replace(" ", "_"),@item.strLastName.Replace(" ", "_"))">
+            <span>
+                @if (string.IsNullOrEmpty(item.strPhotoUrl))
+                {
+                    <i class="fa fa-user-circle-o pt-2" aria-hidden="true" style="font-size: 30px"></i>
+                }
+                else
+                {
+                    <img src="@item.strPhotoUrl" class="member-avatar" />
+                }
+            </span>
+            <span class="ml-3">@String.Format("{0}_{1}", item.strFirstName.Replace(" ", "_"), item.strLastName.Replace(" ", "_"))</span>
+        </a>
+    }
+</div> 

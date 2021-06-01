@@ -1,0 +1,142 @@
+﻿@model List<Odyssey2Frontend.Models.CalculationModel>
+
+<div class="container-fluid">
+	<div class="table-responsive" style="display:block; overflow:scroll; max-height:330px;">
+		<table class="table table-hover" style="text-align: center">
+			<thead>
+				<tr class="tr-calculation-header">
+					<th style="text-align: center">Description</th>
+					@if (
+				 ViewBag.Type != "Profit"
+				 )
+					{
+						<th style="text-align: center">
+							Account
+						</th>
+					}
+
+					@if (
+					  (ViewBag.Type == "PerQuantity" || ViewBag.strCalculationType == "PQ") ||
+					  (ViewBag.Type == "Base" || ViewBag.strCalculationType == "B")
+					  )
+					{
+						if(
+							(ViewBag.Type == "Base" || ViewBag.strCalculationType == "B")
+							)
+						{
+							<th style="text-align: center">Base Cost</th>
+						}
+
+						if (
+							(ViewBag.Type == "PerQuantity" || ViewBag.strCalculationType == "PQ")
+							)
+						{
+							<th style="text-align: center">Min to Produce</th>
+							<th style="text-align: center">By Block</th>
+						}
+						<th class="text-center">Condition</th>
+					}
+					else if (ViewBag.Type == "Profit")
+					{
+						<th style="text-align: center">Profit</th>
+					}
+
+					<th style="text-align: center">Enabled</th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				@if (Model != null && Model.Count > 0)
+				{
+					foreach (var calculation in Model)
+					{
+				<tr class="tr-calculation-row" id="row_@calculation.intPk">
+					<td>@calculation.strDescription</td>
+
+					@if (
+					  ViewBag.Type != "Profit"
+					  )
+					{
+						<td>
+							@calculation.strAccountName
+						</td>
+					}
+
+					@if (
+				  (ViewBag.Type == "PerQuantity" || ViewBag.strCalculationType == "PQ") ||
+				  (ViewBag.Type == "Base" || ViewBag.strCalculationType == "B")
+				  )
+					{
+						if (
+							(ViewBag.Type == "Base" || ViewBag.strCalculationType == "B")
+							)
+						{
+							<td>$@calculation.numnCost.GetValueOrDefault().ToString("n2")</td>
+						}
+
+						if (
+							(ViewBag.Type == "PerQuantity" || ViewBag.strCalculationType == "PQ")
+							)
+						{
+							<td>@calculation.numnMin</td>
+							<td>
+								@if (calculation.numnBlock != null)
+								{
+									<text>@calculation.numnBlock</text>
+								}
+								else
+								{
+									<i>-</i>
+								}
+							</td>
+						}
+						<td>
+							@if (calculation.boolHasCondition)
+							{
+								<i class="fa fa-check" aria-hidden="true" style="color: green"></i>
+							}
+							else
+							{
+								<i class="fa fa-times" aria-hidden="true" style="color: red"></i>
+							}
+						</td>
+					}
+					else if (ViewBag.Type == "Profit")
+					{
+						<td>@calculation.numnProfit %</td>
+					}
+
+					<td>
+						@if (calculation.boolIsEnable)
+						{
+							<i class="fa fa-check" aria-hidden="true" style="color: green"></i>
+						}
+						else
+						{
+							<i class="fa fa-times" aria-hidden="true" style="color: red"></i>
+						}
+					</td>
+					<td>
+						<button class="btn btn-danger btn-sm delete-calculation" id="@calculation.intPk" href=""><i class="fa fa-trash-o"></i></button>
+					</td>
+					<td>
+						<button class="btn btn-secondary btn-sm edit-calculation" id="@calculation.intPk"
+								data-boolisinpostprocess="@calculation.boolIsInPostProcess" href=""
+								@if (!calculation.boolIsEditable) { <text> disabled </text> }>
+							<i class="fa fa-pencil"></i>
+						</button>
+					</td>
+				</tr>
+					}
+				}
+				else
+				{
+					<tr class="tr-calculation-row">
+						<td colspan="10">This section contains no records.</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>

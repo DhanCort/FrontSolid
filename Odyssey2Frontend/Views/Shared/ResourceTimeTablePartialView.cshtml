@@ -1,0 +1,54 @@
+﻿@model List<Odyssey2Frontend.Models.ResourceTimeModel>
+
+<div class="container-fluid">
+    <div class="table-responsive">
+        <table class="table" style="text-align: center">
+            <thead>
+                <tr class="tr-calculation-header">
+                    <th style="text-align: center">Quantity</th>
+                    <th style="text-align: center">Unit of Measurement</th>
+                    <th style="text-align: center">Time</th>
+                    <th style="text-align: center">Minimum Thickness</th>
+                    <th style="text-align: center">Maximum Thickness</th>
+                    <th style="text-align: center">Thickness Unit</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var time in Model)
+                    {
+                <tr class="tr-calculation-row" id="rowTime_@time.intPkTime">
+                    <td>@time.numQuantity</td>
+                    <td>@time.strUnit</td>
+                    <td>
+                        @((time.intHours.ToString().Length == 1) ? ("0" + time.intHours) : ("" + time.intHours)):@((time.intMinutes.ToString().Length == 1) ? ("0" + time.intMinutes) : ("" + time.intMinutes)):@((time.intSeconds.ToString().Length == 1) ? ("0" + time.intSeconds) : ("" + time.intSeconds))
+                    </td>
+                    <td>@((time.numnMinThickness != null) ? (time.numnMinThickness + "") : "")</td>
+                    <td>@((time.numnMaxThickness != null) ? (time.numnMaxThickness + "") : "")</td>
+                    <td>@time.strThicknessUnit</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm btnDeleteTime" id="@time.intPkTime" href="">
+                            <i class="fa fa-trash-o"></i>
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm btnEditTime" id="@time.intPkTime" href="">
+                            <i class="fa fa-pencil"></i>
+                        </button>
+                    </td>
+                </tr>
+                    }
+                }
+                else
+                {
+                    <tr class="tr-calculation-row">
+                        <td colspan="10">This section contains no records.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,68 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    ViewData["Title"] = "Home Page";
+    String strPrintshopId = HttpContextAccessor.HttpContext.Session.GetString("strPrintshopId");
+}
+@{ if (
+              !String.IsNullOrEmpty(strPrintshopId)
+              )
+    {
+        <body style="background-color:#585856 !important;">
+                <div class="row" style="background-color:#585856;">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-12 mt-5 text-center">
+                                <img class="img-fluid" src="~/images/Odyssey Welcome Aboard.png" width="600" height="350" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </body>
+    }
+    else
+    {
+        <body style="background-color:#585856 !important;">
+            <div class="row mt-lg-5" style="background-color: #585856; height:7rem;">
+            </div>
+            <div class="row mt-lg-5" style="background-color:#585856;">
+                <div class="col-6" style="border-right:solid; border-color:#d1d2d4; border-right-width:thin;">
+                    <div class="row mt-0 text-right">
+                        <img class="signupImg" src="~/images/Odyssey Login Page Mockup.png" width="600" height="350" />
+                    </div>
+                </div>
+                <div class="col-6" style="height:12rem;">
+                    <div class="row mt-lg-5 pl-5">
+                        <input type="text" class="form-control" placeholder="example@@mail.com"
+                               id="strEmail" style="width:300px;" autocomplete="off" required>
+                    </div>
+                    <div class="row mt-4 pl-5">
+                        <input type="password" class="form-control" placeholder="Password" id="strPassword"
+                               style="width:300px;" autocomplete="off" required />
+                    </div>
+                    <div class="divPrintshopId row mt-4 pl-5" hidden>
+                        <input type="text" id="strPrintshopId" class="form-control" placeholder="Printshop Id"
+                               style="width:300px;" autocomplete="off" required />
+                    </div>
+                    <div class="divPrintshopIdDropdown row mt-4 pl-5" hidden>
+                        <span class="select" style="height:2.25rem;">
+                            <select class="mt-1" id="strPrintshopIdDropdown" style="width:300px; font-size:1rem;" required>
+                                <option>Pick a printshop</option>
+                            </select>
+                        </span>
+                    </div>
+                    <div class="row mt-4 pl-5">
+                        <button class="btn btn-primary text-center pull-right boolIsLogged" id="btnGetPrintshops"
+                                style="width:300px;" data-boolIsLogged="false">
+                            Login
+                        </button>
+                        <button class="btn btn-primary text-center pull-right boolIsLogged" id="btnLogin"
+                                style="width:300px;" data-boolIsLogged="false" hidden>
+                            Login
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </body>
+    }
+}

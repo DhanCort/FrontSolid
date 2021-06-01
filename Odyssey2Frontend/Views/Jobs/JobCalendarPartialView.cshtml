@@ -1,0 +1,137 @@
+﻿@model JobCalendarModel
+@{
+	String[] arrstrDay = { "sun", "mon", "tues", "wed", "thurs", "fri", "sat" };
+}
+
+<div class="row" style="margin: 0px !important;">
+	<div class="col-sm-6">
+		<button class="btn btn-secondary btn-sm col-sm-12" id="refreshJobPeriod" data-boolIsInformative="@ViewBag.boolIsInformative">
+			<i class="fa fa-refresh" aria-hidden="true"></i> Refresh week
+		</button>
+	</div>
+	<div class="col-sm-6">
+		<button class="btn btn-info btn-sm col-sm-12" id="goToJobDateNow" data-boolIsInformative="@ViewBag.boolIsInformative">
+			<i class="fa fa-calendar" aria-hidden="true"></i> Go to now
+		</button>
+	</div>
+</div>
+<div class="row" style="">
+	<div class="col-sm-3">
+		<button id="jobPrevWeek" class="btn btn-info btn-sm" data-boolIsInformative="@ViewBag.boolIsInformative">
+			<i class="fa fa-chevron-circle-left" aria-hidden="true"></i> Previous week
+		</button>
+	</div>
+	<div class="col-sm-6 font-bold text-center divMonth">June</div>
+	<div class="col-sm-3">
+		<button id="jobNextWeek" class="btn btn-info btn-sm pull-right" data-boolIsInformative="@ViewBag.boolIsInformative">
+			Next week <i class="fa fa-chevron-circle-right" aria-hidden="true"></i>
+		</button>
+	</div>
+</div>
+<div class="row" id="generalCalendarBody">
+	<div class="job-calendar-container job-calendar-inline">
+		<div id="divOfWeekDate" class="" style="width: 100% !important; flex-wrap: unset">
+			<div id="divOfDayWeek_0" class="job-calendar-item job-day-week-inline-item font-bold text-center">Sunday 7</div>
+			<div id="divOfDayWeek_1" class="job-calendar-item job-day-week-inline-item font-bold text-center">Monday 8</div>
+			<div id="divOfDayWeek_2" class="job-calendar-item job-day-week-inline-item font-bold text-center">Tuesday 9</div>
+			<div id="divOfDayWeek_3" class="job-calendar-item job-day-week-inline-item font-bold text-center">Wednesday 10</div>
+			<div id="divOfDayWeek_4" class="job-calendar-item job-day-week-inline-item font-bold text-center">Thursday 11</div>
+			<div id="divOfDayWeek_5" class="job-calendar-item job-day-week-inline-item font-bold text-center">Friday 12</div>
+			<div id="divOfDayWeek_6" class="job-calendar-item job-day-week-inline-item font-bold text-center">Saturday 13</div>
+		</div>
+		<div>
+			@for (int i = 0; i < 7; i++)
+			{
+				<div class="job-calendar-item job-hour-week-inline-item divOfDay" data-strDay="@arrstrDay[i]">
+					<div class="row">
+						@for (int j = 0; j < 24; j++)
+						{
+							<div id="hour_@j" class="font-sm" data-hour="@j"
+								 style="width: 4.16%; border-color: #dee2e6; border-width: 1px; border-style: solid">@j</div>
+							}
+					</div>
+				</div>
+			}
+		</div>
+		<div>
+			<div class="job-calendar-periods-container job-calendar-periods-inline" id="processToDrawing">
+				@{ int p = 0; int row = 0; }
+				@foreach (var level in Model.arrlevels)
+				{
+					<div id="row_@row" class="row processToDrawingRow" style="margin-top: 0px !important;width: 100%;">
+						<div class="layoutRules" style="position: relative; z-index: 2; ">
+							@foreach (var rule in level.arrrule)
+							{
+								p = p + 1;
+								<div id="process_@p" class="rule-container-of-process"
+									 data-startDate="@rule.strStartDate"
+									 data-endDate="@rule.strEndDate"
+									 data-startTime="@rule.strStartTime"
+									 data-endTime="@rule.strEndTime"
+									 style="height: 55px; margin-top: 0px !important;float: left; position: relative; left: 0;"></div>
+							}
+						</div>
+						<div class="layoutProcess" style="position: relative; z-index: 1; ">
+							@foreach (var process in level.arrpro)
+							{
+								p = p + 1;
+								<div id="process_@p" class="container-of-process font-bold layoutTooltip"
+									 data-strName="@process.strName"
+									 data-startDate="@process.strStartDate"
+									 data-endDate="@process.strEndDate"
+									 data-startTime="@process.strStartTime"
+									 data-endTime="@process.strEndTime"
+									 style="height: 55px; margin-top: 0px !important;float: left; position: relative; left: 0;">
+								</div>
+							}
+						</div>
+						<div class="layoutPeriods" style="position: relative; z-index: 3; ">
+							@foreach (var period in level.arrper)
+							{
+								p = p + 1;
+								if (period.boolIsByProcess)
+								{
+									<div id="period_@p" class="period-bar font-bold period layoutTooltip"
+										 data-strName="@period.strName"
+										 data-boolIsTheFirstPeriod="@period.boolIsTheFirstPeriod"
+										 data-boolIsTheLastPeriod="@period.boolIsTheLastPeriod"
+										 data-startDate="@period.strStartDate"
+										 data-endDate="@period.strEndDate"
+										 data-startTime="@period.strStartTime"
+										 data-endTime="@period.strEndTime"
+										 style="margin-top: 0.75rem !important; margin-left: 0px !important;float: left; position: relative; left: 0;">
+									</div>
+								}
+								else
+								{
+									<div id="period_@p" class="another-period font-bold period layoutTooltip"
+										 data-strName="@period.strName"
+										 data-boolIsTheFirstPeriod="@period.boolIsTheFirstPeriod"
+										 data-boolIsTheLastPeriod="@period.boolIsTheLastPeriod"
+										 data-startDate="@period.strStartDate"
+										 data-endDate="@period.strEndDate"
+										 data-startTime="@period.strStartTime"
+										 data-endTime="@period.strEndTime"
+										 style="margin-top: 0.75rem !important; margin-left: 0px !important;float: left; position: relative; left: 0;">
+									</div>
+								}
+							}
+						</div>
+					</div>
+					row = row + 1;
+				}
+				<div class="divTooltip font-bold">Hola</div>
+			</div>
+		</div>
+	</div>
+</div>
+@if (
+   (bool)ViewBag.boolIsInformative
+)
+{
+	<div>
+		@{
+			await Html.RenderPartialAsync("JobProcessesPeriods.cshtml", Model.arrpiw);
+		}
+	</div>
+}

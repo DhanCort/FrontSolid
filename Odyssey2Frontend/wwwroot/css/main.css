@@ -1,0 +1,100 @@
+﻿@charset "UTF-8";
+/* Local CSS Document */
+@font-face {
+    font-family: 'Rawline Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: url('../fonts/Rawline/rawline-400.woff');
+}
+
+@font-face {
+    font-family: 'Rawline Bold';
+    font-style: normal;
+    font-weight: normal;
+    src: url('../fonts/Rawline/rawline-700.woff');
+}
+
+@font-face {
+    font-family: 'Raleway Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: url('../fonts/Raleway/Raleway-Regular.ttf');
+}
+
+body {
+	font-family: 'Rawline Regular', sans-serif;
+	font-size: medium;
+	color: #58585b;
+}
+
+.row {
+	margin: 2% 0 0 0;
+}
+
+.progress {
+	margin-bottom: 5px;
+}
+
+.styleGuidContent {
+	margin-left: 245px;
+	margin-top: 10px;
+}
+
+.styleGuideNav {
+	position: fixed;
+	z-index: 2;
+	top: 0;
+	left: 0;
+}
+
+.styleGuideNav, .p-4 {
+	height: 100%;
+	overflow: auto;
+}
+
+hr {
+	border: 2px solid #58595B;
+	border-radius: 10px;
+}
+
+.colorPallet {
+	width: 100px;
+	height: 100px;
+	margin: 25px 5px;
+	display: inline-block;
+}
+
+.codeStyle {
+	background-color: #474747;
+	border-radius: 10px;
+	margin-bottom: 15px;
+	padding: 15px;
+}
+
+pre code {
+	color: #FFFFFF;
+}
+
+.nt {
+	color: #5AC7FD;
+}
+
+.na {
+	color: #24D917;
+}
+
+.s {
+	color: #FF780E;
+}
+
+.sameWidth {
+    /*width: 14%*/
+}
+
+.indicator-ready {
+    color: #b3d450;
+}
+
+.indicator-not-ready {
+    color: #be1e2d;
+}

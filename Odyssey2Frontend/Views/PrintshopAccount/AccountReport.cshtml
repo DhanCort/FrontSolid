@@ -1,0 +1,27 @@
+﻿<h2>Reports</h2>
+<div class="row">
+    <div class="col-sm-1 mt-1">
+        <label class="input-label">Start Date</label>
+    </div>
+    <div class="col-sm-2 mt-1">
+        <input id="strStartDate" class="form-control input-with-dropdowns" data-toggle="datetimepicker" 
+               data-target="#strStartDate" value="@ViewBag.strStartDateTime"/>
+    </div>
+    <div class="col-sm-1 mt-1">
+        <label class="input-label">End Date</label>
+    </div>
+    <div class="col-sm-2 mt-1">
+        <input id="strEndDate" class="form-control input-with-dropdowns" data-toggle="datetimepicker" 
+               data-target="#strEndDate" value="@ViewBag.strEndDateTime"/>
+    </div>
+    <div class="col-sm-2">
+        <button class="btn btn-sm btn-primary getjobMovs">Ok</button>
+    </div>
+</div>
+
+<div class="row" id="accountReportTable">
+    @{ 
+        JsonResponseModel accountmovementsmodel = ViewBag.accountmovementsmodel;
+        await Html.RenderPartialAsync("ReportAccountTablePartialView", accountmovementsmodel);
+    }
+</div>

@@ -1,0 +1,70 @@
+﻿@model Odyssey2Frontend.Models.PrintshopProcessTemplateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create</h2>
+
+<h4>Printshop Process</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <div class="radio">
+            <label class="radio-inline"><input type="radio" name="processType" value="new" checked />New Process</label>
+        </div>
+        <div class="radio">
+            <label class="radio-inline"><input type="radio" name="processType" value="xjdf" />New Process from XJDF</label>
+        </div>
+    </div>
+    <div class="col-md-12" id="newProcess">
+        <form asp-action="CreateNew">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="strPrintshopId" class="control-label">Printshop Id</label>
+                </div>
+                <div class="form-group">
+                    <label for="strCustomTemplateId" class="control-label">Process Id</label>
+                    <input asp-for="strTypeId" class="form-control" />
+                    <span asp-validation-for="strTypeId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-default" />
+                </div>
+            </div>
+        </form>
+</div>
+    <div class="col-md-12" id="newXJDF" hidden>
+        <!--<form asp-action="CreateNewFromXJDF">-->
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="col-xs-4">
+                <div class="form-group">
+                    <label for="strPrintshopId" class="control-label">Printshop Id</label>
+                </div>
+                <div class="form-group">
+                    <label for="strCustomTemplateId" class="control-label">XJDF Templates</label>
+                    <select name="strCustomTemplateId" asp-items="@ViewBag.Templates" class="form-control" id="templatesList">
+                        <option value="">Pick one</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="strTemplateId" class="control-label">Template Id</label>
+                    <input name="strTemplateId" class="form-control"  id="strTemplateId"/>
+                </div>
+                <div class="form-group">
+                    <input type="button" value="Create" id="savePrintshopTemplate" class="btn btn-default" />
+                </div>
+            </div>
+            <div class="col-xs-6" id="attributesXJDF"></div>
+        <!--</form>-->
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

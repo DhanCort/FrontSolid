@@ -1,0 +1,251 @@
+﻿@model InvoiceModel
+
+@{
+	ViewData["Title"] = "Edit Invoices";
+
+	int intInvoiceNumber = (Model.intnInvoiceNumber == null ? @Model.intOrderId : Model.intnInvoiceNumber.Value);
+
+	int intNumberOfJobs = 0;
+	if (
+		Model.darrinvjobinfojson != null
+		)
+	{
+		intNumberOfJobs = Model.darrinvjobinfojson.Where(job => job.intnJobId != null).Count();
+	}
+}
+<div class="row">
+	<div class="col-6">
+		<h2>Edit Invoice</h2>
+	</div>
+	<div class="col-6">
+		<a type="button" class="btn btn-secondary btn-sm float-right" asp-action="Index">
+			<i class="fa fa-angle-left" aria-hidden="true"></i> Back
+		</a>
+	</div>
+</div>
+
+<div class="">
+    <form id="editInvoiceForm">
+        <input class="form-control" asp-for="intOrderId" value="@Model.intOrderId" type="hidden" />
+        <input class="form-control" asp-for="strOrderDate" value="@Model.strOrderDate" type="hidden" />
+        <input class="form-control" asp-for="intPkInvoice" value="@ViewBag.intPkInvoice" type="hidden" />
+        <input class="form-control" asp-for="strLogoUrl" value="@Model.strLogoUrl" type="hidden" />
+        <input class="form-control" asp-for="boolIsShipped" value="@Model.boolIsShipped" type="hidden" />
+        <div class="row">
+            <div class="col-md-2">
+                <label class="input-label">Invoice #:</label>
+                <input class="form-control input-with-dropdowns" asp-for="intnInvoiceNumber" value="@intInvoiceNumber"
+                       required />
+            </div>
+            <div class="col-md-2">
+                <label class="input-label">Order Number</label>
+                <input class="form-control input-with-dropdowns" asp-for="intnOrderNumber" value="@Model.intnOrderNumber" readonly />
+                <input class="form-control input-with-dropdowns" asp-for="intOrderId" value="@Model.intOrderId" type="hidden" />
+            </div>
+            <div class="col-md-4">
+                <label class="input-label">Order Date</label>
+                <input class="form-control input-with-dropdowns" asp-for="strOrderDate" value="@Model.strOrderDate" readonly />
+            </div>
+            <div class="col-md-4">
+                <label class="input-label">Number of Jobs</label>
+                <input class="form-control input-with-dropdowns" name="intNumberOfJobs" value="@intNumberOfJobs" readonly />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <label class="input-label col-md-4 p-0">Shipped To:</label>
+                <div class="row">
+                    <label class="input-label col-3">First Name:</label>
+                    <input class="form-control col-9 pl-1 input-with-dropdowns" id="strShippedToFirstName"
+                           name="strShippedToFirstName" value="@Model.strShippedToFirstName" />
+                </div>
+                <div class="row">
+                    <label class="input-label col-3">Last Name:</label>
+                    <input class="form-control col-9 pl-1 input-with-dropdowns" id="strShippedToLastName"
+                           name="strShippedToLastName" value="@Model.strShippedToLastName" />
+                </div>
+                <div class="row">
+                    <label class="input-label col-3">Line 1:</label>
+                    <input class="form-control col-9 pl-1 input-with-dropdowns" id="strShippedToLine1"
+                           name="strShippedToLine1" value="@Model.strShippedToLine1" />
+                </div>
+                <div class="row">
+                    <label class="input-label col-3">Line 2:</label>
+                    <input class="form-control col-9 pl-1 input-with-dropdowns" id="strShippedToLine2"
+                           name="strShippedToLine2" value="@Model.strShippedToLine2" />
+                </div>
+                <div class="row">
+                    <label class="input-label col-3">City:</label>
+                    <input class="form-control col-9 pl-1 input-with-dropdowns" id="strShippedToCity"
+                           name="strShippedToCity" value="@Model.strShippedToCity" />
+                </div>
+                <div class="row">
+                    <label class="input-label col-3">State:</label>
+                    <input class="form-control col-9 pl-1 input-with-dropdowns" id="strShippedToState"
+                           name="strShippedToState" value="@Model.strShippedToState" />
+                </div>
+                <div class="row">
+                    <label class="input-label col-3">Zip Code:</label>
+                    <input class="form-control col-9 pl-1 input-with-dropdowns" id="strShippedToZip"
+                           name="strShippedToZip" value="@Model.strShippedToZip" />
+                </div>
+                <div class="row">
+                    <label class="input-label col-3">Country:</label>
+                    <input class="form-control col-9 pl-1 input-with-dropdowns" id="strShippedToCountry"
+                           name="strShippedToCountry" value="@Model.strShippedToCountry" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label class="input-label">Billed To:</label>
+                <textarea class="form-control mt-2" rows="12" asp-for="strBilledTo" value="@Model.strBilledTo"
+                          style="font-size:14px;" required></textarea>
+            </div>
+            <div class="col-md-4">
+                <label class="input-label">Make Check Payable To:</label>
+                <textarea class="form-control mt-2" rows="12" asp-for="strPayableTo" value="@Model.strPayableTo"
+                          style="font-size:14px;"></textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <label class="input-label">Terms:</label>
+                <input class="form-control input-with-dropdowns" asp-for="strTerms" />
+            </div>
+            <div class="col-md-4">
+                <label class="input-label">Shipping Method:</label>
+                <input class="form-control input-with-dropdowns" asp-for="strShippingMethod"
+                       value="@Model.strShippingMethod" />
+            </div>
+            <div class="col-md-4">
+                <label class="input-label">P.O. Number:</label>
+                <input class="form-control input-with-dropdowns" asp-for="strPO" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <label class="input-label">Additional Comments or Instructions:</label>
+                <input class="form-control input-with-dropdowns" asp-for="strComments" value="@Model.strComments" />
+            </div>
+        </div>
+        <div class="table-responsive mt-4 ml-2 pr-4" style="max-height: 30vh; overflow: auto">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Job Number</th>
+                        <th>Description</th>
+                        <th>Quantity</th>
+                        <th>Account</th>
+                        <th>Price</th>
+                        <th>Taxable</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="conceptTableBody">
+                    @if (
+                  (Model.darrinvjobinfojson != null) &&
+                  (Model.darrinvjobinfojson.Length > 0)
+                  )
+                    {
+                        foreach (JobDataModel jobData in Model.darrinvjobinfojson)
+                        {
+                            <tr class="jobInfoSection">
+                                @if (
+                             jobData.intnJobId != null
+                             )
+                                {
+                                    <td>
+                                        @jobData.strJobNumber
+                                        <input class="form-control form-control-sm" name="intnJobId" type="hidden" value="@jobData.intnJobId" />
+                                        <input class="form-control form-control-sm" name="strJobNumber" type="hidden" value="@jobData.strJobNumber"
+                                               data-account="@jobData.intnPkAccount|@jobData.intnPkAccountMov|@jobData.strAccount" />
+                                    </td>
+                                    <td>
+                                        @jobData.strName
+                                        <input class="form-control form-control-sm" name="strName" type="hidden" value="@jobData.strName" />
+                                    </td>
+                                    <td>
+                                        @jobData.intQuantity
+                                        <input class="form-control form-control-sm" type="hidden" name="intQuantity" value="@jobData.intQuantity" min="0" required />
+                                    </td>
+                                    <td>
+                                        @jobData.strAccount
+                                        <input class="form-control form-control-sm" name="strAccount" value="@jobData.strAccount" type="hidden" />
+                                        <input class="form-control form-control-sm" name="intnPkAccount" value="@jobData.intnPkAccount" type="hidden" />
+                                        <input class="form-control form-control-sm" name="intnPkAccountMov" value="@jobData.intnPkAccountMov" type="hidden" />
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" name="numPrice" value="@jobData.numPrice.ToString("0.00")" min="0" step="0.01" style="width:200px;" required />
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" class="chkTaxes ml-3" id="boolIsExempt"
+                                               name="boolIsExempt" @(jobData.boolIsExempt == true ? "" : "checked") />
+                                    </td>
+                                    <td></td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        -
+                                        <input class="form-control form-control-sm" name="strJobNumber" val="" type="hidden"
+                                               data-account="@jobData.intnPkAccount|@jobData.intnPkAccountMov|@jobData.strAccount" />
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" name="strName" value="@jobData.strName" required />
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" name="intQuantity" value="@jobData.intQuantity" min="0" required />
+                                    </td>
+                                    <td>
+                                        @jobData.strAccount
+                                        <input class="form-control form-control-sm" name="strAccount" value="@jobData.strAccount" type="hidden" />
+                                        <input class="form-control form-control-sm" name="intnPkAccount" value="@jobData.intnPkAccount" type="hidden" />
+                                        <input class="form-control form-control-sm" name="intnPkAccountMov" value="@jobData.intnPkAccountMov" type="hidden" />
+                                    </td>
+                                    <td>
+                                        <input class="form-control form-control-sm" type="number" name="numPrice" value="@jobData.numPrice.ToString("0.00")" min="0" step="0.01" required />
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" class="chkTaxes ml-3" id="boolIsExempt"
+                                               name="boolIsExempt" @(jobData.boolIsExempt == true ? "" : "checked") />
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-danger pull-right deleteConceptRow" type="button">
+                                            <span class="fa fa-trash"></span>
+                                        </button>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center">There are no records to show</td>
+                        </tr>
+                    }
+                    <tr>
+                        <td colspan="7">
+                            <button class="btn btn-sm btn-info pull-right" id="addANewConcept" type="button">
+                                <span class="fa fa-plus"></span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <button class="btn btn-primary pull-right" type="submit">
+                    <span class="fa fa-save"></span> Save changes
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+	<script>
+
+		arrJobs = JSON.parse(@Html.Raw(Json.Serialize(ViewBag.strarrjobs)));
+	</script>
+}

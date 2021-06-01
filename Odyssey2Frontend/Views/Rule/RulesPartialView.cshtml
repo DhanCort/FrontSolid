@@ -1,0 +1,1407 @@
+﻿@model List<RuleModel>
+<div class="row mt-0">
+    <div class="col-md-2">
+        <div class="form-group">
+            <div class="row mt-0">
+                <div class="col-auto border-bottom">
+                    <label class="font-bold">Periodicity</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-auto">
+                    @{
+                        String showForm;
+                        String printOrRes;
+                        if (ViewBag.intnPkResource == null || ViewBag.intnPkResource == 0)
+                        {
+                            showForm = "showFormPrintshop";
+                            printOrRes = "printshop";
+                        }
+                        else
+                        {
+                            showForm = "showFormResource";
+                            printOrRes = "resource";
+                        }
+                    }
+                    <span class="select">
+                        <select class="@showForm" id="showForm">
+                            <option value="once" selected>Once</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="annually">Annually</option>
+                        </select>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-10">
+        <form class="once formHidden ruleForm">
+            <div class="row mt-0">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div class="row mt-0">
+                            <div class="col-sm-12 border-bottom">
+                                <label class="font-bold">Start</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-auto">
+                                <input type="hidden" value="@ViewBag.intnPkResource" name="intnPkResource" />
+                                <input type="hidden" value="@ViewBag.boolIsEmployee" name="boolIsEmployee" />
+                                <input type="hidden" value="@ViewBag.intnContactId" name="intnContactId" />
+                                <label class="input-label">Date</label>
+                                <input required type="date" class="form-control input-with-dropdowns"
+                                       name="strStartDate" />
+                            </div>
+                            <div class="col-auto">
+                                <div>
+                                    <label class="input-label">Hour</label>
+                                </div>
+                                <span class="select">
+                                    <select name="strStartHour">
+                                        @for (int i = 0; i < 24; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="col-auto">
+                                <div>
+                                    <label class="input-label">Min</label>
+                                </div>
+                                <span class="select">
+                                    <select required name="strStartMin">
+                                        @for (int i = 0; i < 60; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div class="row mt-0">
+                            <div class="col-sm-12 border-bottom">
+                                <label class="font-bold">End</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-auto">
+                                <label class="input-label">Date</label>
+                                <input required type="date" class="form-control input-with-dropdowns"
+                                       name="strEndDate" />
+                            </div>
+                            <div class="col-auto">
+                                <div>
+                                    <label class="input-label">Hour</label>
+                                </div>
+                                <span class="select">
+                                    <select required name="strEndHour">
+                                        @for (int i = 0; i < 24; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="col-auto">
+                                <div>
+                                    <label class="input-label">Min</label>
+                                </div>
+                                <span class="select">
+                                    <select required name="strEndMin">
+                                        @for (int i = 0; i < 60; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                                <input hidden name="strRangeStartDate" />
+                                <select hidden value="" name="strRangeStartHour" />
+                                <select hidden value="" name="strRangeStartMin" />
+                                <input hidden name="strRangeEndDate" />
+                                <select hidden value="" name="strRangeEndHour" />
+                                <select hidden value="" name="strRangeEndMin" />
+                                <input hidden value="" name="arrintDays" />
+                                <input hidden value="" name="strDay" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-auto m-auto">
+                        <button type="submit" class="btn btn-primary daily">
+                            <i class="fa fa-floppy-o"></i> Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <form class="daily formHidden ruleForm">
+            <div class="form-group">
+                <div class="row mt-0">
+                    <div class="col-sm-6">
+                        <div class="border-bottom">
+                            <label class="font-bold">Start</label>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <input type="hidden" value="@ViewBag.intnPkResource" name="intnPkResource" />
+                                <input type="hidden" value="@ViewBag.boolIsEmployee" name="boolIsEmployee" />
+                                <input type="hidden" value="@ViewBag.intnContactId" name="intnContactId" />
+                                <input hidden value="" name="strFrecuency" />
+                                <input hidden value="" name="strStartDate" />
+                                <input hidden value="" name="strEndDate" />
+                                <div>
+                                    <label class="input-label">Hour</label>
+                                </div>
+                                <span class="select">
+                                    <select required name="strStartHour">
+                                        <option value="">-</option>
+                                        @for (int i = 0; i < 24; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+
+                            </div>
+                            <div class="col-sm-5">
+                                <div>
+                                    <label class="input-label">Min</label>
+                                </div>
+                                <span class="select">
+                                    <select required name="strStartMin">
+                                        <option value="">-</option>
+                                        @for (int i = 0; i < 60; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="border-bottom">
+                            <label class="font-bold">End</label>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <div>
+                                    <label class="input-label">Hour</label>
+                                </div>
+                                <span class="select">
+                                    <select required class="strEndHour" name="strEndHour">
+                                        <option value="">-</option>
+                                        @for (int i = 0; i < 24; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="col-sm-5">
+                                <div>
+                                    <label class="input-label">Min</label>
+                                </div>
+                                <span class="select">
+                                    <select required class="strEndMin" name="strEndMin">
+                                        <option value="">-</option>
+                                        @for (int i = 0; i < 60; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                                <input hidden value="" name="arrintDays" />
+                                <input hidden value="" name="strDay" />
+                            </div>
+                            <div style="display:none" class="col-sm-2 bg-info mt-3 rounded labelNextDay">
+                                <label class="text-center checkbox-label">Next Day</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 my-3">
+                    <div class="border-bottom">
+                        <label class="font-bold">Range</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="border-bottom">
+                            <label class="font-bold">Start</label>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label fclass="input-label">Date</label>
+                                <input type="date" class="form-control input-with-dropdowns"
+                                       name="strRangeStartDate" />
+                            </div>
+                            <div class="col-sm-3">
+                                <div>
+                                    <label class="input-label">Hour</label>
+                                </div>
+                                <span class="select">
+                                    <select name="strRangeStartHour">
+                                        <option value="00">-</option>
+                                        @for (int i = 0; i < 24; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="col-sm-3">
+                                <div>
+                                    <label class="input-label">Min</label>
+                                </div>
+                                <span class="select">
+                                    <select name="strRangeStartMin">
+                                        <option value="00">-</option>
+                                        @for (int i = 0; i < 60; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="border-bottom">
+                            <label class="font-bold">End</label>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label class="input-label">Date</label>
+                                <input type="date" class="form-control input-with-dropdowns" name="strRangeEndDate" />
+                            </div>
+                            <div class="col-sm-3">
+                                <div>
+                                    <label class="input-label">Hour</label>
+                                </div>
+                                <span class="select">
+                                    <select name="strRangeEndHour">
+                                        <option value="00">-</option>
+                                        @for (int i = 0; i < 24; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="col-sm-3">
+                                <div>
+                                    <label class="input-label">Min</label>
+                                </div>
+                                <span class="select">
+                                    <select name="strRangeEndMin">
+                                        <option value="00">-</option>
+                                        @for (int i = 0; i < 60; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-auto m-auto">
+                        <button type="submit" class="btn btn-primary daily">
+                            <i class="fa fa-floppy-o"></i> Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <form class="weekly formHidden ruleForm">
+            <div class="form-group">
+                <input type="hidden" value="@ViewBag.intnPkResource" name="intnPkResource" />
+                <input type="hidden" value="@ViewBag.boolIsEmployee" name="boolIsEmployee" />
+                <input type="hidden" value="@ViewBag.intnContactId" name="intnContactId" />
+                <div class="row mt-0 text-center">
+                    <div class="col-md-1-5 font-bold">Sun</div>
+                    <div class="col-md-1-5 font-bold">Mon</div>
+                    <div class="col-md-1-5 font-bold">Tue</div>
+                    <div class="col-md-1-5 font-bold">Wed</div>
+                    <div class="col-md-1-5 font-bold">Thu</div>
+                    <div class="col-md-1-5 font-bold">Fri</div>
+                    <div class="col-md-1-5 font-bold">Sat</div>
+                </div>
+                <div class="row mt-0 text-center">
+                    <input hidden value="" name="strStartDate" />
+                    <input hidden value="" name="strEndDate" />
+                    <input hidden value="" name="strDay" />
+                    @for (int i = 1; i < 8; i++)
+                    {
+                        printOrRes = printOrRes + "_" + i;
+                        <div class="col-md-1-5 font-bold">
+                            <div class="custom-control custom-checkbox mb-3">
+                                <input type="checkbox" class="custom-control-input chkDay" id="dayWeek_@printOrRes"
+                                       name="dayWeek_@printOrRes">
+                                <label class="custom-control-label checkbox-label" for="dayWeek_@printOrRes"></label>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row mt-0">
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="col-sm-12 border-bottom">
+                                <label class="font-bold">Start</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <div>
+                                    <label class="input-label">Hour</label>
+                                </div>
+                                <span class="select">
+                                    <select required name="strStartHour">
+                                        <option value="">-</option>
+                                        @for (int i = 0; i < 24; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="col-sm-5">
+                                <div>
+                                    <label class="input-label">Min</label>
+                                </div>
+                                <span class="select">
+                                    <select required name="strStartMin">
+                                        <option value="">-</option>
+                                        @for (int i = 0; i < 60; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="col-sm-12 border-bottom">
+                                <label class="font-bold">End</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <div>
+                                    <label class="input-label">Hour</label>
+                                </div>
+                                <span class="select">
+                                    <select required class="strEndHour" name="strEndHour">
+                                        <option value="">-</option>
+                                        @for (int i = 0; i < 24; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="col-sm-5">
+                                <div>
+                                    <label class="input-label">Min</label>
+                                </div>
+                                <span class="select">
+                                    <select required class="strEndMin" name="strEndMin">
+                                        <option value="">-</option>
+                                        @for (int i = 0; i < 60; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                            <div style="display:none" class="col-sm-2 bg-info mt-3 rounded labelNextDay">
+                                <label class="text-center checkbox-label">Next Day</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 border-bottom">
+                    <label class="font-bold">Range</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="col-sm-12 border-bottom">
+                                <label class="font-bold">Start</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-auto">
+                                <label class="input-label">Date</label>
+                                <input type="date" class="form-control input-with-dropdowns" name="strRangeStartDate" />
+                            </div>
+                            <div class="col-auto">
+                                <div>
+                                    <label class="input-label">Hour</label>
+                                </div>
+                                <span class="select">
+                                    <select name="strRangeStartHour">
+                                        <option value="00">-</option>
+                                        @for (int i = 0; i < 24; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="col-auto">
+                                <div>
+                                    <label class="input-label">Min</label>
+                                </div>
+                                <span class="select">
+                                    <select name="strRangeStartMin">
+                                        <option value="00">-</option>
+                                        @for (int i = 0; i < 60; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="col-sm-12 border-bottom">
+                                <label class="font-bold">End</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-auto">
+                                <label class="input-label">Date</label>
+                                <input type="date" class="form-control input-with-dropdowns" name="strRangeEndDate" />
+                            </div>
+                            <div class="col-auto">
+                                <div>
+                                    <label class="input-label">Hour</label>
+                                </div>
+                                <span class="select">
+                                    <select name="strRangeEndHour">
+                                        <option value="00">-</option>
+                                        @for (int i = 0; i < 24; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="col-auto">
+                                <div>
+                                    <label class="input-label">Min</label>
+                                </div>
+                                <span class="select">
+                                    <select name="strRangeEndMin">
+                                        <option value="00">-</option>
+                                        @for (int i = 0; i < 60; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-auto m-auto">
+                        <button type="submit" class="btn btn-primary weekly">
+                            <i class="fa fa-floppy-o"></i> Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <form class="monthly formHidden ruleForm" >
+            <div class="form-group">
+                <input type="hidden" value="@ViewBag.intnPkResource" name="intnPkResource" />
+                <input type="hidden" value="@ViewBag.boolIsEmployee" name="boolIsEmployee" />
+                <input type="hidden" value="@ViewBag.intnContactId" name="intnContactId" />
+                <input hidden value="" name="strStartDate" />
+                <input hidden value="" name="strEndDate" />
+                <div class="row">
+                    <div class="col-sm-12 text-center">
+                        @{int day = 0;}
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <div class="row">
+                                @for (int j = 1; j <= 7; j++)
+                                {
+                                    day = day + 1;
+                                    if (day <= 31)
+                                    {
+                                        printOrRes = printOrRes + "_" + day;
+                                        <div class="col-md-1-5">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input dayMonth"
+                                                       id="day_@printOrRes" name="day_@printOrRes" value="@day" />
+                                                <label class="custom-control-label checkbox-label"
+                                                       for="day_@printOrRes">@day</label>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="col-sm-12 border-bottom">
+                                <label class="font-bold">Start</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <div>
+                                    <label class="input-label">Hour</label>
+                                </div>
+                                <span class="select">
+                                    <select required name="strStartHour">
+                                        <option value="">-</option>
+                                        @for (int i = 0; i < 24; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="col-sm-5">
+                                <div>
+                                    <label class="input-label">Min</label>
+                                </div>
+                                <span class="select">
+                                    <select required name="strStartMin">
+                                        <option value="">-</option>
+                                        @for (int i = 0; i < 60; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="col-sm-12 border-bottom">
+                                <label class="font-bold">End</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <div>
+                                    <label class="input-label">Hour</label>
+                                </div>
+                                <span class="select">
+                                    <select required class="strEndHour" name="strEndHour">
+                                        <option value="">-</option>
+                                        @for (int i = 0; i < 24; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="col-sm-5">
+                                <div>
+                                    <label class="input-label">Min</label>
+                                </div>
+                                <span class="select">
+                                    <select required class="strEndMin" name="strEndMin">
+                                        <option value="">-</option>
+                                        @for (int i = 0; i < 60; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                            <div style="display:none" class="col-sm-2 bg-info mt-3 rounded labelNextDay">
+                                <label class="text-center checkbox-label">Next Day</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 border-bottom">
+                    <label class="font-bold">Range</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="col-sm-12 border-bottom">
+                                <label class="font-bold">Start</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-auto">
+                                <label class="input-label">Date</label>
+                                <input type="date" class="form-control input-with-dropdowns" name="strRangeStartDate" />
+                            </div>
+                            <div class="col-auto">
+                                <div>
+                                    <label class="input-label">Hour</label>
+                                </div>
+                                <span class="select">
+                                    <select name="strRangeStartHour">
+                                        <option value="00">-</option>
+                                        @for (int i = 0; i < 24; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="col-auto">
+                                <div>
+                                    <label class="input-label">Min</label>
+                                </div>
+                                <span class="select">
+                                    <select name="strRangeStartMin">
+                                        <option value="00">-</option>
+                                        @for (int i = 0; i < 60; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="col-sm-12 border-bottom">
+                                <label class="font-bold">End</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-auto">
+                                <label class="input-label">Date</label>
+                                <input type="date" class="form-control input-with-dropdowns" name="strRangeEndDate" />
+                            </div>
+                            <div class="col-auto">
+                                <div>
+                                    <label class="input-label">Hour</label>
+                                </div>
+                                <span class="select">
+                                    <select name="strRangeEndHour">
+                                        <option value="00">-</option>
+                                        @for (int i = 0; i < 24; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="col-auto">
+                                <div>
+                                    <label class="input-label">Min</label>
+                                </div>
+                                <span class="select">
+                                    <select name="strRangeEndMin">
+                                        <option value="00">-</option>
+                                        @for (int i = 0; i < 60; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-auto m-auto">
+                        <button type="submit" class="btn btn-primary col-sm-12 monthly">
+                            <i class="fa fa-floppy-o"></i> Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <form class="annually formHidden ruleForm">
+            <div class="form-group">
+                <input type="hidden" value="@ViewBag.intnPkResource" name="intnPkResource" />
+                <input type="hidden" value="@ViewBag.boolIsEmployee" name="boolIsEmployee" />
+                <input type="hidden" value="@ViewBag.intnContactId" name="intnContactId" />
+                <input hidden value="" name="strStartDate" />
+                <input hidden value="" name="strEndDate" />
+                <input hidden value="" name="arrintDays" />
+                <div class="row mt-0">
+                    <div class="col-sm-2 my-auto">
+                        <div>
+                            <label class="font-bold">Month</label>
+                        </div>
+                        <span class="select">
+                            <select name="strMonth">
+                                @{
+                                    string[] month = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                                    for (int i = 1; i <= 12; i++)
+                                    {
+                                        int m = i - 1;
+                                        <option value="@i">@month[m]</option>
+                                    }
+                                }
+                            </select>
+                        </span>
+                    </div>
+                    <div class="col-sm-2 my-auto">
+                        <div>
+                            <label class="font-bold">Day</label>
+                        </div>
+                        <span>
+                            <select name="strDay" id="strDay">
+                                @for (int i = 1; i <= 31; i++)
+                                {
+                                    if (i < 10)
+                                    {
+                                        string d = "0" + i.ToString();
+                                        <option value="@d">@d</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@i">@i</option>
+                                    }
+                                }
+                            </select>
+                        </span>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="row mt-0">
+                            <div class="col-sm-12 border-bottom">
+                                <label for="" class="font-bold">Start</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div>
+                                    <label class="input-label">Hour</label>
+                                </div>
+                                <span class="select">
+                                    <select required name="strStartHour">
+                                        <option value="">-</option>
+                                        @for (int i = 0; i < 24; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="col-sm-4">
+                                <div>
+                                    <label class="input-label">Min</label>
+                                </div>
+                                <span class="select">
+                                    <select required name="strStartMin">
+                                        <option value="">-</option>
+                                        @for (int i = 0; i < 60; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="row mt-0">
+                            <div class="col-sm-12 border-bottom">
+                                <label class="font-bold">End</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div>
+                                    <label class="input-label">Hour</label>
+                                </div>
+                                <span class="select">
+                                    <select required class="strEndHour" name="strEndHour">
+                                        <option value="">-</option>
+                                        @for (int i = 0; i < 24; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="col-sm-4">
+                                <div>
+                                    <label class="input-label">Min</label>
+                                </div>
+                                <span class="select">
+                                    <select required class="strEndMin" name="strEndMin">
+                                        <option value="">-</option>
+                                        @for (int i = 0; i < 60; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                            <div style="display:none" class="text-center col-sm-4 bg-info mt-3 rounded labelNextDay">
+                                <label class="">Next Day</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-12 border-bottom">
+                        <label class="font-bold">Range</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="col-sm-12 border-bottom">
+                                <label class="font-bold">Start</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-auto">
+                                <label class="input-label">Date</label>
+                                <input type="date" class="form-control input-with-dropdowns" name="strRangeStartDate"/>
+                            </div>
+                            <div class="col-auto">
+                                <div>
+                                    <label class="input-label">Hour</label>
+                                </div>
+                                <span class="select">
+                                    <select name="strRangeStartHour">
+                                        <option value="00">-</option>
+                                        @for (int i = 0; i < 24; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="col-auto">
+                                <div>
+                                    <label class="input-label">Min</label>
+                                </div>
+                                <span class="select">
+                                    <select name="strRangeStartMin">
+                                        <option value="00">-</option>
+                                        @for (int i = 0; i < 60; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="col-sm-12 border-bottom">
+                                <label class="font-bold">End</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-auto">
+                                <label class="input-label">Date</label>
+                                <input type="date" class="form-control input-with-dropdowns" name="strRangeEndDate"/>
+                            </div>
+                            <div class="col-auto">
+                                <div>
+                                    <label class="input-label">Hour</label>
+                                </div>
+                                <span class="select"> 
+                                    <select name="strRangeEndHour">
+                                        <option value="00">-</option>
+                                        @for (int i = 0; i < 24; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="col-auto">
+                                <div>
+                                    <label class="input-label">Min</label>
+                                </div>
+                                <span class="select">
+                                    <select name="strRangeEndMin">
+                                        <option value="00">-</option>
+                                        @for (int i = 0; i < 60; i++)
+                                        {
+                                            string format;
+                                            if (i < 10)
+                                            {
+                                                format = "0" + i;
+                                            }
+                                            else
+                                            {
+                                                format = i.ToString();
+                                            }
+                                            <option value="@format">@i</option>
+                                        }
+                                    </select>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-auto m-auto">
+                        <button type="submit" class="btn btn-primary annually">
+                            <i class="fa fa-floppy-o"></i> Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--Rule's Table-->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr class="tr-calculation-header">
+                        <th scope="col" class="">Periodicity</th>
+                        <th scope="col" class="">Frequency</th>
+                        <th scope="col" class="">Date</th>
+                        <th scope="col" class="">Start</th>
+                        <th scope="col" class="">Date</th>
+                        <th scope="col" class="">End</th>
+                        <th scope="col" class="">Start Date's Range</th>
+                        <th scope="col" class="">Start Hour's Range</th>
+                        <th scope="col" class="">End Date's Range</th>
+                        <th scope="col" class="">End Hour's Range</th>
+                        <th scope="col" class="">Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Count > 0)
+                    {
+                        for (int i = 0; i < Model.Count; i++)
+                        {
+                            string dateStart, dateEnd, hourStart, hourEnd;
+                            if (Model[i].strFrecuency == "once")
+                            {
+                                string[] dateHourStart = Model[i].strStartTime.Split(" ");
+                                dateStart = dateHourStart[0];
+                                hourStart = dateHourStart[1];
+
+                                string[] dateHourEnd = Model[i].strEndTime.Split(" ");
+                                dateEnd = dateHourEnd[0];
+                                hourEnd = dateHourEnd[1];
+
+                            }
+                            else
+                            {
+                                hourStart = Model[i].strStartTime;
+                                hourEnd = Model[i].strEndTime;
+                                dateStart = "-";
+                                dateEnd = "-";
+
+                            }
+                            if (Model[i].strRangeStartDate == null)
+                            {
+                                Model[i].strRangeStartDate = "-";
+                            }
+                            if (Model[i].strRangeStartTime == null)
+                            {
+                                Model[i].strRangeStartTime = "-";
+                            }
+                            <tr class="tr-calculation-row">
+                                <td scope="col">@Model[i].strFrecuency</td>
+                                <td scope="col">@Model[i].strFrecuencyValue</td>
+                                <td scope="col">@dateStart</td>
+                                <td scope="col">@hourStart</td>
+                                <td scope="col">@dateEnd</td>
+                                <td scope="col">@hourEnd</td>
+                                <td scope="col">@Model[i].strRangeStartDate</td>
+                                <td scope="col">@Model[i].strRangeStartTime</td>
+                                <td scope="col">@Model[i].strRangeEndDate</td>
+                                <td scope="col">@Model[i].strRangeEndTime</td>
+                                <td scope="col">
+                                    <button type="button" class="btn btn-danger btn-sm" data-intPkResource="@ViewBag.intnPkResource"
+                                            data-intPkRule="@Model[i].intPkRule" id="deleteRuleButton"
+                                            data-boolIsEmployee="@ViewBag.boolIsEmployee">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr class="tr-calculation-row">
+                            <td scope="col" colspan="11" 
+                                class="bg-info text-center font-weight-bold">No rules added
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

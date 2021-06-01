@@ -1,0 +1,83 @@
+@if (ViewBag.boolGeneral)
+{
+    @:<div class="card mt-0" style=" background-color: #e6e7e880; color: #58585b; border-style: none; margin-top: 7px !important; margin-bottom: 0px !important">
+        @:<div class="card-body conditionBodyChildren" style="padding-left: 0rem !important; padding-right: 0rem !important; padding-bottom: 1rem !important; padding-top: 1rem !important;">
+        }
+
+<div class="@if ((bool)ViewBag.boolCondition) { <text>singleCardCondition</text> } else { <text>groupCardCondition</text> } ">
+    <div class="row conditionCard" style="margin-top: 1% !important; margin-bottom: 1% !important; ">
+        <div class="pl-1 pr-1" style="width: 87px">
+            <div class="divGroupOperator" @if ((bool)ViewBag.boolCondition) { <text> hidden</text> }>
+                <span class="select dropdownDarker">
+                    <select class="strOperator">
+                        <option value="AND">And</option>
+                        <option value="OR">Or</option>
+                    </select>
+                </span>
+            </div>
+        </div>
+        <div class="pl-1 pr-1">
+            <span class="select">
+                <select class="intnPkAttribute" required>
+                    <option value="">- Select criteria -</option>
+                </select>
+            </span>
+        </div>
+        <div class="pl-1 pr-1" style="width: 109px">
+            <span class="select dropdownDarker" style="width: 95%">
+                <select class="strCondition">
+                    <option value="==">=</option>
+                    <option value="!=">≠</option>
+                </select>
+            </span>
+        </div>
+        <div class="divValues dropdownValues pl-1 pr-1" style="max-width: 250px">
+            <span class="select" style="width: 100%">
+                <select class="strValue" required>
+                </select>
+            </span>
+        </div>
+        <div class="divValues inputValues pl-1 pr-1" style="display: none; width: 250px">
+            <input type="number" class="form-control form-control-sm strValue" style="width: 100%" />
+        </div>
+        @if (!(bool)ViewBag.boolCondition || ((bool)ViewBag.boolCondition && (bool)ViewBag.boolFromGroup))
+        {
+            <div class="pl-1 pr-1">
+                <button type="button" class="btn btn-primary btnAddConditionGroup btn-sm btn-block font-sm"
+                        data-intMargin="0"
+                        data-boolFromGroup="true"
+                        data-boolCondition="true"
+                        data-boolGeneral="false" data-toggle="tooltip" data-placement="top" title="Create a new condition inside this group (gray box).">
+                    <i class="fa fa-plus"></i> Condition
+                </button>
+            </div>
+            <div class="pl-1 pr-1">
+                <button type="button" class="btn btn-primary btnAddConditionGroup btn-sm btn-block font-sm"
+                        data-intMargin="0"
+                        data-boolFromGroup="true"
+                        data-boolCondition="false"
+                        data-boolGeneral="false" data-toggle="tooltip" data-placement="top" title="Create a new group of conditions inside this group (gray box).">
+                    <i class="fa fa-plus"></i> Group
+                </button>
+            </div>
+        }
+        <div class="pl-1 pr-1 float-right">
+            <button type="button" class="btn btn-danger btnRemoveConditionGroup hasDropdown btn-sm font-sm mb-1"
+                    data-boolIsCondition="false">
+                <i class="fa fa-trash"></i>
+            </button>
+        </div>
+    </div>
+</div>
+@* } *@
+@*else
+    {
+        <div class="groupCardCondition">
+
+        </div>
+    }*@
+@if (ViewBag.boolGeneral)
+{
+@:</div>
+@:</div>
+}

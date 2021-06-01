@@ -1,0 +1,93 @@
+﻿<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr class="tr-calculation-header">
+                <th>Date</th>
+                <th>Transaction Type</th>
+                <th>Number</th>
+                <th>Name</th>
+                <th>Memo/Description</th>
+                <th colspan="2" class="text-center">Increase</th>
+                <th colspan="2" class="text-center">Decrease</th>
+                <th colspan="2" class="text-center">Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in (List<JobAccountMovementsModel>)Model.objResponse.arrAccountMovements)
+            {
+            <tr class="tr-calculation-row">
+                <td>@item.strDate</td>
+                <td>@item.strTransacctionType</td>
+                <td>@item.strNumber</td>
+                <td>@item.strAccountName</td>
+                <td>@item.strMemo</td>
+                <td>
+                    @{
+                        if (
+                            item.numnIncrease != null
+                            )
+                        {
+                            <text>$</text>
+                        }
+                    }
+                </td>
+                <td class="text-right">
+                    @{
+                        if (
+                            item.numnIncrease != null
+                            )
+                        {
+                            <text>@(((double)item.numnIncrease).ToString("n2"))</text>
+                        }
+                    }
+                </td>
+                <td>
+                    @{
+                        if (
+                            item.numnDecrease != null
+                            )
+                        {
+                            <text>$</text>
+                        }
+                    }
+                </td>
+                <td class="text-right">
+                    @{
+                        if (
+                            item.numnDecrease != null
+                            )
+                        {
+                            <text>@(((double)item.numnDecrease).ToString("n2"))</text>
+                        }
+                    }
+                </td>
+                <td>$</td>
+                <td class="text-right">@item.numBalance.ToString("n2")</td>
+            </tr>
+            }
+            @*<tr>
+                <td colspan="4" class="font-bold text-center">Total: </td>
+                <td class="font-bold">$ </td>
+                <td class="text-right">
+                    @if (!@Model.objResponse.numTotal.ToString().Contains("."))
+                    {
+                        <text>@Model.objResponse.numTotal.00</text>
+                    }
+                    else
+                    {
+                        if (
+                            Model.objResponse.numTotal.ToString().Substring(Model.objResponse.numTotal.ToString().IndexOf(".") + 1).Length == 1
+                            )
+                        {
+                            <text>@Model.objResponse.numTotal</text><text>0</text>
+                        }
+                        else
+                        {
+                            <text>@Model.objResponse.numTotal</text>
+                        }
+                    }
+                </td>
+            </tr>*@
+        </tbody>
+    </table>
+</div>

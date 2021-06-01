@@ -1,0 +1,106 @@
+﻿@model List<JobDueDateAndPriceLogModel>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 border-bottom">
+            <form class="row @if ((bool)ViewBag.boolIsPrice) { <text>saveCostPrice</text> } else { <text>jobWflwDueDateForm</text> } ">
+                <input name="intJobId" type="hidden" value="@ViewBag.intJobId" />
+                <input name="intnCopyNumber" type="hidden" value="@ViewBag.intnCopyNumber" />
+                <input name="intPkWorkflow" type="hidden" value="@ViewBag.intPkWorkflow" />
+                <input name="intnEstimateId" type="hidden" value="@ViewBag.intnEstimationId" />
+                <div class="col-sm-3">
+                    @if ((bool)ViewBag.boolIsPrice)
+                    {
+                        <div>
+                            <label class="input-label">Price:</label>
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend input-with-dropdowns">
+                                <span class="input-group-text">$</span>
+                            </div>
+                            <input id="numPrice" name="numPrice" type="number" step="0.0001" min="0" value="@ViewBag.numPrice.ToString("0.00")" class="form-control input-with-dropdowns elementToDisable" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div>
+                            <label class="input-label">Due date:</label>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input name="strDueDate" id="strDueDate" class="form-control input-with-dropdowns" value="@ViewBag.strDueDate" data-toggle="datetimepicker" data-target="#strDueDate" required />
+                        </div>
+                    }
+                </div>
+                <div class="col-sm-8">
+                    <div>
+                        <label class="input-label">Description:</label>
+                    </div>
+                    <div>
+                        <input type="text" name="strDescription" class="form-control input-with-dropdowns" />
+                    </div>
+                </div>
+                <div class="col-sm-1" style="margin-top: 27px">
+                    <button type="submit" class="btn btn-sm btn-primary saveCostPrice elementToDisable">
+                        <span class="fa fa-floppy-o"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        @if (Model.Count > 0)
+        {
+            <div class="col-sm-12 mt-3">
+                <h3>Log</h3>
+                <div class="table-responsive" style="max-height: 35vh; overflow-y: auto">
+                    <table class="table text-center">
+                        <thead>
+                            <tr>
+                                <td>Date</td>
+                                <td>
+                                    @if ((bool)ViewBag.boolIsPrice)
+                                    {
+                                        <text>Price</text>
+                                    }
+                                    else
+                                    {
+                                        <text>Due Date</text>
+                                    }
+                                </td>
+                                <td>Description</td>
+                                <td>Employee</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (JobDueDateAndPriceLogModel item in Model)
+                            {
+                                <tr>
+                                    <td>@item.strStartDate @item.strStartTime </td>
+                                    <td>
+                                        @if ((bool)ViewBag.boolIsPrice)
+                                        {
+                                            @if (@item.numnPrice != null)
+                                            {
+                                                <label class="pull-left">$</label>
+                                                <label class="pull-right">@(((double)item.numnPrice).ToString("n2"))</label>
+                                            }
+                                            else
+                                            {
+                                                <text>-</text>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <text>@item.strDate @item.strTime</text>
+                                        }
+                                    </td>
+                                    <td>@item.strDescription</td>
+                                    <td>@item.strFirstName @item.strLastName</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>

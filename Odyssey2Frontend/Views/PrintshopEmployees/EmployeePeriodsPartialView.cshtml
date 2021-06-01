@@ -1,0 +1,210 @@
+﻿@model List<PerPeriodModel>
+<div style="display: block; overflow-y: scroll; height: 390px; width: 100%">
+	@if (Model.Any())
+	{
+		@foreach (PerPeriodModel period in Model)
+        {
+            if (
+                period.intnPkTask == null &&
+                period.boolIsByResource
+                )
+            {
+				<div class="card card-margin card-another-period">
+					<div class="card-body">
+						<div class="row">
+							<div class="col-sm-12 font-bold">Job Number: @period.strJobNumber (@period.strProcess)</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6">Start Date: @period.strStartDate</div>
+							<div class="col-sm-6">Start Time: @period.strStartTime</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6">End Date: @period.strEndDate</div>
+							<div class="col-sm-6">End Time: @period.strEndTime</div>
+						</div>
+						<div class="row">
+							<div class="col-xl-12">Schedule Reset Allowance: @period.intMinsBeforeDelete minutes</div>
+						</div>
+                        <div class="row">
+                            @if (ViewBag.intnContactId == null)
+                            {
+                                <div class="col-sm-6 font-bold">
+                                    <button class="btn btn-sm btn-primary btnStartEmployeeTask" 
+											data-intnPkPeriod="@period.intnPkPeriod" 
+											data-strJobId="@period.strJobId"
+											@if (!period.boolIsAbleToStart) { <text> disabled</text> }>
+                                        <span class="fa fa-play"></span> Start
+                                    </button>
+                                    <button class="btn btn-sm btn-danger btnEndEmployeeTask" 
+											data-intnPkPeriod="@period.intnPkPeriod"
+											data-strJobId="@period.strJobId"
+											@if (!period.boolIsAbleToEnd) { <text> disabled</text> }>
+                                        <span class="fa fa-stop"></span> Finish
+                                    </button>
+                                    <button class="btn btn-sm btn-tertiary btnTaskNotes"
+											data-strJobId="@period.strJobId"
+                                            data-intnPkProcessInWorkflow=""
+                                            data-intnPkPeriod="@period.intnPkPeriod"
+                                            data-boolFromWfJobs="False"
+                                            data-boolFromMyEmployees="False">
+                                        <span class="fa fa-sticky-note" aria-hidden="true"></span> Notes
+                                    </button>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-sm-6">
+                                    <button class="btn btn-sm btn-tertiary btnTaskNotes"
+											data-strJobId="@period.strJobId"
+                                            data-intnPkProcessInWorkflow=""
+                                            data-intnPkPeriod="@period.intnPkPeriod"
+                                            data-boolFromWfJobs="False"
+                                            data-boolFromMyEmployees="True">
+                                        <span class="fa fa-sticky-note" aria-hidden="true"></span> Notes
+                                    </button>
+                                </div>
+                            }
+                        </div>
+					</div>
+				</div>
+            }
+            else if (
+                period.intnPkTask == null &&
+                !period.boolIsByResource
+                )
+            {
+				<div class="card card-margin card-period">
+					<div class="card-body">
+						<div class="row">
+							<div class="col-xl-6 font-bold">Job Number: @period.strJobNumber</div>
+						</div>
+						<div class="row">
+							<div class="col-xl-6">Start Date: @period.strStartDate</div>
+							<div class="col-xl-6">Start Time: @period.strStartTime</div>
+						</div>
+						<div class="row">
+							<div class="col-xl-6">End Date: @period.strEndDate</div>
+							<div class="col-xl-6">End Time: @period.strEndTime</div>
+						</div>
+						<div class="row">
+							<div class="col-xl-12">Schedule Reset Allowance: @period.intMinsBeforeDelete minutes</div>
+						</div>
+                        <div class="row">
+                            @if (ViewBag.intnContactId == null)
+                            {
+                                <div class="col-sm-6">
+                                    <button class="btn btn-sm btn-primary btnStartEmployeeTask" 
+											data-intnPkPeriod="@period.intnPkPeriod" 
+											data-strJobId="@period.strJobId"
+											@if (!period.boolIsAbleToStart) { <text> disabled</text> }>
+                                        <span class="fa fa-play"></span> Start
+                                    </button>
+                                    <button class="btn btn-sm btn-danger btnEndEmployeeTask" 
+											data-intnPkPeriod="@period.intnPkPeriod" 
+											data-strJobId="@period.strJobId"
+											@if (!period.boolIsAbleToEnd) { <text> disabled</text> }>
+                                        <span class="fa fa-stop"></span> Finish
+                                    </button>
+                                    <button class="btn btn-sm btn-tertiary btnTaskNotes"
+											data-strJobId="@period.strJobId"
+                                            data-intnPkPeriod="@period.intnPkPeriod"
+                                            data-boolFromMyEmployees="False">
+                                        <span class="fa fa-sticky-note" aria-hidden="true"></span> Notes
+                                    </button>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-sm-6">
+                                    <button class="btn btn-sm btn-tertiary btnTaskNotes"
+											data-strJobId="@period.strJobId"
+                                            data-intnPkPeriod="@period.intnPkPeriod"
+                                            data-boolFromMyEmployees="True">
+                                        <span class="fa fa-sticky-note" aria-hidden="true"></span> Notes
+                                    </button>
+                                </div>
+                            }
+                        </div>
+					</div>
+				</div>
+			}
+			else
+			{
+				<div class="card card-margin card-task">
+					<div class="card-body">
+						<div class="row">
+							<div class="col-xl-12 font-bold">@period.strDescription</div>
+						</div>
+						<div class="row">
+							<div class="col-xl-6">Start Date: @period.strStartDate</div>
+							<div class="col-xl-6">Start Time: @period.strStartTime</div>
+						</div>
+						<div class="row">
+							<div class="col-xl-6">End Date: @period.strEndDate</div>
+							<div class="col-xl-6">End Time: @period.strEndTime</div>
+						</div>
+						@if (period.boolIsNotifiedable || (period.strCustomerName != "" || period.strCustomerLastName != ""))
+                        {
+							<div class="row">
+								@if (period.boolIsNotifiedable)
+                                {
+									<div class="col-xl-6">
+										<i class="fa fa-bell" aria-hidden="true"></i>
+										@period.intMinutesForNotification minute@(period.intMinutesForNotification > 1 || period.intMinutesForNotification == 0 ? "s" : "")
+									</div>
+								}
+								@if (period.boolIsNotifiedable && (period.strCustomerName != "" || period.strCustomerLastName != ""))
+                                {
+									<div class="col-xl-6">
+										<i class="fa fa-handshake-o" aria-hidden="true"></i> @period.strCustomerName @period.strCustomerLastName
+									</div>
+                                }
+                                else if (!period.boolIsNotifiedable && (period.strCustomerName != "" || period.strCustomerLastName != ""))
+                                {
+									<div class="col-xl-6"> </div>
+									<div class="col-xl-6">
+										<i class="fa fa-handshake-o" aria-hidden="true"></i> @period.strCustomerName @period.strCustomerLastName
+									</div>
+								}
+							</div>
+						}
+						@if (ViewBag.intnContactId == null)
+						{
+							<div class="row">
+								<div class="col-sm-6">
+									<button type="button" class="btn btn-secondary btn-sm btnEditTask disableIfIsAdmin disableIfCompleted" data-intnPkTask="@period.intnPkTask"
+											data-boolIsCompleted="@period.boolIsCompleted"
+											data-boolIsOverdue="@false">
+										<i class="fa fa-pencil" aria-hidden="true"></i>
+									</button>
+									<button class="btn btn-danger btn-sm btnDeleteTask disableIfIsAdmin disableIfCompleted" data-intnPkTask="@period.intnPkTask" data-strStartDate="@period.strStartDate"
+											data-boolIsCompleted="@period.boolIsCompleted"
+											data-boolIsOverdue="@false">
+										<i class="fa fa-trash" aria-hidden="true"></i>
+									</button>
+									<button class="btn btn-primary btn-sm completeTask disableIfCompleted"
+											data-intnPkTask="@period.intnPkTask" data-boolIsCompleted="@period.boolIsCompleted"
+											data-boolIsOverdue="@false">
+										<i class="fa fa-flag-checkered" aria-hidden="true"></i> Complete
+									</button>
+								</div>
+							</div>
+						}
+					</div>
+				</div>
+			}
+		}
+	}
+	else
+	{
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="card">
+					<div class="card-body">
+						Nothing to show
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+</div>

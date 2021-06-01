@@ -1,0 +1,87 @@
+﻿@model JobProcessNotesModel
+<div class="row">
+	<div class="col-sm-12">
+		<div class="card">
+			<div class="card-header">Order Notes</div>
+			<div class="card-body">@Model.strWisnetNote</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-12">
+		<div class="card">
+			<div class="card-header">Job Notes</div>
+			<div class="card-body">
+				<div class="row divNote">
+					<div class="col-sm-10">
+						@foreach (var item in Model.strOdyssey2Note.Split("\n"))
+						{
+							@item<br />
+						}
+					</div>
+					<div class="col-sm-1 btnDivEdit">
+						<button class="btn btn-secondary btn-sm editNote" data-strOdyssey2Note="@Model.strOdyssey2Note">
+							<i class="fa fa-pencil" aria-hidden="true"></i>
+						</button>
+					</div>
+					@if (
+						Model.intnPreviousJobId != null &&
+						Model.intnPkWorkflow != null
+						)
+					{
+						<div class="col-sm-12">
+							@Html.ActionLink("Go to: Job " + Model.strJobName, "Workflow", "Jobs",
+								 new { intJobId = Model.intnPreviousJobId, intPkWorkflow = Model.intnPkWorkflow },
+								 new { @target = "_blank" })
+						</div>
+					}
+				</div>
+				<div class="row btnDivSaveAndCancel" style="display: none">
+					<div class="col-sm-12">
+						<div class="form-group frmAddNote">
+							<input type="hidden" value="@(Model.intnPkNote == null ? Model.intPkNote : Model.intnPkNote)" id="intnPkNote" />
+							<input type="hidden" value="@ViewBag.intJobId" id="intJobId" />
+							<input type="hidden" value="@ViewBag.intPkWorkflow" id="intPkWorkflow" />
+							<textarea maxlength="470" class="form-control" rows="5" id="strOdyssey2Note">@Model.strOdyssey2Note</textarea>
+						</div>
+					</div>
+				</div>
+				<div class="row btnDivSaveAndCancel" style="display: none">
+					<div class="col-sm-6 text-right">
+						<button class="btn btn-primary btn-sm btnSaveNote">
+							<i class="fa fa-floppy-o" aria-hidden="true"></i> Save
+						</button>
+					</div>
+					<div class="col-sm-6">
+						<button class="btn btn-danger btn-sm cancelEdit">
+							<i class="fa fa-times" aria-hidden="true"></i> Cancel
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-12">
+		<div class="card">
+			<div class="card-header">Process Notes</div>
+			<div class="card-body">
+				@foreach (var item in Model.arrpronotes)
+				{
+					<div class="row">
+						<div class="col-sm-12 font-bold">@item.strProcessName</div>
+					</div>
+					@foreach (var notes in item.arrnotes)
+					{
+						<div class="row">
+							<div class="col-sm-12" style="text-align: justify; text-justify: inter-word;">
+								<i class="fa fa-sticky-note-o" aria-hidden="true"></i> @notes.strNote
+							</div>
+						</div>
+					}
+				}
+			</div>
+		</div>
+	</div>
+</div>

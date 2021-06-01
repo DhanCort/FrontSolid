@@ -1,0 +1,355 @@
+﻿@model Odyssey2Frontend.Models.ObjTemplatesAndResourcesResponse
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+	String strPrintshopId = HttpContextAccessor.HttpContext.Session.GetString("strPrintshopId");
+}
+<div class="row mb-3">
+	<div class="col-sm-6">
+		<h2 class="float-left">My Resources</h2>
+	</div>
+	<div class="col-sm-6">
+		<a class="btn btn-secondary btn-sm float-right" href="/PrintshopResourcesTemplate">
+			<i class="fa fa-angle-left" aria-hidden="true"></i> Back
+		</a>
+	</div>
+</div>
+
+@if (Model.intStatus == 200)
+{
+	<input type="hidden" value="@Model.objResponse.boolIsPhysical.ToString().ToLower()" id="boolIsPhysical" />
+	<input type="hidden" value="@Model.objResponse.boolIDeviceToolOrCustom.ToString().ToLower()"
+		   id="boolIsDeviceToolOrCustom" />
+	<ul class="breadcrumb resPath">
+		@foreach (var item in Model.objResponse.arrpePathElement)
+		{
+			<li class="breadcrumb-item">
+				<a class="cursor-pointer my-resources"
+				   asp-controller="PrintshopResourcesTemplate"
+				   asp-action="GetTemplatesAndResources"
+				   asp-route-intPk="@item.intPk"
+				   asp-route-boolIsType="@item.boolIsType">
+					@if (item.boolIsResource)
+					{
+						<span class="font-bold">@item.strName</span>
+					}
+					else
+					{
+						@item.strName
+					}
+				</a><input class="resBreadcrumb" type="hidden" value="@item.intPk|@item.boolIsType|@item.strName"
+						   id="intPkResource" />
+			</li>
+		}
+	</ul>
+	if (Model.objResponse.arrattr.Count > 0)
+	{
+		<h3>Attributes</h3>
+		<div class="table-responsive">
+			<table class="table" style="text-align: center">
+				<thead>
+					<tr>
+						<th style="text-align: center; font-size:16px;">Attribute</th>
+						<th style="text-align: center; font-size:16px;">Value</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var item in Model.objResponse.arrattr)
+					{
+						<tr>
+							<td>@item.strName</td>
+							<td>@item.strValue</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	}
+	@*<hr/>*@
+	@if (Model.objResponse.arrtem.Count > 0)
+	{
+		<h3>Templates</h3>
+		<ul class="list-group">
+			@foreach (var item in Model.objResponse.arrtem)
+			{
+				<li class="list-group-item d-flex justify-content-between align-items-center
+                    list-group-item-action cursor-pointer">
+					<a class="col-sm-9 pt-3 pb-3 my-resources"
+					   asp-controller="PrintshopResourcesTemplate"
+					   asp-action="GetTemplatesAndResources"
+					   asp-route-intPk="@item.intPk"
+					   asp-route-boolIsType="@item.boolIsType">@item.strName</a>
+					<input type="hidden" value="@item.intPk|@item.boolIsType" id="intPkResource" />
+					<span class="">
+						@if (Model.objResponse.boolIsPhysical)
+						{
+							<span class="btn-group">
+								@if (!item.boolnIsCalendar.Value && item.boolnIsAvailable != null)
+								{
+									<span class="btn btn-tertiary">
+										<label for="resource-switch-@item.intPk"
+											   style="margin-bottom: 0; vertical-align: top;">
+											<i class="fa fa-database"></i>
+										</label>
+									</span>
+									@if (Model.objResponse.boolIDeviceToolOrCustom)
+									{
+										<button type="button" class="btn btn-tertiary dropdown-toggle dropdown-toggle-split"
+												data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+												@if (!item.boolnCalendarIsChangeable.Value) { <text> disabled </text> }>
+											<span class="sr-only"></span>
+										</button>
+										<span class="dropdown-menu">
+											<a class="dropdown-item availability checkbox-label"
+											   data-intPkResource="@item.intPk" data-boolIsCalendar="true"
+											   data-boolnIsAvailable="null" href="#">Calendarized</a>
+										</span>
+									}
+								}
+								else
+								{
+									<button id="" data-intPkResource="@item.intPk" data-strName="@item.strName"
+											class="btn btn-tertiary resourceCalendarButton">
+										<i class="fa fa-calendar"></i>
+									</button>
+									<button type="button" class="btn btn-tertiary dropdown-toggle dropdown-toggle-split"
+											data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+											@if (!item.boolnCalendarIsChangeable.Value) { <text> disabled </text> }>
+										<span class="sr-only">Toggle Dropdown</span>
+									</button>
+									<span class="dropdown-menu">
+										<a class="dropdown-item availability checkbox-label"
+										   data-intPkResource="@item.intPk" data-boolIsCalendar="false"
+										   data-boolnIsAvailable="true" href="#">Available/Unavailable</a>
+									</span>
+								}
+							</span>
+							@*@if (item.boolnIsCalendar.Value == true && (Model.objResponse.boolIDeviceToolOrCustom))
+								{
+									<button class="btn btn-info btn-sm ml-2 addResourceTime"
+											data-intPk-strName="@item.intPk|@item.strName|@item.strUnit">
+										<i class="fa fa-clock-o" aria-hidden="true"></i>
+									</button>
+								}*@
+							<button class="btn btn-primary ml-2 addCost"
+									data-intPk-strName="@item.intPk|@item.strName|@item.boolnCostIsChangeable.Value"
+									data-boolIsDeviceToolOrCustom="@Model.objResponse.boolIDeviceToolOrCustom">
+								<i class="fa fa-usd" aria-hidden="true"></i>
+							</button>
+						}
+						@if (Model.objResponse.arrpePathElement[0].strName != "Custom Resources")
+						{
+							<button class="btn btn-secondary ml-2 editResourceOrTemplate" data-intPk="@item.intPk"
+									data-boolIsDeviceToolOrCustom="@Model.objResponse.boolIDeviceToolOrCustom">
+								<i class="fa fa-pencil" aria-hidden="true"></i>
+							</button>
+						}
+
+						<button class="btn btn-danger ml-2 deleteResource" data-intPkResource="@item.intPk">
+							<i class="fa fa-trash-o"></i>
+						</button>
+					</span>
+				</li>
+			}
+		</ul>
+		@*<hr/>*@
+		<br />
+	}
+	if (Model.objResponse.arrres.Count > 0)
+	{
+		<h3>Resources</h3>
+		<ul class="list-group">
+			@foreach (var item in Model.objResponse.arrres)
+			{
+				<li class="list-group-item d-flex justify-content-between align-items-center list-group-item-action
+                    cursor-pointer">
+					<a class="col-sm-9 pt-3 pb-3 my-resources"
+					   asp-controller="PrintshopResourcesTemplate"
+					   asp-action="GetTemplatesAndResources"
+					   asp-route-intPk="@item.intPk"
+					   asp-route-boolIsType="@item.boolIsType">@item.strName</a>
+					<input type="hidden" value="@item.intPk|@item.boolIsType" id="intPkResource" />
+					<span class="">
+						@if (Model.objResponse.boolIsPhysical)
+						{
+							<span class="btn-group">
+								@if (!item.boolnIsCalendar.Value && item.boolnIsAvailable != null)
+								{
+									<span class="btn btn-tertiary checkbox-switch switchAvailability pl-0 pb-0"
+										  data-intPkResource="@item.intPk" data-printshopid="@strPrintshopId">
+										<div class="switch-plate resAvailability">
+											<div class="switch@(item.boolnIsAvailable.Value ? " on" : "")"
+												 id="resource-switch-@item.intPk" data-on="Available"
+												 data-off="Unavailable">
+											</div>
+										</div><label><i class="fa fa-database"></i></label>
+									</span>
+									@if (Model.objResponse.boolIDeviceToolOrCustom)
+									{
+										<button type="button" class="btn btn-tertiary dropdown-toggle dropdown-toggle-split"
+												data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+												@if (!item.boolnCalendarIsChangeable.Value) { <text> disabled </text> }>
+											<span class="sr-only"></span>
+										</button>
+										<span class="dropdown-menu">
+											<a class="dropdown-item availability checkbox-label"
+											   data-intPkResource="@item.intPk" data-boolIsCalendar="true"
+											   data-boolnIsAvailable="null" href="#">Calendarized</a>
+										</span>
+									}
+								}
+								else
+								{
+									<button id="" data-intPkResource="@item.intPk" data-strName="@item.strName"
+											class="btn btn-tertiary resourceCalendarButton">
+										<i class="fa fa-calendar"></i>
+									</button>
+									<button type="button" class="btn btn-tertiary dropdown-toggle dropdown-toggle-split"
+											data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+											@if (!item.boolnCalendarIsChangeable.Value) { <text> disabled </text> }>
+										<span class="sr-only"></span>
+									</button>
+									<span class="dropdown-menu">
+										<a class="dropdown-item availability checkbox-label"
+										   data-intPkResource="@item.intPk" data-boolIsCalendar="false"
+										   data-boolnIsAvailable="true" href="#">Available/Unavailable</a>
+									</span>
+								}
+							</span>
+							@if (item.boolnIsCalendar.Value == true && (Model.objResponse.boolIDeviceToolOrCustom))
+							{
+								<button class="btn btn-info ml-2 addResourceTime"
+										data-intPk-strName="@item.intPk|@item.strName|@item.strUnit">
+									<i class="fa fa-clock-o" aria-hidden="true"></i>
+								</button>
+							}
+							<button class="btn btn-primary ml-2 addCost"
+									data-intPk-strName="@item.intPk|@item.strName|@item.boolnCostIsChangeable.Value"
+									data-boolIsDeviceToolOrCustom="@Model.objResponse.boolIDeviceToolOrCustom">
+								<i class="fa fa-usd" aria-hidden="true"></i>
+							</button>
+						}
+						@if (Model.objResponse.arrpePathElement[0].strName != "Custom Resources")
+						{
+							<button class="btn btn-secondary ml-2 editResourceOrTemplate" data-intPk="@item.intPk"
+									data-boolIsDeviceToolOrCustom="@Model.objResponse.boolIDeviceToolOrCustom">
+								<i class="fa fa-pencil" aria-hidden="true"></i>
+							</button>
+						}
+
+						<button class="btn btn-danger ml-2 deleteResource" data-intPkResource="@item.intPk">
+							<i class="fa fa-trash-o"></i>
+						</button>
+					</span>
+				</li>
+			}
+		</ul>
+	}
+
+	<div class="row">
+		@if (Model.objResponse.arrpePathElement[0].strName != "Custom Resources")
+		{
+			<div class="col-lg-12 text-center">
+				<br /><a id="addSpecificResource" value="xjdf" class="btn btn-info" href="">
+					<i class="fa fa-plus-circle"></i> Add Resource
+				</a>
+			</div>
+		}
+		else
+		{
+			<div class="col-lg-12 text-center">
+				<br />
+				<button value="custom" class="btn btn-info addResourceTemplate" data-toggle="modal" data-target="#xjdfTemplateModal">
+					<i class="fa fa-plus-circle"></i> Add Custom Resource
+				</button>
+			</div>
+		}
+	</div>
+
+
+	<!-- Cost Modal -->
+	await Html.RenderPartialAsync("~/Views/Shared/ResourceCostAndTimeModalPartialView.cshtml");
+
+	<!-- Resource's Rule's Modal -->
+	<div class="modal fade" id="calendarModal">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h3 class="modal-title" id="resourceRuleTittle">Resource's Unavailability's Rules</h3>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body" id="calendarModalBody">
+
+				</div>
+
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<!-- AddRule Confirmation Modal -->
+	<div class="modal fade" id="addRuleConfirmationModal">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">Warning</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body" id="addRuleConfirmationModalBody">
+				</div>
+
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-success" data-dismiss="modal" id="addRuleConfirmationButton"><i class="fa fa-plus-circle"> Add Anyway</i></button>
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	@if (
+		Model.objResponse.arrpePathElement[0].strName == "Custom Resources"
+		)
+	{
+		<!-- Modal -->
+		<div id="xjdfTemplateModal" class="modal fade" tabindex="-1" role="dialog">
+			<div class="modal-dialog modal-md modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h3 class="modal-title" id="res-modal-title">Add Custom Resource</h3>
+						<button class="btn-sm close" type="button" data-dismiss="modal">
+							<i class="fa fa-close"></i>
+						</button>
+					</div>
+					<div class="modal-body" id="res-modal-body">
+						<div id="addCustomResourceSection" hidden></div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" id="saveResForm" style="display: none">Save</button>
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+}
+else
+{
+	<div class="alert alert-danger" role="alert">
+		@Model.strUserMessage
+	</div>
+}

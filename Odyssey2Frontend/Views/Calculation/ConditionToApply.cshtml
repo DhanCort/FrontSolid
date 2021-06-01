@@ -1,0 +1,44 @@
+﻿<div class="card" style=" background-color: #e6e7e8; color: #58585b; border-style: none; margin-bottom: 0 !important">
+    <div class="card-body">
+        <div class="row align-items-center" style="margin-top: 1% !important; margin-bottom: 1% !important">
+            <div class="col-sm-6 mx-auto">
+                When
+                <span class="select dropdownDarker">
+                    <select id="strOperator" class="generalOperator">
+                        <option value="AND">All</option>
+                        <option value="OR">Any</option>
+                    </select>
+                </span>
+                of the following conditions match
+            </div>
+            <div class="col-sm-6 text-right">
+                <button type="button" class="btn btn-primary btnAddConditionGroup"
+                        data-boolFromGroup="false"
+                        data-boolCondition="true"
+                        data-boolGeneral="true" data-toggle="tooltip" data-placement="top" title="Create a new condition to compare.">
+                    <i class="fa fa-plus"></i> Condition
+                </button>
+                <button type="button" class="btn btn-primary btnAddConditionGroup"
+                        data-boolFromGroup="false"
+                        data-boolCondition="false"
+                        data-boolGeneral="true" data-toggle="tooltip" data-placement="top" title="Create a new group of conditions to compare.">
+                    <i class="fa fa-plus"></i> Group
+                </button>
+                @*<button class="btn btn-danger btnRemoveConditionGroup"><i class="fa fa-trash"></i></button>*@
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" style="margin-top: 5px !important">
+    <div class="col-sm-12" style="padding-left: 0px !important; padding-right: 0px !important">
+        @if (ViewBag.boolSetCondition ?? false)
+        {
+            <input id="strConditionToApply" type="hidden" />
+            <input id="intnPkIn" type="hidden" />
+            <input id="intnPkOut" type="hidden" />
+        }
+        <div class="col-sm-12 pl-0 pr-0" id="conditionBody" style="max-height: 40vh; overflow: auto">
+
+        </div>
+    </div>
+</div>

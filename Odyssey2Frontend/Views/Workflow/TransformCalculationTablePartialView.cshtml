@@ -1,0 +1,75 @@
+﻿@model List<TranformationCalculationModel>
+<div class="table-responsive" style="overflow: scroll; height: 200px">
+	<div class="table table-hover">
+		<table class="table">
+			<thead>
+				<tr class="tr-calculation-header">
+					<th>Input</th>
+					<th>Output</th>
+					<th>Needed</th>
+					<th>Per unit</th>
+					<th class="text-center">Condition</th>
+					<th colspan="2"></th>
+				</tr>
+			</thead>
+			<tbody>
+				@if (
+		 Model != null && Model.Count > 0
+		 )
+				{
+					foreach (TranformationCalculationModel tranformationCalculation in Model)
+					{
+						String strOperator = null;
+						if (
+							(!String.IsNullOrEmpty(tranformationCalculation.strConditionToApply)) &&
+							(tranformationCalculation.numnMinQty != null && tranformationCalculation.numnMaxQty != null)
+							)
+						{
+							strOperator = "AND";
+
+							if (
+								!tranformationCalculation.boolConditionAnd
+								)
+							{
+								strOperator = "OR";
+							}
+						}
+
+						<tr class="tr-calculation-row">
+							<td>@tranformationCalculation.strTypeTemplateAndResourceI</td>
+							<td>@tranformationCalculation.strTypeTemplateAndResourceO</td>
+							<td>@tranformationCalculation.numNeeded</td>
+							<td>@tranformationCalculation.numPerUnit</td>
+							<td class="text-center">
+								@if (tranformationCalculation.boolHasCondition)
+								{
+									<i class="fa fa-check" aria-hidden="true" style="color: green"></i>
+								}
+								else
+								{
+									<i class="fa fa-times" aria-hidden="true" style="color: red"></i>
+								}
+							</td>
+							<td>
+								<button type="button" class="btn btn-sm btn-secondary editTransformCalculationBtn" data-intPk="@tranformationCalculation.intnPk">
+									<i class="fa fa-pencil"></i>
+								</button>
+							</td>
+							<td>
+								<button type="button" class="btn btn-sm btn-danger deleteTransformCalculationBtn" data-intPk="@tranformationCalculation.intnPk">
+									<i class="fa fa-trash"></i>
+								</button>
+							</td>
+						</tr>
+					}
+				}
+				else
+				{
+					<tr>
+						<td colspan="9" class="text-center">There are no records to show.</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>

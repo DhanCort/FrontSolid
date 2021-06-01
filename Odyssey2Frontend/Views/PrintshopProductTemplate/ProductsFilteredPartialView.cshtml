@@ -1,0 +1,104 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+	var darrProducts = (List<PrintshopProductTemplateModel>)ViewBag.darrstrCustomTemplateId;
+	bool boolIsAccountant = bool.Parse(HttpContextAccessor.HttpContext.Session.GetString("boolIsAccountant") ?? "false");
+}
+
+<div style="display: block; overflow-y: scroll; height: 70vh; width: 100%">
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>
+                        Category
+                    </th>
+                    <th>
+                        Product Name
+                    </th>
+                    <th></th>
+                    <th>
+                        Account
+                    </th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    @*<th>
+                            XJDF Product Type
+                        </th>*@
+                </tr>
+            </thead>
+            <tbody>
+                @if (darrProducts.Any())
+                {
+                    @foreach (var item in darrProducts)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.strCategory)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.strTypeId)
+                            </td>
+							<td>
+								<a class="btn btn-info text-white" href="@item.strGuidedLink" target="_blank">Order form</a>
+							</td>
+                            <td>
+                                @{
+                                    String strDisabled = "";
+                                    if (
+                                        !boolIsAccountant
+                                        )
+                                    {
+                                        strDisabled = "disabled='true'";
+                                    }
+                                }
+                                <span class="select">
+                                    <select class="selectAccount" required @strDisabled>
+                                        <option value="">Pick one</option>
+                                        @foreach (AccountModel account in ViewBag.darraccRevenueAccounts)
+                                        {
+                                            if (
+                                                account.intPk == item.intnPkAccount
+                                                )
+                                            {
+                                                <option data-intpkproduct="@item.intPk" value="@account.intPk" selected>@account.strName</option>
+                                            }
+                                            else
+                                            {
+                                                <option data-intpkproduct="@item.intPk" value="@account.intPk">@account.strName</option>
+                                            }
+                                        }
+                                    </select>
+                                </span>
+                            </td>
+                            <td>
+                                @Html.ActionLink("Profit Settings", "ProfitSettings", "Calculation", new { intPk = item.intPk, strTypeId = item.strTypeId },
+                                     new { @class = "btn btn-sm btn-info" })
+                            </td>
+                            <td>
+                                @Html.ActionLink("Cost Settings", "CostSettings", "Calculation", new { intPk = item.intPk, strTypeId = item.strTypeId },
+                                     new { @class = "btn btn-sm btn-info" })
+                            </td>
+                            <td>
+                                @*@Html.ActionLink("Workflows", "Index", "Workflow", new { intPk = item.intPk, strTypeId = item.strTypeId },
+                                    new { @class = "btn btn-info" })*@
+                                <button class="btn btn-sm btn-info btn-wf-modal" data-intpkproduct="@item.intPk">Workflows</button>
+                            </td>
+                            @*<td>
+                                    @Html.DropDownList("body", new SelectList(ViewBag.XJDFProductType, "Value", "Text", item.strXJDFType), new { @class = "form-control product-type", @id = item.intPk })
+                                </td>*@
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="font-bold text-center">No Products Found</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

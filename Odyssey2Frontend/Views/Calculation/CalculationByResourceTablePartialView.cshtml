@@ -1,0 +1,161 @@
+﻿@model List<Odyssey2Frontend.Models.CalculationModel>
+
+<div class="container-fluid">
+    <div class="table-responsive" style="display:block; overflow:scroll; max-height:330px;">
+        <table class="table table-hover" style="text-align: center">
+            <thead>
+                <tr class="tr-calculation-header">
+                    @*<th style="text-align: center"></th>*@
+                    @*<th style="text-align: center">Process</th>*@
+                    <th style="text-align: center">Resource</th>
+
+                    @if (
+                        ViewBag.Type != "BasePerQuantity"
+                        )
+                    {
+                        <th style="text-align: center">Q. From</th>
+                    }
+                    else
+                    {
+                        <th style="text-align: center">Quantity</th>
+                    }
+
+                    <th style="text-align: center">Description</th>
+
+                    @if (
+                       ViewBag.Type == "PerQuantity" || ViewBag.strCalculationType == "PQ"
+                       )
+                    {
+                        <th style="text-align: center">Needed</th>
+                        <th style="text-align: center">By Block</th>
+                        <th style="text-align: center">Per Units</th>
+                        <th style="text-align:center">Percent Waste</th>
+                        <th style="text-align:center">Quantity Waste</th>
+                    }
+
+                    <th style="text-align: center">Condition</th>
+                    <th style="text-align: center">Enabled</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var calculation in Model)
+                    {
+                        <tr class="tr-calculation-row" id="row_@calculation.intPk">
+                            @*<td class="text-center">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-code-fork fa-stack-1x fa-inverse ml-sm-0" style="font-size:smaller"></i>
+                                </span>
+                            </td>
+
+                            <td>@calculation.strProcessName</td>*@
+                            <td>@calculation.strResourceName</td>
+
+                            @if (
+                                ViewBag.Type != "BasePerQuantity"
+                                )
+                            {
+                                <td>@calculation.strQtyFromResourceName</td>
+                            }
+                            else
+                            {
+                                <td>@calculation.numnNeeded</td>
+                            }
+
+                            <td>@calculation.strDescription</td>
+
+                            @if (
+                          ViewBag.Type == "PerQuantity" || ViewBag.strCalculationType == "PQ"
+                          )
+                            {
+                                <td>
+                                    @if (
+									   calculation.numnNeeded != null
+									 ) {
+									    <text>@(calculation.numnNeeded + " " + (ViewBag.boolByResource == true ? calculation.strUnitI : ""))</text>
+									}
+									else {
+									    <text>-</text>
+									}
+                                </td>
+								<td>
+									@if (calculation.boolIsBlock)
+									{
+										<i class="fa fa-check" aria-hidden="true" style="color: green"></i>
+									}
+									else
+									{
+										<i class="fa fa-times" aria-hidden="true" style="color: red"></i>
+									}
+								</td>
+
+								<td>
+									@if (
+									  calculation.boolFromThickness
+									  )
+									{
+										<text>From Thickness</text>
+									}
+									else if (
+										calculation.numnPerUnits != null
+										)
+									{
+										<text>@(calculation.numnPerUnits + " " + (ViewBag.boolByResource == true ? calculation.strUnitO : ""))</text>
+									}
+									else
+									{
+										<text>-</text>
+									}
+								</td>
+
+                                <td>@calculation.numnPercentWaste</td>
+                                <td>@calculation.numnQuantityWaste</td>
+                            }
+
+                            <td>
+                                @if (calculation.boolHasCondition)
+                                {
+                                    <i class="fa fa-check" aria-hidden="true" style="color: green"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-times" aria-hidden="true" style="color: red"></i>
+                                }
+                            </td>
+                            <td>
+                                @if (calculation.boolIsEnable)
+                                {
+                                    <i class="fa fa-check" aria-hidden="true" style="color: green"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-times" aria-hidden="true" style="color: red"></i>
+                                }
+                            </td>
+                            <td>
+                                <button class="btn btn-danger btn-sm delete-calculation" id="@calculation.intPk" href=""><i class="fa fa-trash-o"></i></button>
+                            </td>
+                            <td>
+                                <button class="btn btn-secondary btn-sm edit-calculation" id="@calculation.intPk"
+                                        data-boolisinpostprocess="@calculation.boolIsInPostProcess" href=""
+                                        @if (!calculation.boolIsEditable) { <text> disabled </text> }>
+                                    <i class="fa fa-pencil"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr class="tr-calculation-row">
+                        <td colspan="10">This section contains no records.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

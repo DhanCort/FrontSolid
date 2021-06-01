@@ -1,0 +1,93 @@
+﻿@model List<linkModel>
+
+<form class="form-group" id="linkProcessAndNodesForm">
+    <div class="row">
+        <div class="col-sm-3">
+            <div>
+                <label class="input-label">From:</label>
+            </div>
+            <span class="select" style="width:300px;">
+                <select class="nodeAndProcessesDropdown" name="nodeFrom" required>
+                    <option value="">Pick one</option>
+                    @foreach (NodeModel nodemod in ViewBag.darrnodemodNodesAndProcesses)
+                    {
+                        <option data-intnPkNode="@nodemod.intnPkNode"
+                                data-intPkProcessInWorkflow="@nodemod.intnPkProcessInWorkflow"
+                                data-boolIsInput="@false"
+                                value="@nodemod.intnPkNode@nodemod.intnPkProcessInWorkflow">
+                            @nodemod.strName
+                        </option>
+                    }
+                </select>
+            </span>
+        </div>
+        <div class="col-sm-3">
+            <div>
+                <label class="input-label">Output:</label>
+            </div>
+            <span class="select" style="width:300px;">
+                <select disabled name="nodeFromResources" required>
+                    <option>Pick one</option>
+                </select>
+            </span>
+        </div>
+        <div class="col-sm-3">
+            <div>
+                <label class="input-label">To:</label>
+            </div>
+            <span class="select" style="width:300px;">
+                <select class="nodeAndProcessesDropdown" name="nodeTo" required>
+                    <option value="">Pick one</option>
+                    @foreach (NodeModel nodemod in ViewBag.darrnodemodNodesAndProcesses)
+                    {
+                        <option data-intnPkNode="@nodemod.intnPkNode"
+                                data-intPkProcessInWorkflow="@nodemod.intnPkProcessInWorkflow"
+                                data-boolIsInput="@true">
+                            @nodemod.strName
+                        </option>
+                    }
+                </select>
+            </span>
+        </div>
+        <div class="col-sm-3">
+            <div>
+                <label class="input-label">Input:</label>
+            </div>
+            <span class="select" style="width:300px;">
+                <select disabled name="nodeToResources" required>
+                    <option>Pick one</option>
+                </select>
+            </span>
+        </div>
+        @if (
+          ViewBag.intnPkProduct != null && (int)ViewBag.intnPkProduct > 0
+          )
+        {
+            <div class="col-sm-2 mt-3">
+                <input type="hidden" name="condition" id="strConditionToApply" />
+				<button type="button" class="btn btn-info btn-sm openConditionToApplyModal"
+						data-boolIsLink="@true"
+						data-toggle="modal"
+						data-target="#conditionToApplyModal">
+					<b>Conditions To Apply</b>
+				</button>
+			</div>
+			<div class="col-sm-8 mt-2">
+				<div class="alert alert-success text-center" id="translatedCondition" hidden><strong></strong></div>
+			</div>
+			<div class="col-sm-2 mt-3">
+				<button type="button" class="btn btn-secondary btn-sm delete-condition-to-apply pull-right" data-toggle="modal"><b>Remove Conditions</b></button>
+			</div>
+		}
+		<div class="col-sm-12 mt-2 text-center">
+			<button class="btn btn-primary" type="submit">
+				<span class="fa fa-link"></span> Link
+			</button>
+		</div>
+	</div><br />
+	<div class="responsive-table" id="linkTableSection" style="height: 34vh; overflow-y:auto">
+		@{
+			await Html.RenderPartialAsync("LinksTablePartialView.cshtml", Model);
+		}
+	</div>
+</form>

@@ -1,0 +1,150 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    bool boolIsSuperAdmin = bool.Parse(HttpContextAccessor.HttpContext.Session.GetString("boolIsSuperAdmin") ?? "false");
+    List<dynamic> darrAccountsFields = new List<dynamic>()
+{
+        new { field = "strNumber", title = "Number", format = "", template = "" },
+        new { field = "strName", title = "Name", format = "", template = "" },
+        new { field = "numAmount", title = "Amount", format = "", template = "" },
+        new { field = "strAccountType", title = "Type", format = "", template = "" }
+    };
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="row">
+            <input type="hidden" id="intnReportPk" />
+            <div class="col-3">
+                <div>
+                    <label class="input-label">Filter Name</label>
+                </div>
+                <input type="text" class="form-control input-with-dropdowns" id="strName" placeholder="Name">
+            </div>
+            <div class="col-sm-1 pl-0 pr-0 mt-4">
+                <button class="btn btn-primary btn-sm saveCustomReport col-sm-11" type="button" data-grid=".accountsGrid"
+                        data-strdataset="Accounts">
+                    <i class="fa fa-floppy-o" aria-hidden="true"></i> Save
+                </button>
+            </div>
+            <div class="col-sm-1-5 pl-0 pr-0 mt-4" hidden>
+                <button class="btn btn-primary btn-sm saveAsCustomReport" type="button"
+                        data-grid=".accountsGrid" data-strdataset="Accounts">
+                    <i class="fa fa-floppy-o" aria-hidden="true"></i> Save As..
+                </button>
+            </div>
+            <div class="col-1 pl-1 pr-0 mt-4" hidden>
+                <button class="btn btn-secondary btn-sm cancelCustomReport" type="button"
+                        data-grid=".accountsGrid" data-strdataset="Accounts">
+                    <i class="fa fa-times" aria-hidden="true"></i> Cancel
+                </button>
+            </div>
+            <div class="col-2 pl-3">
+                <div>
+                    <label class="input-label">Memorized Reports</label>
+                </div>
+                <span class="select" style="width:200px;">
+                    <select asp-items="@ViewBag.darrReports" class="dropdownReports" id="reportList" 
+                            data-boolIsSuperAdmin="@boolIsSuperAdmin"
+                            data-listType="public"
+                            data-strdataset="Accounts"
+                            data-grid=".accountsGrid">
+                        <option value="">Pick one</option>
+                    </select>
+                </span>
+            </div>
+            <div class="col-sm-1 pl-0 mt-4">
+                <button class="btn btn-danger btn-sm deleteCustomReport memorizedReports" type="button" 
+                        data-strdataset="Accounts"
+                        disabled="">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="col-2 pl-3">
+                <div>
+                    <label class="input-label">Ready to use</label>
+                </div>
+                <span class="select" style="width:200px;">
+                    <select asp-items="@ViewBag.darrReady" class="dropdownReports" id="systemReportList"                             
+                            data-boolIsSuperAdmin="@boolIsSuperAdmin"
+                            data-listType="superadmin"
+                            data-strdataset="Accounts"
+                            data-grid=".accountsGrid">
+                        <option value="">Pick one</option>
+                    </select>
+                </span>
+            </div>
+            @if (boolIsSuperAdmin == true)
+            {
+                <div class="col-sm-1 pl-0 mt-4">
+                    <button class="btn btn-danger btn-sm deleteCustomReport superAdminReports" type="button" 
+                            data-strdataset="Accounts"
+                            disabled="">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </button>
+                </div>
+            }
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                <div>
+                    <label class="input-label">Start Date</label>
+                </div>
+                <input id="strStartDate" class="form-control input-with-dropdowns" data-toggle="datetimepicker" data-target="#strStartDate" />
+            </div>
+            <div class="col-sm-2">
+                <div>
+                    <label class="input-label">End date</label>
+                </div>
+                <input id="strEndDate" class="form-control input-with-dropdowns" data-toggle="datetimepicker" data-target="#strEndDate" />
+            </div>
+            <div class="col-sm-2 pl-0 mt-4">
+                <button class="btn btn-sm btn-info btnGetAccounts">Ok</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                <div class="dropdown">
+                    <button type="button" class="btn btn-info dropdown-toggle col-sm-12 btn-sm" data-toggle="dropdown">
+                        <i class="fa fa-table" aria-hidden="true"></i> Columns
+                    </button>
+                    <div class="dropdown-menu">
+                        <form action="" id="formColumns" style="margin: 0; padding: 3px 15px" accept-charset="utf-8"
+                              method="post">
+                            <div class="form-group">
+                                @foreach (var item in darrAccountsFields)
+                                {
+                                    <fieldset class="control-group">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input chkField"
+                                                   value="@item.field|@item.title|@item.format|@item.template" id="@item.field" name="@item.field" checked>
+                                            <label class="custom-control-label" for="@item.field">@item.title</label>
+                                        </div>
+                                    </fieldset>
+                                }
+                            </div>
+                            <div class="form-group">
+                                <fieldset class="control-group">
+                                    <button class="btn btn-primary col-sm-10 filterAccountColumns btnFilterColumns">Ok</button>
+                                </fieldset>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3">
+                <button download="accounts.pdf" class="mb-3 btn btn-info btnAccountsDownload col-sm-12 btn-sm">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                    Download Report (pdf)
+                </button>
+            </div>
+            <div class="col-3">
+                <button download="accounts.pdf" class="mb-3 btn btn-info btnDownloadCsv col-sm-12 btn-sm" data-grid=".accountsGrid" data-filename="accounts.csv">
+                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                    Download Report (csv)
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="accountsGrid mt-3"></div>

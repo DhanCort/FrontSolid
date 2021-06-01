@@ -1,0 +1,283 @@
+﻿@model PeriodsForJobAndWorkflowModel
+
+@{
+	if (ViewBag.responseTasks.intStatus == 200)
+	{
+		<div class="row pull-right">
+			<label id="estimateDateLabel-@ViewBag.intJobId">Estimated Date: @Model.strEstimateDate</label>
+		</div>
+		<div class="table-responsive">
+			<table class="table table-hover" id="PeriodJobsTable_@ViewBag.intJobId">
+				<thead>
+					<tr class="tr-calculation-header">
+						<th></th>
+						<th>Process</th>
+						<th>Estimated Duration</th>
+						<th>Start</th>
+						<th>End</th>
+						<th>Schedule Reset Allowance</th>
+						<th>Employee</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					@{
+						int intI = 0;
+						if (Model.darrpro  != null) {
+							foreach (JobProcessPeriodsModel process in Model.darrpro )
+							{
+								foreach (JobCalculationModel calculation in process.arrcal)
+								{
+									int intMins = ((calculation.intHours * 60) + (calculation.intMinutes) +
+										((calculation.intSeconds > 0) ? 1 : 0));
+
+								<tr class="collapsed clpTasksJob" data-toggle="collapse" data-intJobId="@ViewBag.intJobId"
+									data-intPkProcessInWorkflow="@process.intPkProcessInWorkflow">
+									<td>@calculation.strDescription</td>
+									<td>@process.strName</td>
+									<td>@((intMins > 0) ? (intMins + " min") : "")</td>
+									<td>
+										<div class="col-sm-12 mt-1">
+											@if (calculation.boolPeriodCompleted || calculation.boolPeriodStarted)
+											{
+												<text>@calculation.strStartDate @calculation.strStartTime</text>
+											}
+											else
+											{
+												<input id="strStartDateJob_@(calculation.intPkCalculation + "_" + ViewBag.intJobId + "_" + intI)" class="form-control input-with-dropdowns dtpicker"
+													   data-toggle="datetimepicker" data-target="#strStartDateJob_@(calculation.intPkCalculation + "_" + ViewBag.intJobId + "_" + intI)"
+													   value="@calculation.strStartDate @calculation.strStartTime" />
+											}
+										</div>
+									</td>
+									<td>
+										<div class="col-sm-12 mt-1">
+											@if (calculation.boolPeriodCompleted || calculation.boolPeriodStarted)
+											{
+												<text>@calculation.strEndDate @calculation.strEndTime</text>
+											}
+											else
+											{
+												<input id="strEndDateJob_@(calculation.intPkCalculation + "_" + ViewBag.intJobId + "_" + intI)" class="form-control input-with-dropdowns dtpicker"
+													   data-toggle="datetimepicker" data-target="#strEndDateJob_@(calculation.intPkCalculation + "_" + ViewBag.intJobId + "_" + intI)"
+													   value="@calculation.strEndDate @calculation.strEndTime" />
+											}
+										</div>
+									</td>
+									<td>
+										<div>
+											@if (calculation.boolPeriodCompleted || calculation.boolPeriodStarted)
+											{
+												<text>@(calculation.intMinsBeforeDelete > 0 ? calculation.intMinsBeforeDelete + "" : "")</text>
+											}
+											else
+											{
+												<input class="form-control input-with-dropdowns" min="1" step="1" type="number"
+													   id="intMinsBeforeDelete_@(calculation.intPkCalculation + "_" + ViewBag.intJobId + "_" + intI)" pattern="^[0-9]$"
+													   value="@(calculation.intMinsBeforeDelete > 0 ? calculation.intMinsBeforeDelete + "" : "")" />
+											}
+										</div>
+									</td>
+									<td>
+										<div>
+											@if (calculation.boolPeriodCompleted || calculation.boolPeriodStarted)
+											{
+												<text>@calculation.strFirstName @calculation.strLastName</text>
+											}
+											else
+											{
+												<span class="select">
+													<select class="selectEmployee"
+															id="strEmployee_@(calculation.intPkCalculation + "_" + ViewBag.intJobId + "_" + intI)"
+															data-intnContactId="@calculation.intnContactId">
+														<option>@calculation.strFirstName @calculation.strLastName</option>
+													</select>
+												</span>
+											}
+										</div>
+									</td>
+									<td>
+										@if (calculation.boolPeriodCompleted || calculation.boolPeriodStarted)
+										{
+											if (calculation.boolPeriodCompleted)
+											{
+												<text>Completed</text>
+											}
+											else if (calculation.boolPeriodStarted)
+											{
+												<text>Started</text>
+											}
+										}
+										else
+										{
+											<input hidden id="intPkPeriod_@(calculation.intPkCalculation + "_" + ViewBag.intJobId + "_" + intI)"
+												   value="@calculation.intnPkPeriod" />
+											<input hidden id="intPkProcessInWorkflow_@(calculation.intPkCalculation + "_" + ViewBag.intJobId + "_" + intI)"
+												   value="@process.intPkProcessInWorkflow" />
+											<input hidden id="intJobId" value="@ViewBag.intJobId" />
+											<button type="button" class="btn btn-sm btn-primary setProcessPeriod"
+													data-intPkCalculation="@(calculation.intPkCalculation + "_" + ViewBag.intJobId + "_" + intI)"
+													data-toRefreshCalendar="@ViewBag.intJobId|@ViewBag.intPkWorkflow|">
+												<i class="fa fa-floppy-o" aria-hidden="true"></i>
+											</button>
+											<button class="btn btn-sm btn-secondary resetProcessPeriod" data-intPkCalculation="@(calculation.intPkCalculation + "_" + ViewBag.intJobId + "_" + intI)">
+												<span class="fa fa-times"></span>
+											</button>
+											@if (calculation.intnPkPeriod != null || calculation.intnPkPeriod > 0)
+											{
+												<button class="btn btn-danger btn-sm deleteJobPeriod" value="@calculation.intnPkPeriod"
+														data-intPkCalculation="@(calculation.intPkCalculation + "_" + ViewBag.intJobId + "_" + intI)"
+														data-toRefreshCalendar="@ViewBag.intJobId|@ViewBag.intPkWorkflow|">
+													<i class="fa fa-trash" aria-hidden="true"></i>
+												</button>
+											}
+										}
+									</td>
+								</tr>
+									intI++;
+								}
+								foreach (JobResourcePeriodsModel resource in process.arrresper)
+								{
+									foreach (JobResourcePeriodModel period in resource.arrresper)
+									{
+									<tr class="collapsed clpTasksJob" data-toggle="collapse" data-intJobId="@ViewBag.intJobId"
+										data-intPkProcessInWorkflow="@process.intPkProcessInWorkflow">
+										<td>@resource.strResource</td>
+										<td>@process.strName</td>
+										<td>@((period.intnEstimatedDuration > 0) ? (period.intnEstimatedDuration + " min") : "")</td>
+										<td>
+											<div class="col-sm-12 mt-1">
+												@if (period.boolPeriodCompleted || period.boolPeriodStarted)
+												{
+													<text>@period.strStartDate @period.strStartTime</text>
+												}
+												else
+												{
+													<input id="strStartDate_@(ViewBag.intJobId + "_" + intI)"
+														   class="form-control input-with-dropdowns dtpicker"
+														   data-toggle="datetimepicker"
+														   data-target="#strStartDate_@(ViewBag.intJobId + "_" + intI)"
+														   value="@period.strStartDate @period.strStartTime" />
+												}
+											</div>
+										</td>
+										<td>
+											<div class="col-sm-12 mt-1">
+												@if (period.boolPeriodCompleted || period.boolPeriodStarted)
+												{
+													<text>@period.strEndDate @period.strEndTime</text>
+												}
+												else
+												{
+													<input id="strEndDate_@(ViewBag.intJobId + "_" + intI)"
+														   class="form-control input-with-dropdowns dtpicker"
+														   data-toggle="datetimepicker"
+														   data-target="#strEndDate_@(ViewBag.intJobId + "_" + intI)"
+														   value="@period.strEndDate @period.strEndTime" />
+												}
+											</div>
+										</td>
+										<td>
+											<div>
+												@if (period.boolPeriodCompleted || period.boolPeriodStarted)
+												{
+													<text>@period.intnMinsBeforeDelete</text>
+												}
+												else
+												{
+													<input class="form-control input-with-dropdowns" min="1" step="1" type="number"
+														   id="intMinsBeforeDelete_@(ViewBag.intJobId + "_" + intI)" pattern="^[0-9]$"
+														   value="@period.intnMinsBeforeDelete" />
+												}
+											</div>
+										</td>
+										<td>
+											<div>
+												@if (period.boolPeriodCompleted || period.boolPeriodStarted)
+												{
+													<text>@period.strFirstName @period.strLastName</text>
+												}
+												else
+												{
+													<span class="select">
+														<select class="selectEmployee"
+																id="strEmployee_@(ViewBag.intJobId + "_" + intI)"
+																data-intnContactId="@period.intnContactId">
+															<option>@period.strFirstName @period.strLastName</option>
+														</select>
+													</span>
+												}
+											</div>
+										</td>
+										<td>
+											@if (period.boolPeriodCompleted || period.boolPeriodStarted)
+											{
+												if (period.boolPeriodCompleted)
+												{
+													<text>Completed</text>
+												}
+												else if (period.boolPeriodStarted)
+												{
+													<text>Started</text>
+												}
+											}
+											else
+											{
+												<button type="button" class="btn btn-sm btn-primary SetResourcePeriod"
+														id="btnSetResourcePeriod_@(ViewBag.intJobId + "_" + intI)"
+														data-intPeriodId="@(ViewBag.intJobId + "_" + intI)"
+														data-intPkPeriod="@period.intnPkPeriod" data-intJobId="@ViewBag.intJobId"
+														data-new-period="@resource.intPkResource|@process.intPkProcessInWorkflow|@resource.intnPkEleetOrEleele|@resource.boolIsEleet">
+													<i class="fa fa-floppy-o" aria-hidden="true"></i>
+												</button>
+												<button class="btn btn-sm btn-secondary resetResourcePeriod" data-intPkPeriod="@period.intnPkPeriod"
+														id="btnResetResourcePeriod_@(ViewBag.intJobId + "_" + intI)"
+														data-intPeriodId="@(ViewBag.intJobId + "_" + intI)">
+													<span class="fa fa-times"></span>
+												</button>
+												<button class="btn btn-danger btn-sm deleteResourcePeriod" value="@period.intnPkPeriod"
+														id="btnDeleteResourcePeriod_@(ViewBag.intJobId + "_" + intI)"
+														data-intPeriodId="@(ViewBag.intJobId + "_" + intI)"
+														@((period.intnPkPeriod != null || period.intnPkPeriod > 0) ? "" : "hidden")>
+													<i class="fa fa-trash" aria-hidden="true"></i>
+												</button>
+											}
+										</td>
+									</tr>
+											intI++;
+										}
+									}
+								}
+							}
+						}
+				</tbody>
+			</table>
+		</div>
+	}
+	else
+	{
+		<div class="table-responsive">
+			<table class="table table-hover">
+				<thead>
+					<tr class="tr-calculation-header">
+						<th></th>
+						<th>Process</th>
+						<th>Estimated Duration</th>
+						<th>Start</th>
+						<th>End</th>
+						<th>Tolerance</th>
+						<th>Employee</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr style="text-align:center;">
+						<td colspan="8">
+							@ViewBag.responseTasks.strUserMessage
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	}
+}

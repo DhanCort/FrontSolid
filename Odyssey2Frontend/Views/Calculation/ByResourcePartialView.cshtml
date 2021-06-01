@@ -1,0 +1,362 @@
+﻿@model Odyssey2Frontend.Models.CalculationModel
+
+<h3>By Resources</h3>
+<div class="accordion" id="accordion2">
+    <!--PerQuantity-->
+    <div class="card">
+        <div class="card-header">
+            <a data-toggle="collapse" id="PerQuantityResource" data-intnPkWorkflow="@ViewBag.intPkWorkflow"
+               data-intJobId="@ViewBag.intJobId" data-hideButtons="@ViewBag.HideFormAttribute" 
+               data-boolnIsWorkflow="@Model.boolnIsWorkflow" data-intnPkProcessInWorkflow=""
+               class="btn btn-link sameWidth calculations"
+               data-parent="#accordion2" href="#ProcessPerQuantityResource"
+               data-strCalculationType="@if (ViewBag.boolDefaultCalculationResource !=null &&
+				   (bool)ViewBag.boolDefaultCalculationResource)
+				   {
+					   <text>ResourceDefaults-PQ</text>
+				   }
+				   else
+				   {
+					   <text>PerQuantity</text>
+				   }" data-strBy="resource">
+                <i class="fa fa-plus-circle"></i> Per Quantity
+            </a>
+            @*form-horizontal add-calculation process Base*@
+        </div>
+        <div id="ProcessPerQuantityResource" class="panel-collapse collapse">
+            <div class="card-body">
+                @if (ViewBag.HideFormAttribute == null || !(bool)ViewBag.HideFormAttribute)
+                {
+                <form class="form-horizontal add-calculation" id="ResourceForm" asp-controller="Calculation"
+                      asp-action="AddCalculation" data-strBy="resource"
+                      data-strCalculationType="@if (ViewBag.boolDefaultCalculationResource != null &&
+							  (bool)ViewBag.boolDefaultCalculationResource)
+					  {
+					   <text>ResourceDefaults-PQ</text>
+					  }
+					  else
+					  {
+					   <text>PerQuantity</text>
+					  }">
+                    <input asp-for="intnPkProduct" type="hidden" value="@Model.intnPkProduct" id="intnPkProduct">
+                    <input asp-for="strCalculationType" type="hidden" value="@CalculationModel.strPerQuantity"
+                           id="strCalculationType">
+                    <input asp-for="strBy" type="hidden" value="@CalculationModel.strByResource">
+                    <input asp-for="intPk" type="hidden" value="0">
+                    <input asp-for="intnPkProcessInWorkflow" type="hidden">
+                    <input asp-for="intnPkEleetOrEleeleI" type="hidden">
+                    <input asp-for="boolnIsEleetI" type="hidden">
+                    @*<input id="intnPkResourceI" name="intnPkResourceI" type="hidden">*@
+                    <input asp-for="strUnitI" type="hidden">
+                    <input asp-for="intnPkEleetOrEleeleO" type="hidden">
+                    <input asp-for="boolnIsEleetO" type="hidden">
+                    <input asp-for="strUnitO" type="hidden">
+                    <input asp-for="boolnIsWorkflow" type="hidden" value="@Model.boolnIsWorkflow">
+                    <input id="boolIsPaper" type="hidden" value="">
+                    <input name="intnJobId" id="intJobId" type="hidden" value="@ViewBag.intJobId">
+                    <input id="intnPkWorkflow" type="hidden" value="@ViewBag.intPkWorkflow">
+                    <input id="hidebuttons" type="hidden" value="@ViewBag.HideFormAttribute">
+                    <div class="form-group">
+                        <div class="row">
+                            @{
+                                String strColClass = "col-sm-4";
+                                if (
+                                    Model.boolnIsWorkflow == null || !(bool)Model.boolnIsWorkflow.Value
+                                    )
+                                {
+                                    strColClass = "col-sm-6";
+                                }
+                            }
+
+                            <div class="@strColClass" id="">
+                                <div>
+                                    <label class="input-label" for="email">Resource</label>
+                                </div>
+                                <span class="select" style="width:350px;">
+                                    <select asp-for="intnPkResourceI" class="default-select
+											resource-PerQuantity ResourceDefaults-PQ"
+                                            style="@if (ViewBag.boolDefaultCalculationResource != null &&
+												(bool)ViewBag.boolDefaultCalculationResource)
+												{<text>pointer-events: none; </text>}"
+                                            asp-items="@ViewBag.PrintshopResource" required>
+                                        <option>Pick one</option>
+                                    </select>
+                                </span>
+                            </div>
+                            @if (
+                        Model.boolnIsWorkflow != null && (bool)Model.boolnIsWorkflow.Value
+                        )
+                            {
+                                <div class="col-sm-4" id="">
+                                    <div>
+                                        <label class="input-label" for="email">Quantity From</label>
+                                    </div>
+                                    <span class="select" style="width:350px;">
+                                        <select asp-for="intnPkResourceO" disabled required>
+                                            <option>Pick one</option>
+                                        </select>
+                                    </span>
+                                </div>
+                            }
+                            <div class="@strColClass">
+                                <label class="input-label" for="strDescription">Description</label>
+                                <input asp-for="strDescription" class="form-control input-with-dropdowns">
+                                <span asp-validation-for="strDescription" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+						<div class="row">
+							<div class="NeededPerUnit col-sm-3">
+								<label class="input-label" for="intnMinAmount">Needed</label>
+								<div class="input-group">
+									<input asp-for="numnNeeded" class="form-control input-with-dropdowns"
+										   step=".0000000000000001" min=".0000000000000001" type="number" required>
+                                    <div class="input-group-append" style="height:29px;">
+                                        <span id="strUnitILabel" class="input-group-text">-</span>
+                                    </div>
+								</div>
+							</div>
+							<div class="custom-control custom-checkbox mt-2 col-sm-2 pt-4 pl-5 NeededByBlockCheckbox">
+								<input type="checkbox" class="custom-control-input chkNeededByBlock" id="boolnIsBlock"
+									   name="boolnIsBlock" value="True">
+								<label class="custom-control-label checkbox-label" for="boolnIsBlock">Calculate Needed by block</label>
+							</div>
+							<div class="NeededPerUnit col-sm-3">
+								<label class="input-label" for="intnMinAmount">Per Units</label>
+                                <div class="input-group">
+                                    <input asp-for="numnPerUnits" class="form-control input-with-dropdowns"
+                                           min="0" type="number" required>
+                                    <div class="input-group-append" style="height:29px;">
+                                        <span id="strUnitOLabel" class="input-group-text">-</span>
+                                        <span class="select" id="spanUnitO" style="width:auto;" hidden>
+                                            <select asp-for="boolnByArea">
+                                                <option value="false">-</option>
+                                            </select>
+                                        </span>
+                                    </div>
+                                </div>
+							</div>
+							<div class="custom-control custom-checkbox mt-2 col-sm-4 pt-4 pl-5 NeededPerUnitCheckbox">
+								<input type="checkbox" class="custom-control-input chkNeededPerUnit" id="boolnFromThickness"
+									   name="boolnFromThickness" value="False">
+								<label class="custom-control-label checkbox-label" for="boolnFromThickness">Calculate Per Units from thickness</label>
+							</div>
+						</div>
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <label class="input-label">Waste</label>
+                                <div class="row" style="margin: 0% !important">
+                                    <div class="col-sm-6 ml-0 pl-0">
+                                        <div class="input-group">
+                                            <input placeholder="Percentage %" type="number" step="0.0001"
+                                                   name="numnPercentWaste" class="form-control input-with-dropdowns"
+                                                   id="numnPercentWaste" />
+                                            <div class="input-group-append" style="height:29px;">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="input-group">
+                                            <input placeholder="Quantity" type="number" step="0.0001"
+                                                   name="numnQuantityWaste" id="numnQuantityWaste"
+                                                   class="form-control input-with-dropdowns" />
+                                            <div class="input-group-append" style="height:29px;">
+                                                <span class="input-group-text">Qty.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="input-label" for="boolIsEnable">Enable</label><br />
+                                <label class="checkbox-label">
+                                    <input name="boolIsEnable" type="radio" value="true" checked> Yes
+                                </label>
+                                <label class="checkbox-label">
+                                    <input name="boolIsEnable" type="radio" value="false"> No
+                                </label>
+                                <span asp-validation-for="boolIsEnable" class="text-danger"></span>
+                            </div>
+
+                        </div>
+                        @if (
+                            Model.intnPkProduct != null && !(bool)ViewBag.boolFromScratch
+                            )
+                        {
+                            <div class="row">
+                                <div class="col-sm-4 text-center mt-2">
+									<input type="hidden" id="strConditionToApply" name="condition" value="" />
+                                    <button type="button" class="btn btn-info btn-sm openConditionToApplyModal"
+                                            data-toggle="modal" data-target="#conditionToApplyModal">
+                                        Conditions to Apply
+                                    </button>
+                                </div>
+                                <div class="col-sm-4 text-center mt-2">
+                                    <div class="alert alert-success" id="translatedCondition" hidden>
+
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 text-center mt-2">
+                                    <button type="button" class="btn btn-secondary btn-sm delete-condition-to-apply text-red">
+                                        Remove Conditions
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    @*@if(Model.boolIsTypeMedia)
+        {*@
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-4 text-center">
+                                <input type="hidden" class="form-control" id="intnPkTrans" name="intnPkTrans" />
+                                <button class="btn btn-info btn-sm openPaperModal" type="button"
+                                        style="display: none" disabled="">
+                                    <i class="fa fa-file-o" aria-hidden="true"></i> Paper Transformation
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    @*}*@
+
+                    <div class="form-group">
+                        <div class="col-sm-12 text-center">
+                            <button type="submit" class="btn btn-primary" id="saveResourceCalculation">
+                                <b>Add</b>
+                            </button>
+                        </div>
+                        <div class="col-sm-12" id="calculationAlert" hidden></div>
+                    </div>
+                </form>
+                }
+                <div>
+                    <div id="resource-PerQuantity-table" class="text-center">
+                        <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div id="resource-PerQuantity-table-default" class="text-center">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Base Quantity-->
+    <div class="card">
+        <div class="card-header">
+            <a class="btn btn-link sameWidth calculations" data-toggle="collapse" href="#BasePerQuantityResource"
+               data-strCalculationType="BasePerQuantity" data-intnPkWorkflow="@ViewBag.intPkWorkflow"
+               data-intJobId="@ViewBag.intJobId" data-hideButtons="@ViewBag.HideFormAttribute"
+               data-boolnIsWorkflow="@Model.boolnIsWorkflow" data-strBy="resource">
+                <i class="fa fa-plus-circle"></i> Base Quantity
+            </a>
+        </div>
+        <div id="BasePerQuantityResource" class="collapse" data-parent="#accordion2">
+            <div class="card-body">
+                @if (ViewBag.HideFormAttribute == null || !(bool)ViewBag.HideFormAttribute)
+                {
+                <form class="form-horizontal add-calculation" id="BaseResourceForm" asp-controller="Calculation"
+                      asp-action="AddCalculation" data-strBy="resource" data-strCalculationType="BasePerQuantity">
+                    <input asp-for="intnPkProduct" type="hidden" value="@Model.intnPkProduct" id="intnPkProduct">
+                    <input asp-for="strCalculationType" type="hidden" value="@CalculationModel.strBaseQuantity"
+                           id="strCalculationType">
+                    <input asp-for="strBy" type="hidden" value="@CalculationModel.strByResource">
+                    <input asp-for="intPk" type="hidden" value="0">
+                    <input asp-for="intnPkProcessInWorkflow" type="hidden">
+                    <input asp-for="intnPkEleetOrEleeleI" type="hidden">
+                    <input asp-for="boolnIsEleetI" type="hidden">
+                    @*<input id="intnPkResourceI" name="intnPkResourceI" type="hidden">*@
+                    <input asp-for="strUnitI" type="hidden">
+                    <input asp-for="intnPkEleetOrEleeleO" type="hidden">
+                    <input asp-for="boolnIsEleetO" type="hidden">
+                    <input asp-for="strUnitO" type="hidden">
+                    <input asp-for="boolnIsWorkflow" type="hidden" value="@Model.boolnIsWorkflow">
+                    <input id="boolIsPaper" type="hidden" value="">
+                    <input name="intnJobId" id="intJobId" type="hidden" value="@ViewBag.intJobId">
+                    <input id="intnPkWorkflow" type="hidden" value="@ViewBag.intPkWorkflow">
+                    <input id="hidebuttons" type="hidden" value="@ViewBag.HideFormAttribute">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-4" id="">
+                                <div>
+                                    <label class="input-label" for="email">Resource</label>
+                                </div>
+                                <span class="select" style="width:350px;">
+                                    <select class="default-select resource-PerQuantity ResourceDefaults-PQ"
+                                            style="@if (ViewBag.boolDefaultCalculationResource != null &&
+													(bool)ViewBag.boolDefaultCalculationResource)
+													{<text>pointer-events: none; </text>}"
+                                            asp-items="@ViewBag.PrintshopResource"
+                                            asp-for="intnPkResourceI" required>
+                                        <option>Pick one</option>
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="input-label" for="strDescription">Description</label>
+                                <input asp-for="strDescription" class="form-control input-with-dropdowns">
+                                <span asp-validation-for="strDescription" class="text-danger"></span>
+                            </div>
+                            <div class="col-sm-2">
+                                <label class="input-label" for="numnNeeded">Quantity</label>
+                                <input asp-for="numnNeeded" class="form-control input-with-dropdowns" step=".0001"
+                                       type="number" min=".0001" required>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <label class="input-label" for="boolIsEnable">Enable</label><br />
+                                <label class="checkbox-label">
+                                    <input name="boolIsEnable" type="radio" value="true" checked> Yes
+                                </label>
+                                <label class="checkbox-label">
+                                    <input name="boolIsEnable" type="radio" value="false"> No
+                                </label>
+                                <span asp-validation-for="boolIsEnable" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @if (Model.intnPkProduct != null && !(bool)ViewBag.boolFromScratch)
+                        {
+                            <div class="row">
+                                <div class="col-sm-4 text-center mt-2">
+                                    <input type="hidden" id="strConditionToApply" name="condition" value="" />
+                                    <button type="button" class="btn btn-info btn-sm openConditionToApplyModal"
+                                            data-toggle="modal" data-target="#conditionToApplyModal">
+                                        Conditions to Apply
+                                    </button>
+                                </div>
+                                <div class="col-sm-4 text-center mt-2">
+                                    <div class="alert alert-success" id="translatedCondition" hidden></div>
+                                </div>
+                                <div class="col-sm-4 text-center mt-2">
+                                    <button type="button" class="btn btn-secondary btn-sm delete-condition-to-apply
+											text-red">
+                                        Remove Conditions
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-12 text-center">
+                            <button type="submit" class="btn btn-primary" id=""><b>Add</b></button>
+                        </div>
+                        <div class="col-sm-12" id="calculationAlert" hidden></div>
+                    </div>
+                </form>
+                }
+
+                <div>
+                    <div id="resource-BasePerQuantity-table" class="text-center">
+                        <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

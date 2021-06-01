@@ -1,0 +1,78 @@
+﻿@model List<OverdueTaskModel>
+	<div style="display: block; overflow-y: scroll; height: 390px; width: 100%">
+		@if (
+			Model.Count > 0
+			)
+		{
+			foreach (OverdueTaskModel perPeriod in Model)
+			{
+				<div class="card card-margin card-task">
+					<div class="card-body">
+						<div class="row">
+							<div class="col-xl-12 font-bold">@perPeriod.strDescription</div>
+						</div>
+						<div class="row">
+							<div class="col-xl-6">Start Date: @perPeriod.strStartDate</div>
+							<div class="col-xl-6">Start Time: @perPeriod.strStartTime</div>
+						</div>
+						<div class="row">
+							<div class="col-xl-6">End Date: @perPeriod.strEndDate</div>
+							<div class="col-xl-6">End Time: @perPeriod.strEndTime</div>
+						</div>
+						@if (
+							!String.IsNullOrEmpty(perPeriod.strCustomerName) || !String.IsNullOrEmpty(perPeriod.strCustomerLastName)
+							)
+						{
+							<div class="row">
+								<div class="col-xl-6">
+
+								</div>
+								<div class="col-xl-6">
+									<i class="fa fa-handshake-o" aria-hidden="true"></i> @perPeriod.strCustomerName @perPeriod.strCustomerLastName
+								</div>
+							</div>
+						}
+						@if (
+							ViewBag.intnContactId == null || ViewBag.intnContactId == 0
+							)
+						{
+							<div class="row">
+								<div class="col-sm-6">
+									<button type="button" class="btn btn-info btn-sm btnEditTask disableIfIsAdmin disableIfCompleted" data-intnPkTask="@perPeriod.intPkTask"
+											data-boolIsCompleted="@perPeriod.boolIsCompleted"
+											data-boolIsOverdue="@true">
+										<i class="fa fa-pencil" aria-hidden="true"></i>
+									</button>
+									<button class="btn btn-danger btn-sm btnDeleteTask disableIfIsAdmin disableIfCompleted"
+											data-intnPkTask="@perPeriod.intPkTask"
+											data-strStartDate="@perPeriod.strStartDate"
+											data-boolIsCompleted="@perPeriod.boolIsCompleted"
+											data-boolIsOverdue="@true">
+										<i class="fa fa-trash" aria-hidden="true"></i>
+									</button>
+									<button class="btn btn-primary btn-sm completeTask disableIfCompleted"
+											data-intnPkTask="@perPeriod.intPkTask"
+											data-boolIsCompleted="@perPeriod.boolIsCompleted"
+											data-boolIsOverdue="@true">
+										<i class="fa fa-flag-checkered" aria-hidden="true"></i> Complete
+									</button>
+								</div>
+							</div>
+						}
+					</div>
+				</div>
+			}
+		}
+		else
+		{
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="card">
+						<div class="card-body">
+							Nothing to show
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+	</div>

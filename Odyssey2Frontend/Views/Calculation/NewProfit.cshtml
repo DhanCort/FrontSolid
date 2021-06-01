@@ -1,0 +1,64 @@
+﻿@model Odyssey2Frontend.Models.CalculationModel
+@{ 
+	String strAction = "/Calculation/AddCalculation";
+	if (
+		Model != null
+		)
+	{
+		strAction = "/Calculation/ModifyCalculation";
+	}
+}
+
+<div class="row">
+	<div class="col-12 pl-0">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item">
+				<a href="/PrintshopProductTemplate">Products</a>
+			</li>
+			<li class="breadcrumb-item active">@ViewBag.strTypeId</li>
+		</ol>
+	</div>
+	<div class="col-12">
+		<h2>Profit settings</h2>
+		<h5>of @ViewBag.strTypeId</h5>
+	</div>
+</div>
+<hr class="greenHrUx" />
+<input id="strUrlForRedirection" type="hidden" 
+	   value="/Calculation/ProfitSettings?intPk=@ViewBag.intPk&strTypeId=@ViewBag.strTypeId"/>
+<form class="col-md-12 addNewCalculation" action="@strAction">
+	<input name="intnPkProduct" type="hidden" id="intPkProduct" value="@ViewBag.intPk">
+	<input asp-for="strCalculationType" type="hidden" value="@CalculationModel.strProfit">
+	<input asp-for="intPk" type="hidden" value="@ViewBag.intPkProfit">
+	<input asp-for="strBy" type="hidden" value="@CalculationModel.strByProduct">
+	<div>
+		<label class="input-label">Name of profit calculation</label>
+		<input asp-for="strDescription" class="form-control input-with-dropdowns resize-input-width" 
+			   style="width: 350px !important" autocomplete="off" required/>
+	</div>
+	<div class="checkbox-switch genericSwitch mt-3">
+		<div class="switch-plate resAvailability" style="width: 120px;">
+			<div class="switch @if(Model != null && Model.boolIsEnable) {<text>on</text>}" id="boolnAreaSwitch">
+			</div>
+		</div>
+		<label>@if (Model != null && Model.boolIsEnable) { <text>Enabled</text>} else {<text>Disabled </text>}</label>
+		<input type="hidden" asp-for="boolIsEnable">
+	</div>
+	<div>
+		<label class="input-label">Profit</label>
+		<div class="input-group mb-3" style="width:100px !important; border-radius:13px !important">
+			<input class="form-control form-control-sm resize-input-width"
+				   asp-for="numnProfit" type="number" min=".01" step=".01" required style="border-right: none;">
+			<div class="input-group-append" style="border-radius: 0px">
+				<span class="input-group-text" style="background: none !important; border-left: none;">
+					<i class="font-weight-bold font-bold" style="font-size: 8.5pt">%</i>
+				</span>
+			</div>
+		</div>
+	</div>
+	<div class="mt-5">
+		<a href="/Calculation/ProfitSettings?intPk=@ViewBag.intPk&strTypeId=@ViewBag.strTypeId"
+		   class="btn btn-secondary mr-3"><i class="fa fa-arrow-left"></i> Back</a>
+		<button type="submit" class="btn btn-primary">Save Calculation</button>
+	</div>
+</form>

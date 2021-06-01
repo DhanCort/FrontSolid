@@ -1,0 +1,52 @@
+﻿@model Odyssey2Frontend.Models.CalculationModel
+@{
+	String id = Model.strCustomName.Replace(" ", "_").ToLower() + "_" + Model.intPk.ToString();
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <!--<form id="@id" asp-action="AddBySpectCalculation">-->
+        <form id="@id">
+            <input asp-for="strPrintshopId" type="hidden" value="@Model.strPrintshopId" id="@{@id}_Printshop">
+            <input asp-for="intnPkOrderFormAttribute" type="hidden" value="@Model.intPk" id="@{@id}_Attribute">
+            <input asp-for="intnPkProduct" type="hidden" value="@Model.intnPkProduct" id="@{@id}_Product">
+            <div class="form-group">
+                <label>Product Intent</label>
+                <select asp-for="strAscendantElements" asp-items="@Model.darrIntent" id="@{@id}_IntentList"
+                        onchange="getAttributes('@{@id}')"
+                        class="form-control intent-select">
+                    <option value="">Pick one</option>
+                </select>
+            </div>
+            <div class="form-group" id="@{@id}_IntentAttributeList" hidden>
+
+            </div>
+            <div class="form-group">
+                <div class="col-sm-4">
+                    <label>Order Form values</label>
+                    <select asp-for="strOrderFormValue"
+                             id="@{@id}_OrderFormValue"
+                            class="form-control">
+                        <option value="">Pick one</option>
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <label>Min</label>
+                    <input asp-for="intnMinAmount" class="form-control" id="@{@id}_Min">
+                </div>
+                <div class="col-sm-2">
+                    <label>Max</label>
+                    <input asp-for="intnMaxAmount" class="form-control" id="@{@id}_Max">
+                </div>
+                <div class="col-sm-2">
+                    <label>Per Unit Cost</label>
+                    <input asp-for="numnCost" class="form-control" id="@{@id}_PerUnit">
+                </div>
+                <div class="col-sm-2">
+                    <br />
+                    <button type="button" class="btn btn-info" onclick="saveSpecifications('@{@id}')" id="@{@id}_Save"><b>Add</b></button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

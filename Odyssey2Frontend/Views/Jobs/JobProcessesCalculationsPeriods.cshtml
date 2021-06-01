@@ -1,0 +1,191 @@
+﻿@model List<JobProcessModel>
+
+@{
+    String[] arrstrTimeDefault = { "00", "00", "00" };
+}
+
+<div id="accordion" style="display: none">
+    @if (Model != null && Model.Count > 0)
+    {
+        int intproc = 0;
+        foreach (var process in Model)
+        {
+            <div class="card" style="margin: 0.5% !important;">
+                <div class="card-header" id="heading_@intproc">
+                    <h5 class="mb-0">
+                        <button class="btn btn-sm btn-link" data-toggle="collapse" data-target="#collapse_@intproc" aria-expanded="true" aria-controls="collapse_@intproc">
+                            @process.strName
+                        </button>
+                    </h5>
+                </div>
+                <div id="collapse_@intproc" class="collapse" aria-labelledby="heading_@intproc" data-parent="#accordion">
+                    <div class="card-body" style="padding: 0.25rem !important">
+                        @foreach (var calculation in process.arrcal)
+                        {
+                            String strProcessTime = "";
+
+                            if (calculation.intHours > 0)
+                            {
+                                strProcessTime = strProcessTime + calculation.intHours.ToString();
+                                if (calculation.intMinutes > 0)
+                                {
+                                    strProcessTime = strProcessTime + ":" + calculation.intMinutes.ToString("00");
+
+                                    if (calculation.intSeconds > 0)
+                                    {
+                                        strProcessTime = strProcessTime + ":" + calculation.intSeconds.ToString("00");
+                                    }
+                                }
+
+                                strProcessTime = strProcessTime + " hrs.";
+                            }
+                            else if (calculation.intMinutes > 0)
+                            {
+                                strProcessTime = calculation.intMinutes.ToString();
+
+                                if (calculation.intSeconds > 0)
+                                {
+                                    strProcessTime = strProcessTime + ":" + calculation.intSeconds.ToString("00");
+                                }
+
+                                strProcessTime = strProcessTime + " min.";
+                            }
+                            else if (calculation.intSeconds > 0)
+                            {
+                                strProcessTime = calculation.intSeconds + " sec.";
+                            }
+                            else
+                            {
+                                strProcessTime = "";
+                            }
+
+                            var strStartDateTime = @calculation.strStartDate + " " + @calculation.strStartTime;
+                            var strEndDateTime = @calculation.strEndDate + " " + @calculation.strEndTime;
+                            <div class="row border-bottom" style="margin-top: 10px !important; padding-bottom: 10px">
+                                <div class="col-sm-1 mt-4 font-bold">
+                                    @if (calculation.boolPeriodCompleted == true)
+                                    {
+                                        <div class="pull-right">
+                                            <i class="fa fa-2x fa-check-circle" style="color: green"></i>
+                                        </div>
+                                    }
+                                    else if (calculation.boolPeriodStarted == true)
+                                    {
+                                        <div class="pull-right">
+                                            <i class="fa fa-2x fa-tasks"></i>
+                                        </div>
+                                    }
+                                    @calculation.strDescription
+                                </div>
+                                <div class="col-sm-1 mt-4 font-bold">@strProcessTime</div>
+                                <div class="col-sm-2">
+                                    <div>
+                                        <label class="input-label">Start date</label>
+                                    </div>
+                                    <div>
+                                        <input id="strStartDateJob_@calculation.intPkCalculation" data-toggle="datetimepicker"
+                                               data-target="#strStartDateJob_@calculation.intPkCalculation"
+                                               class="form-control jobDatePicker input-with-dropdowns" value="@strStartDateTime"
+                                               @if (calculation.boolProcessCompleted) { <text> disabled</text> } />
+                                    </div>
+                                </div>
+                                <div class="col-sm-1 pt-3" style="max-width: 5%">
+                                    <button class="btn btn-info btn-sm getSuggestedEndTime" data-toggle="tooltip"
+                                            data-placement="top" title="Get suggested End Date"
+                                            data-intPkCalculation="@calculation.intPkCalculation"
+                                            @if (calculation.boolProcessCompleted) { <text> disabled</text> }>
+                                        <i class="fa fa-clock-o" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div>
+                                        <label class="input-label">End date</label>
+                                    </div>
+                                    <div>
+                                        <input id="strEndDateJob_@calculation.intPkCalculation" data-toggle="datetimepicker"
+                                               data-target="#strEndDateJob_@calculation.intPkCalculation"
+                                               class="form-control input-with-dropdowns jobDatePicker" value="@strEndDateTime"
+                                               @if (calculation.boolProcessCompleted) { <text> disabled</text> } />
+                                    </div>
+                                </div>
+                                @*<div class="col-sm-2">
+                                        <label class="font-bold">Assigned to:</label>
+                                        @if (@calculation.strFirstName != null || calculation.strLastName != null)
+                                        {
+                                            <label>@calculation.strFirstName @calculation.strLastName</label>
+                                        }
+                                        else
+                                        {
+                                            <label>-</label>
+                                        }
+                                    </div>*@
+                                <div class="col-sm-2">
+                                    <div>
+                                        <label class="input-label">Employee</label>
+                                    </div>
+                                    <div>
+                                        <span class="select">
+                                            <select class="selectEmployee"
+                                                    id="strEmployee_@calculation.intPkCalculation"
+                                                    data-intnContactId="@calculation.intnContactId"
+                                                    @if (calculation.boolProcessCompleted) { <text> disabled</text> }>
+                                                <option>-</option>
+                                            </select>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div>
+										<label class="input-label">Schedule Reset Allowance</label>
+                                    </div>
+                                    <div>
+                                        <input class="form-control input-with-dropdowns" min="0" step="1" type="number"
+                                               id="intMinsBeforeDelete_@calculation.intPkCalculation" pattern="^[0-9]$"
+                                               value="@calculation.intMinsBeforeDelete" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-1 pt-3 text-center">
+                                    <input hidden id="intPkPeriod_@calculation.intPkCalculation"
+                                           value="@calculation.intnPkPeriod" />
+                                    <input hidden id="intPkProcessInWorkflow_@calculation.intPkCalculation"
+                                           value="@process.intPkProcessInWorkflow" />
+                                    <input hidden id="intJobId" value="@ViewBag.intJobId" />
+                                    @if (
+                                    calculation.boolPeriodCompleted == false &&
+                                    calculation.boolPeriodStarted == false
+                                    )
+                                    {
+                                        <button type="button" class="btn btn-sm btn-primary setProcessPeriod"
+                                                data-intPkCalculation="@calculation.intPkCalculation"
+                                                data-toRefreshCalendar="@ViewBag.intJobId|@ViewBag.intPkWorkflow|@ViewBag.strSunday"
+                                                @if (calculation.boolProcessCompleted) { <text> disabled</text> }>
+                                            <i class="fa fa-floppy-o" aria-hidden="true"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-secondary resetProcessPeriod" data-intPkCalculation="@calculation.intPkCalculation"><span class="fa fa-times"></span></button>
+                                        @if (calculation.intnPkPeriod != null || calculation.intnPkPeriod > 0)
+                                        {
+                                            <button class="btn btn-danger btn-sm deleteJobPeriod" value="@calculation.intnPkPeriod"
+                                                    data-intPkCalculation="@calculation.intPkCalculation"
+                                                    data-toRefreshCalendar="@ViewBag.intJobId|@ViewBag.intPkWorkflow|@ViewBag.strSunday"
+                                                    @if (calculation.boolProcessCompleted) { <text> disabled</text> }>
+                                                <i class="fa fa-trash" aria-hidden="true"></i>
+                                            </button>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            intproc = intproc + 1;
+        }
+    }
+    else
+    {
+        <div class="alert alert-danger text-center">
+            There are no process time calculations added.
+        </div>
+    }
+</div>

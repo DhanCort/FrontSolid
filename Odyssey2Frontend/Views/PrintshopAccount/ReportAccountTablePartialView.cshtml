@@ -1,0 +1,36 @@
+﻿<div class="table-responsive">
+    <table class="table table-sm table-hover">
+        <thead>
+            <tr>
+                <th>Number</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th colspan="2" class="text-center">Amount</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in (List<AccountMovementsDetailsModel>)Model.objResponse)
+            {
+            <tr>
+                <td>@item.strNumber</td>
+                <td>@item.strName</td>
+                <td>@item.strAccountType</td>
+                <td>$</td>
+                <td class="text-right">@item.numAmount.ToString("n2")</td>
+                <td class="text-center">
+                    <button class="btn btn-info showAccountDetails"
+                            data-intPk="@item.intPk" data-strAccountName="@item.strName">
+                        <i class="fa fa-file-text-o" aria-hidden="true"></i> Account Details
+                    </button>
+                </td>
+            </tr>
+            }
+            @*<tr>
+                <td colspan="2" class="font-bold text-center">Total Expenses: </td>
+                <td class="font-bold">$ @Model.objResponse.numTotalExpenses</td>
+                <td></td>
+            </tr>*@
+        </tbody>
+    </table>
+</div>

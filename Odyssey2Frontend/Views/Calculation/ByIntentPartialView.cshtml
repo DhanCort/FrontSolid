@@ -1,0 +1,228 @@
+﻿@model Odyssey2Frontend.Models.CalculationModel
+
+<div class="accordion" id="accordion3">
+	@* Intent per unit *@
+	<div class="card">
+		<div class="card-header">
+            <a data-toggle="collapse" id="PerUnitIntent" class="btn btn-link sameWidth calculations collapsed" data-strCalculationType="PerUnit" data-strBy="intent" data-parent="#accordion3" href="#ProcessPerUnitIntent">
+                <i class="fa fa-plus-circle"></i> Per Unit
+            </a>
+		</div>
+		<div id="ProcessPerUnitIntent" class="collapse" data-parent="#accordion3">
+			<div class="card-body">
+				<form class="form-horizontal calculation-form-intent PerUnit" asp-action="AddCalculation" data-strCalculationType="PerUnit" data-strBy="intent">
+					<input asp-for="intnPkProduct" type="hidden" value="@Model.intnPkProduct" id="intPkProduct">
+					<input asp-for="strCalculationType" type="hidden" value="@CalculationModel.strPerUnit" id="strCalculationType">
+					<input asp-for="intPk" type="hidden" value="0">
+					<input asp-for="strBy" type="hidden" value="@CalculationModel.strByIntent">
+					<div class="form-group">
+						<div class="col-sm-12">
+							<label>Product Intent</label>
+							<select asp-for="strAscendantElements" asp-items="@Model.darrIntent" required
+									class="form-control intent-select strAscendantElements">
+								<option value="">Pick one</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-12" id="dynamicElements">
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="row">
+							<div class="col-sm-3">
+								<label for="strDescription">Description:</label>
+								<input id="strDescription" name="strDescription"
+									   class="form-control" required/>
+								<span asp-validation-for="strDescription" class="text-danger"></span>
+							</div>
+							<div class="col-sm-3">
+								<label for="intnMinAmount">Min Amount:</label>
+								<input type="number" id="intnMinAmount" name="intnMinAmount" min="1" placeholder="1" class="form-control">
+								<span asp-validation-for="intnMinAmount" class="text-danger"></span>
+							</div>
+							<div class="col-sm-3">
+								<label for="intnMaxAmount">Max Amount:</label>
+								<input type="number" id="intnMaxAmount" name="intnMaxAmount" min="1" max="2147483647" placeholder="2147483647" class="form-control">
+								<span asp-validation-for="intnMaxAmount" class="text-danger"></span>
+							</div>
+							<div class="col-sm-3">
+								<label for="numnCost">Per Unit Cost:</label>
+								<input type="number" id="numnCost" name="numnCost" class="form-control" step=".01" min="1" required>
+								<span asp-validation-for="numnCost" class="text-danger"></span>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-4 text-center">
+                                <label for="numnCost">Min to Produce:</label>
+                                <input type="number" name="numnMin" id="numnMin" class="form-control" step=".01" min="1" placeholder="1">
+                                <span asp-validation-for="numnMin" class="text-danger"></span>
+                            </div>
+                            <div class="col-sm-4 text-center">
+                                <label for="boolIsBlock">By Block:</label><br />
+                                @*<label><input asp-for="boolnIsBlock" type="radio" value="true"> Yes</label>
+                                <label><input asp-for="boolnIsBlock" type="radio" value="false" checked> No</label>
+                                <span asp-validation-for="boolnIsBlock" class="text-danger"></span>*@
+                                <input asp-for="numnBlock" class="form-control" type="number" step=".01" placeholder="1" min="0">
+                            </div>
+                            <div class="col-sm-4 text-center">
+                                <label for="boolIsBlock">Enable:</label><br />
+                                <label><input id="boolIsEnable" name="boolIsEnable" type="radio" value="true" checked> Yes</label>
+                                <label><input id="boolIsEnable" name="boolIsEnable" type="radio" value="false"> No</label>
+                                <span asp-validation-for="boolIsEnable" class="text-danger"></span>
+                            </div>
+                        </div>
+					</div>
+					<div class="form-group">
+						<div class="row">
+							<div class="col-sm-4 text-center">
+								<input type="hidden" asp-for="strConditionToApply" value="" />
+								<button type="button" class="btn btn-link openConditionToApplyModal" data-toggle="modal" data-target="#conditionToApplyModal"><b>Conditions to Apply</b></button>
+							</div>
+							<div class="col-sm-4 text-center">
+								<div class="alert alert-success" id="translatedCondition" hidden>
+
+								</div>
+							</div>
+							<div class="col-sm-4 text-center">
+								<button type="button" class="btn btn-link delete-condition-to-apply text-red" style="display: none">
+									<b>Remove Condition</b>
+								</button>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-12 text-center">
+							<button type="submit" class="btn btn-info" id="saveCalculation"><b>Add</b></button>
+						</div>
+						<div class="col-sm-12" id="calculationAlert" hidden></div>
+					</div>
+				</form>
+				<div>
+					<div id="intent-PerUnit-table" class="text-center">
+						<img src='https://mir-s3-cdn-cf.behance.net/project_modules/disp/35771931234507.564a1d2403b3a.gif' width='85' height='75'>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	@* inent per quantity *@
+	<div class="card">
+		<div class="card-header">
+			<a data-toggle="collapse" id="PerQuantityIntent" class="btn btn-link sameWidth calculations collapsed" data-strCalculationType="PerQuantity" data-strBy="intent" data-parent="#accordion3" href="#ProcessPerQuantityIntent">
+                <i class="fa fa-plus-circle"></i> Per Quantity
+			</a>
+		</div>
+		<div id="ProcessPerQuantityIntent" class="collapse" data-parent="#accordion3">
+			<div class="card-body">
+				<form class="form-horizontal calculation-form-intent" asp-action="AddCalculation" data-strCalculationType="PerQuantity" data-strBy="intent">
+					<input asp-for="intnPkProduct" type="hidden" value="@Model.intnPkProduct" id="intPkProduct">
+					<input asp-for="strCalculationType" type="hidden" value="@CalculationModel.strPerQuantity" id="strCalculationType">
+					<input asp-for="intPk" type="hidden" value="0">
+					<input asp-for="strBy" type="hidden" value="@CalculationModel.strByIntent">
+					<div class="form-group">
+						<div class="col-sm-12">
+							<label>Product Intent</label>
+							<select asp-for="strAscendantElements" asp-items="@Model.darrIntent" required
+									class="form-control intent-select strAscendantElements">
+								<option value="">Pick one</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-12" id="dynamicElements">
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="row">
+							<div class="col-sm-6">
+								<label for="strDescription">Description:</label>
+								<input asp-for="strDescription" class="form-control" required>
+								<span asp-validation-for="strDescription" class="text-danger"></span>
+							</div>
+							<div class="col-sm-3">
+								<label for="numnCost">Cost:</label>
+								<input asp-for="numnCost" class="form-control" step=".01" min="1" type="number" required>
+								<span asp-validation-for="numnCost" class="text-danger"></span>
+							</div>
+							<div class="col-sm-3">
+								<label for="intnQuantity">Quantity:</label>
+								<input asp-for="numnQuantity" class="form-control" step=".01" min="1" type="number" required>
+								<span asp-validation-for="numnQuantity" class="text-danger"></span>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="row">
+							<div class="col-sm-2">
+								<label for="intnMinAmount">Min Amount:</label>
+								<input asp-for="intnMinAmount" class="form-control" min="1" placeholder="1">
+								<span asp-validation-for="intnMinAmount" class="text-danger"></span>
+							</div>
+							<div class="col-sm-2">
+								<label for="intnMaxAmount">Max Amount:</label>
+								<input asp-for="intnMaxAmount" class="form-control" min="1" placeholder="2147483647">
+								<span asp-validation-for="intnMaxAmount" class="text-danger"></span>
+							</div>
+							<div class="col-sm-2">
+								<label for="numnMin">Min to Produce:</label>
+								<input asp-for="numnMin" class="form-control" step=".01" min="1" type="number" placeholder="1">
+								<span asp-validation-for="numnMin" class="text-danger"></span>
+							</div>
+                            <div class="col-sm-3 text-center">
+                                <label for="boolIsBlock">By Block:</label><br />
+                                @*<label><input asp-for="boolnIsBlock" type="radio" value="true"> Yes</label>
+                                <label><input asp-for="boolnIsBlock" type="radio" value="false" checked> No</label>
+                                <span asp-validation-for="boolnIsBlock" class="text-danger"></span>*@
+                                <input asp-for="numnBlock" class="form-control" type="number" step=".01" placeholder="1" min="0">
+                            </div>
+							<div class="col-sm-3 text-center">
+								<label for="boolIsEnable">Enable:</label><br />
+								<label><input id="boolIsEnable" name="boolIsEnable" type="radio" value="true" checked> Yes</label>
+								<label><input id="boolIsEnable" name="boolIsEnable" type="radio" value="false"> No</label>
+								<span asp-validation-for="boolIsEnable" class="text-danger"></span>
+							</div>
+						</div>
+					</div>
+					@if (Model.intnPkProduct != null)
+					{
+						<div class="form-group">
+							<div class="row">
+								<div class="col-sm-4 text-center">
+									<input type="hidden" asp-for="strConditionToApply" value="" />
+									<button type="button" class="btn btn-link openConditionToApplyModal" data-toggle="modal" data-target="#conditionToApplyModal"><b>Conditions to Apply</b></button>
+								</div>
+								<div class="col-sm-4 text-center">
+									<div class="alert alert-success" id="translatedCondition" hidden>
+
+									</div>
+								</div>
+								<div class="col-sm-4 text-center">
+									<button type="button" class="btn btn-link delete-condition-to-apply text-red" style="display: none">
+										<b>Remove Condition</b>
+									</button>
+								</div>
+							</div>
+						</div>
+					}
+
+					<div class="form-group">
+						<div class="col-sm-12 text-center">
+							<button type="submit" class="btn btn-info" id="saveCalculation"><b>Add</b></button>
+						</div>
+						<div class="col-sm-12" id="calculationAlert" hidden></div>
+					</div>
+				</form>
+				<div>
+                    <div id="intent-PerQuantity-table" class="text-center">
+                        <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                        <span class="sr-only">Loading...</span>
+                    </div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

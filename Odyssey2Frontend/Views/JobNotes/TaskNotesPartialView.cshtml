@@ -1,0 +1,65 @@
+﻿@model ProcessNotesModel
+@if (ViewBag.boolFromWfJobs)
+{
+	<div class="row frmAddPeriodNote">
+		<div class="col">
+			<textarea maxlength="220" class="form-control" rows="5" id="strNote" placeholder="Add note..."></textarea>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<div class="employeeToast tagBox">
+
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-6">
+			<button class="btn btn-primary btn-sm btnSavePeriodNote"
+					data-intPkProcessInWorkflow="@ViewBag.intnPkProcessInWorkflow"
+					data-strJobId="@ViewBag.strJobId"
+					data-boolFromWfJobs="True"
+					data-boolFromMyEmployees="False">
+				<i class="fa fa-floppy-o" aria-hidden="true"></i> Save
+			</button>
+		</div>
+	</div>
+}
+<div class="row">
+	<div class="col-sm-12">
+		<div class="card">
+			<div class="card-header">@Model.strProcessName Notes</div>
+			<div class="card-body">
+				<div class="row divNote">
+					@foreach (var item in Model.arrnotes)
+					{
+						<div class="col-sm-10" style="text-align: justify; text-justify: inter-word;">
+							<i class="fa fa-sticky-note-o" aria-hidden="true"></i> @item.strNote<br />
+						</div>
+						<div class="col-sm-2">
+							<button class="btn btn-danger btn-sm btnDeleteNote"
+									data-intPkProcessInWorkflow="@ViewBag.intnPkProcessInWorkflow"
+									data-strJobId="@ViewBag.strJobId"
+									data-boolFromWfJobs="True"
+									data-boolFromMyEmployees="False"
+									data-intPkNote="@item.intPkNote">
+								<i class="fa fa-trash" aria-hidden="true"></i>
+							</button>
+						</div>
+					}
+					@if (
+					 Model.intnPreviousJobId != null &&
+					 Model.intnPkWorkflow != null
+					 )
+					{
+						<div class="col-sm-12">
+							@Html.ActionLink("Go to: Job " + Model.strJobName, "Workflow", "Jobs",
+								 new { intJobId = Model.intnPreviousJobId, intPkWorkflow = Model.intnPkWorkflow },
+								 new { @target = "_blank" })
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

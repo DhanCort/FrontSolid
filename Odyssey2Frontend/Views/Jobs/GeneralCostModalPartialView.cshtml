@@ -1,0 +1,113 @@
+﻿@model JobFinalCost
+@{
+	double numEstimatedCostTotal = 0;
+	double? numnFinalCostTotal = 0;
+	double numCostDifferenceTotal = 0;
+}
+<div class="">
+	<div class="table-responsive" style="max-height: 62vh">
+		<table class="table">
+			<thead>
+				<tr class="tr-calculation-header text-center" style="position: sticky; top: 0; z-index: 10; background: white">
+					<th style="width: 46%">Process Name</th>
+					<th class="pl-5" style="width: 18%" colspan="2">Estimated</th>
+					<th class="pl-5" style="width: 18%" colspan="2">Final</th>
+					<th class="pl-5 pr-5" style="width: 18%" colspan="2">Difference</th>
+				</tr>
+			</thead>
+			<tbody>
+				@if (Model.arrpro.Count() > 0)
+				{
+
+					numEstimatedCostTotal = 0;
+					numnFinalCostTotal = 0;
+					numCostDifferenceTotal = 0;
+
+					foreach (JobProcessFinalCostModel item in Model.arrpro)
+					{
+						numEstimatedCostTotal = numEstimatedCostTotal + item.numEstimateCost;
+						numnFinalCostTotal = numnFinalCostTotal + item.numFinalCost;
+						numCostDifferenceTotal = numCostDifferenceTotal + item.numCostDifference;
+
+						<tr class="tr-calculation-row table-active">
+							<td>@item.strProcessName</td>
+							<td class="text-right pl-4 pr-0">$</td>
+							<td class="text-right pr-5 pl-0">@item.numEstimateCost.ToString("n2")</td>
+							<td class="text-right pl-4 pr-0">$</td>
+							<td class="text-right pr-5 pl-0">@item.numFinalCost.GetValueOrDefault().ToString("n2")</td>
+							<td class="text-right pl-4 pr-0">$</td>
+							<td class="text-right pr-5 pl-0">@((item.numCostDifference * -1).ToString("n2"))</td>
+						</tr>
+
+
+						@if (
+						   item.arrresourcecost != null
+						   )
+						{
+							foreach (var resoruce in item.arrresourcecost)
+							{
+								numEstimatedCostTotal = numEstimatedCostTotal + resoruce.numEstimateCost;
+								numnFinalCostTotal = numnFinalCostTotal + resoruce.numFinalCost;
+								numCostDifferenceTotal = numCostDifferenceTotal + resoruce.numCostDifference;
+								<tr class="tr-calculation-row">
+									<td>@resoruce.strResourceName</td>
+									<td class="text-right pl-4 pr-0">$</td>
+									<td class="text-right pr-5 pl-0">@resoruce.numEstimateCost.ToString("n2")</td>
+									<td class="text-right pl-4 pr-0">$</td>
+									<td class="text-right pr-5 pl-0">@resoruce.numFinalCost.GetValueOrDefault().ToString("n2")</td>
+									<td class="text-right pl-4 pr-0">$</td>
+									<td class="text-right pr-5 pl-0">@((resoruce.numCostDifference * -1).ToString("n2"))</td>
+								</tr>
+							}
+						}
+
+						@if (
+						   item.arrcalculationscost != null
+						   )
+						{
+							foreach (var calculation in item.arrcalculationscost)
+							{
+								numEstimatedCostTotal = numEstimatedCostTotal + calculation.numEstimateCost;
+								numnFinalCostTotal = numnFinalCostTotal + calculation.numFinalCost;
+								numCostDifferenceTotal = numCostDifferenceTotal + calculation.numCostDifference;
+								<tr class="tr-calculation-row">
+									<td>@calculation.strCalculationName</td>
+									<td class="text-right pl-4 pr-0">$</td>
+									<td class="text-right pr-5 pl-0">@calculation.numEstimateCost.ToString("n2")</td>
+									<td class="text-right pl-4 pr-0">$</td>
+									<td class="text-right pr-5 pl-0">@calculation.numFinalCost.GetValueOrDefault().ToString("n2")</td>
+									<td class="text-right pl-4 pr-0">$</td>
+									<td class="text-right pr-5 pl-0">@((calculation.numCostDifference * -1).ToString("n2"))</td>
+								</tr>
+							}
+						}
+					}
+					<tr class="tr-calculation-row table-active">
+						<td class="">Cost By Product</td>
+						<td colspan="2" class="text-center">-</td>
+						<td class="text-right pl-4 pr-0">$</td>
+						<td class="text-right pr-5 pl-0">@Model.numCostByProduct.ToString("n2")</td>
+						<td colspan="2" class="text-center">-</td>
+					</tr>
+				}
+			</tbody>
+			<tbody style="position: sticky; bottom: 0; z-index: 10; background: white">
+				<tr class="tr-calculation-row table-primary">
+					<td class="font-bold">Total Cost</td>
+					<td class="text-right pl-4 pr-0">$</td>
+					<td class="text-right font-bold pr-5 pl-0">@Model.numEstimateCost.ToString("n2")</td>
+					<td class="text-right pl-4 pr-0">$</td>
+					<td class="text-right font-bold pr-5 pl-0">@Model.numFinalCost.ToString("n2")</td>
+					<td class="text-right pl-4 pr-0">$</td>
+					<td class="text-right font-bold pr-5 pl-0">@((Model.numCostDifference * -1).ToString("n2"))</td>
+				</tr>
+				<tr class="tr-calculation-row table-primary">
+					<td class="font-bold">Total Profit</td>
+					<td class="text-right font-bold pl-4 pr-0 pr-5 pl-0" colspan="2">@Model.numEstimatedProfit%</td>
+					<td class="text-right font-bold pl-4 pr-0 pr-5 pl-0" colspan="2">@Model.numFinalProfit%</td>
+					<td class="text-right font-bold pl-4 pr-0 pr-5 pl-0" colspan="2">@((Model.numEstimatedProfit - Model.numFinalProfit)* -1)%</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

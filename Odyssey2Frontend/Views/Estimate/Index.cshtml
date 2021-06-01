@@ -1,0 +1,238 @@
+﻿@model List<Odyssey2Frontend.Models.JobsModel>
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    String strTitle = "";
+    if (
+        ViewBag.boolRequested != null && (bool)ViewBag.boolRequested
+        )
+    {
+        strTitle = "Requested Estimates";
+    }
+    else if (
+        ViewBag.boolWaitingForCustResponse != null && (bool)ViewBag.boolWaitingForCustResponse
+        )
+    {
+        strTitle = "Estimates Waiting For Customer Response";
+    }
+    else if (
+        ViewBag.boolRejected != null && (bool)ViewBag.boolRejected
+        )
+    {
+        strTitle = "Rejected Estimates";
+        ViewBag.boolRejected = true;
+    }
+
+    ViewData["Title"] = strTitle;
+
+    String strPrintshopName = HttpContextAccessor.HttpContext.Session.GetString("strPrintshopName");
+    String strPrintshopId = HttpContextAccessor.HttpContext.Session.GetString("strPrintshopId");
+    bool boolIsAccountant = bool.Parse(HttpContextAccessor.HttpContext.Session.GetString("boolIsAccountant") ?? "false");
+}
+
+<div class="row">
+	<div class="col-6">
+		<h2>
+			@strTitle <span class="badge badge-primary text-center mb-4" style="min-width: 50px; background-color: #59a2c8">
+				@Model.Count()
+			</span>
+		</h2>
+	</div>
+	<div class="col-6 text-right">
+		<button class="btn btn-sm btn-primary" id="btnAddNewEstimate">
+			<span class="fa fa-plus-circle"></span> Add New Estimate
+		</button>
+	</div>
+</div>
+
+@if (!String.IsNullOrEmpty(strPrintshopId))
+{
+	if (Model.Count > 0)
+	{
+		<div id="jobsTable" class="table-responsive" style="min-height: 55vh;">
+			<table class="table table-sm table-hover" id="jobsTable">
+				<thead>
+					<tr>
+						<th>
+							Id
+						</th>
+						<th>
+							Customer
+						</th>
+						<th>
+							Estimate Name
+						</th>
+						<th>
+							Product Name
+						</th>
+						<th>
+							Date Added
+						</th>
+						<th colspan="2"></th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var item in Model)
+					{
+						<tr id="tr_@item.intJobId">
+							<td>
+								@item.strEstimateNumber
+							</td>
+							<td>
+								@Html.DisplayFor(modelItem => item.strCustomerName)
+							</td>
+							<td>
+								@Html.DisplayFor(modelItem => item.strJobTicket)
+							</td>
+							<td>
+								@Html.DisplayFor(modelItem => item.strProductName)
+							</td>
+							<td>
+								@(item.dateLastUpdate != null ? Convert.ToDateTime(item.dateLastUpdate).ToString("MM/dd/yyyy"): "") 
+							</td>
+							@if (
+					ViewBag.boolRejected == null || !(bool)ViewBag.boolRejected
+					)
+							{
+								<td>
+									@if (
+							 !String.IsNullOrEmpty(item.strProductName)
+							 )
+									{
+										<div class="dropdown workflow-job-dropdown"
+											 data-intPkProduct="@item.intPkProduct"
+											 data-intJobId="@item.intJobId"
+											 data-boolEstimate="@true"
+											 data-service="Estimate">
+											<button type="button" class="btn btn-sm btn-info dropdown-toggle" data-toggle="dropdown">
+												<i class="fa fa-usd" aria-hidden="true"></i> Estimates
+											</button>
+											<div class="dropdown-menu" style="overflow-y:hidden; max-height: 200px">
+												<div class="col-sm-12 text-center"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only"></span></div>
+											</div>
+										</div>
+									}
+									else if (
+										item.intnPkWorkflow != null && item.intnPkWorkflow > 0
+										)
+									{
+										<a class="btn btn-sm btn-info" href="/Estimate/GetEstimates?intJobId=@item.intJobId&intPkWorkflow=@item.intnPkWorkflow&intPkProduct=@item.intPkProduct">
+											<i class="fa fa-usd" aria-hidden="true"></i> Estimate
+										</a>
+									}
+								</td>
+								<td>
+									<a class="btn btn-sm btn-info" href="/Estimate/GetWorkflow?intJobId=@item.intJobId">
+										<i class="fa fa-code-fork" aria-hidden="true"></i> Custom Workflow
+									</a>
+								</td>
+							}
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+		<div id="result_calculation"></div>
+	}
+	else
+	{
+		<div class="col-md-12">
+			<div class="alert alert-info text-center">
+				There are no records to show
+			</div>
+		</div>
+	}
+
+	@section Scripts {
+		<script>
+			funGoToJobOrEstimate();
+		</script>
+	}
+	<!-- Add New Estimate Modal -->
+	<div class="modal fade" id="modalNewEstimate">
+		<div class="modal-dialog modal-dialog-centered modal-md">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h3 class="modal-title">New Custom Estimate</h3>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body autoHeight">
+					<form id="newEstimateForm">
+						<input type="hidden" name="intContactId"/>
+						<div class="row">
+							<div class="col-6">
+								<label class="input-label">Estimate Name</label>
+								<input type="text" class="form-control form-control-sm" name="strName"
+									   placeholder="Name" required>
+							</div>
+							<div class="col-6">
+								<label class="input-label">Quantity</label>
+								<input type="number" class="form-control form-control-sm" min="1" step="1"
+									   name="intQuantity" placeholder="1" required>
+							</div>
+						</div>
+                        <div class="row mb-4">
+                            <div class="col-sm-3">
+                                <label class="input-label">Company</label>
+                                <span class="select" style="width: 100%">
+                                    <select id="selectCompany">
+                                        <option value="">All</option>
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="col-sm-3">
+                                <label class="input-label">Branch</label>
+                                <span class="select" style="width: 100%">
+                                    <select id="selectBranch">
+                                        <option value="">All</option>
+                                    </select>
+                                </span>
+                            </div>
+                            <div class="col-sm-3">
+                                <label class="input-label">Customer</label>
+                                <input class="form-control input-with-dropdowns" id="customerNameSearchInput" required />
+                                <div id="display" class="unitsList mt-0 pl-1 mr-1"
+                                     style="margin-top: 0px !important; font-family: 'Rawline Regular', sans-serif;
+                                                color: #58585b; font-size: 14px; border-radius:0px; display:none; max-height: 200px;
+												position: fixed; z-index:1060 !important; overflow-y: auto">
+                                </div>
+                            </div>
+                            <div class="col-sm-3 mt-4">
+                                <button type="button" class="btn btn-info btn-sm" id="btnAddcustomerModal" 
+										data-toggle="modal" data-target="#addCustomerModal">
+                                    <i class="fa fa-user-plus" aria-hidden="true"></i> Add Customer
+                                </button>
+                            </div>
+                        </div>
+						<div class="row mt-5">
+							<div class="col-12 text-center">
+								<button class="btn btn-primary" type="submit">
+									<span class="fa fa-plus-circle"></span> Add Estimate
+								</button>
+							</div>
+						</div>
+					</form>
+				</div>
+
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+}
+else
+{
+	<div class="col-md-12">
+		<div class="alert alert-info text-center">
+			The Printshop needs to be selected.
+		</div>
+	</div>
+}

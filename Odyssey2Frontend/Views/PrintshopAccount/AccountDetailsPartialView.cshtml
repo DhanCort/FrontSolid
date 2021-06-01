@@ -1,0 +1,129 @@
+﻿@model AllAccountDetailsModel
+<div class="row">
+    <div class="col-2">
+        <label class="checkbox-label">Start Date</label>
+    </div>
+    <div class="col-3">
+        <input id="strStartDate" class="form-control" data-toggle="datetimepicker"
+               data-target="#strStartDate" value="@ViewBag.strStartDateTime" />
+    </div>
+    <div class="col-2">
+        <label>End Date</label>
+    </div>
+    <div class="col-3">
+        <input id="strEndDate" class="form-control" data-toggle="datetimepicker"
+               data-target="#strEndDate" value="@ViewBag.strEndDateTime" />
+    </div>
+    <div class="col-2">
+        <button class="btn btn-primary getAccountMovs" data-intpk="@ViewBag.intPkAccount">Ok</button>
+    </div>
+</div>
+<div class="table-responsive mt-4">
+	<table class="table table-hover">
+		<thead>
+            <tr class="tr-calculation-header">
+                <th>Date</th>
+                <th>Transaction Type</th>
+                <th>Number</th>
+                <th>Name</th>
+                <th>Memo/Description</th>
+                <th colspan="2" class="text-center">
+                    @{
+                        if (
+                            Model.boolIsAsset
+                            )
+                        {
+                            <text>Charge</text>
+                        }
+                        else
+                        {
+                            <text>Increase</text>
+                        }
+                    }
+                </th>
+                <th colspan="2" class="text-center">
+                    @{
+                        if (
+                            Model.boolIsAsset
+                            )
+                        {
+                            <text>Payment</text>
+                        }
+                        else
+                        {
+                            <text>Decrease</text>
+                        }
+                    }
+                </th>
+                <th colspan="2" class="text-center">Balance</th>
+            </tr>
+		</thead>
+		<tbody>
+			@if (
+			 Model.arrAccountMovements.Count > 0
+			 )
+			{
+				foreach (AccountDetailsModel accountDetail in Model.arrAccountMovements)
+				{
+            <tr class="tr-calculation-row">
+                <td>@accountDetail.strDate</td>
+                <td>@accountDetail.strTransacctionType</td>
+                <td>@accountDetail.strNumber</td>
+                <td>@accountDetail.strName</td>
+                <td>@accountDetail.strMemo</td>
+                <td>
+                    @{
+                        if (
+                            accountDetail.numnChargeOrIncrease != null
+                            )
+                        {
+                            <text>$</text>
+                        }
+                    }
+                </td>
+                <td>
+                    @{
+                        if (
+                            accountDetail.numnChargeOrIncrease != null
+                            )
+                        {
+                            <text>@(((double)accountDetail.numnChargeOrIncrease).ToString("n2"))</text>
+                        }
+                    }
+                </td>
+                <td>
+                    @{
+                        if (
+                            accountDetail.numnPaymentOrDecrease != null
+                            )
+                        {
+                            <text>$</text>
+                        }
+                    }
+                </td>
+                <td>
+                    @{
+                        if (
+                            accountDetail.numnPaymentOrDecrease != null
+                            )
+                        {
+                            <text>@(((double)accountDetail.numnPaymentOrDecrease).ToString("n2"))</text>
+                        }
+                    }
+                </td>
+                <td>$</td>
+                <td>@accountDetail.numBalance.ToString("n2")</td>
+            </tr>
+				}
+			}
+			else
+			{
+				<tr>
+					<td colspan="8" class="text-center checkbox-label">
+						No records to show.
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>

@@ -1,0 +1,547 @@
+﻿@model List<Odyssey2Frontend.Models.CalculationModel>
+
+<div class="container-fluid">
+	<div class="table-responsive" style="display:block; overflow:scroll; max-height:330px;">
+		<table class="table" style="text-align: center">
+			<thead>
+				<tr class="tr-calculation-header">
+					@if (
+				(ViewBag.boolnByProcess != null &&
+				ViewBag.boolnByProcess == true) ||
+				(ViewBag.boolnByIntent != null &&
+				ViewBag.boolnByIntent == true) ||
+				(ViewBag.boolByResource != null &&
+				ViewBag.boolByResource == true) ||
+				(ViewBag.boolnByResource == true)
+				)
+					{
+						@if (ViewBag.boolnByProcess == true || ViewBag.boolByResource == true)
+						{
+							<th style="text-align: center"></th>
+							if (
+								ViewBag.boolByResource == true &&
+								(ViewBag.intnPkProduct != null && ViewBag.intnPkProduct > 0) &&
+								(ViewBag.Type == "PerQuantity" || ViewBag.strCalculationType == "PQ")
+								)
+							{
+								<th style="text-align: center">Group</th>
+							}
+
+							if (ViewBag.boolnByProcess == true)
+							{
+								<th style="text-align: center">Process</th>
+							}
+							if (ViewBag.boolByResource == true)
+							{
+								<th style="text-align: center" class="resource-proces-title" hidden>Process</th>
+								<th style="text-align: center">Resource</th>
+
+								if (
+									ViewBag.Type != "BasePerQuantity"
+									)
+								{
+									<th style="text-align: center">Q. From</th>
+								}
+								else
+								{
+									<th style="text-align: center">Quantity</th>
+								}
+							}
+						}
+						else if (ViewBag.boolnByIntent == true)
+						{
+							<th style="text-align: center">
+								Intent
+							</th>
+						}
+						if (
+							ViewBag.boolnByIntent == true || ViewBag.boolnByResource == true
+							)
+						{
+							<th style="text-align: center">
+								Attribute
+							</th>
+							<th style="text-align: center">
+								Value
+							</th>
+						}
+					}
+
+					<th style="text-align: center">Description</th>
+					@if (
+					  (ViewBag.boolnByTime == null || !(bool)ViewBag.boolnByTime) &&
+					  (ViewBag.boolByResource == null || !(bool)ViewBag.boolByResource) &&
+					  (ViewBag.Type != "Profit")
+					  )
+					{
+						<th style="text-align: center">
+							Account
+						</th>
+					}
+
+					@if (
+					  ViewBag.Type == "Base" || ViewBag.strCalculationType == "B"
+					  )
+					{
+						@if (ViewBag.boolnByTime != null && (bool)ViewBag.boolnByTime)
+						{
+							<th style="text-align: center">Time</th>
+						}
+						else
+						{
+							<th style="text-align: center">Base Cost</th>
+						}
+					}
+					@if (
+					ViewBag.Type == "Profit"
+				)
+					{
+						<th style="text-align: center">Profit</th>
+					}
+					@if (
+					ViewBag.Type == "PerQuantity" || ViewBag.strCalculationType == "PQ"
+				)
+					{
+						if (ViewBag.boolByResource == null || !(bool)ViewBag.boolByResource)
+						{
+							@if (ViewBag.boolnByTime != null && (bool)ViewBag.boolnByTime)
+							{
+								<th style="text-align: center">Time</th>
+							}
+							else
+							{
+								<th style="text-align: center">Cost</th>
+							}
+							<th style="text-align: center">Quantity</th>
+						}
+						@if
+					(ViewBag.boolnByProcess == true)
+						{
+							<th style="text-align: center">Unit of Measurement</th>
+						}
+						@if (
+				  ViewBag.Type != "ProcessDefaults" && ViewBag.Type != "ResourceDefaults" &&
+				  ((ViewBag.boolByResource == true) || (ViewBag.boolnByProcess == true))
+			  )
+						{
+							<th style="text-align: center">Needed</th>
+							<th style="text-align: center">Per Units</th>
+						}
+						@if (ViewBag.boolByResource == true)
+						{
+							<th style="text-align:center">Percent Waste</th>
+							<th style="text-align:center">Quantity Waste</th>
+						}
+					}
+					@if (
+					ViewBag.Type == "PerUnit" || ViewBag.Type == "PerQuantity" || ViewBag.strCalculationType == "PQ" || ViewBag.strCalculationType == "PU"
+				)
+					{
+						@*if ((ViewBag.boolnByProcess == null || !(bool)ViewBag.boolnByProcess) && (ViewBag.boolByResource == null || !(bool)ViewBag.boolByResource))
+			{
+				<th style="text-align: center">Min Amount</th>
+				<th style="text-align: center">Max Amount</th>
+			}*@
+						@if (
+						ViewBag.Type == "PerUnit" || ViewBag.strCalculationType == "PU"
+					)
+						{
+							<th style="text-align: center">Per Unit Cost</th>
+						}
+						if ((ViewBag.boolByResource == null || !(bool)ViewBag.boolByResource) && (ViewBag.boolnByTime == null || !(bool)ViewBag.boolnByTime))
+						{
+							<th style="text-align: center">
+								Min to
+								@if (ViewBag.boolByResource == true || ViewBag.boolnByProcess == true)
+								{
+									<text>Use</text>
+								}
+								else
+								{
+									<text>Produce</text>
+								}
+							</th>
+						}
+					}
+					@if (
+					ViewBag.Type != "Profit" && ViewBag.Type != "ProcessDefaults" && ViewBag.Type != "ResourceDefaults"
+				)
+					{
+						<th style="text-align: center">Condition to Apply</th>
+						<th></th>
+						@*<th style="text-align: center">Minimum</th>
+						<th style="text-align: center">Maximum</th>*@
+					}
+					@if (
+					ViewBag.Type == "PerQuantity" || ViewBag.strCalculationType == "PQ" || ViewBag.Type == "PerUnit" || ViewBag.strCalculationType == "PU"
+				)
+					{
+						if ((ViewBag.boolByResource == null || !(bool)ViewBag.boolByResource) && (ViewBag.boolnByTime == null || !(bool)ViewBag.boolnByTime))
+						{
+							<th style="text-align: center">By Block</th>
+						}
+					}
+					@if (ViewBag.boolnByResource == null || ViewBag.boolnByResource == false)
+					{
+						<th style="text-align: center">Enabled</th>
+					}
+					@if (ViewBag.boolnByResource == null || ViewBag.boolnByResource == false)
+					{
+						<th></th>
+					}
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				@if (Model != null && Model.Count > 0)
+				{
+					foreach (var calculation in Model)
+					{
+						String strName = "-";
+						String strQuantityFrom = "-";
+						<tr class="tr-calculation-row" id="row_@calculation.intPk">
+							@if (
+							  (ViewBag.boolnByProcess != null &&
+							  ViewBag.boolnByProcess == true) ||
+							  (ViewBag.boolnByIntent != null &&
+							  ViewBag.boolnByIntent == true) ||
+							  (ViewBag.boolByResource != null &&
+							  ViewBag.boolByResource == true) ||
+							  (ViewBag.boolnByResource == true)
+						  )
+							{
+
+								@if (ViewBag.boolnByProcess == true || ViewBag.boolByResource == true)
+								{
+
+									<td class="text-center">
+										@if (
+								  calculation.boolnIsWorkflow == true
+								  )
+										{
+											<span class="fa-stack fa-lg">
+												<i class="fa fa-circle fa-stack-2x"></i>
+												<i class="fa fa-code-fork fa-stack-1x fa-inverse ml-sm-0" style="font-size:smaller"></i>
+											</span>
+										}
+									</td>
+
+									if (
+										ViewBag.boolByResource == true &&
+										(ViewBag.intnPkProduct != null && ViewBag.intnPkProduct > 0) &&
+										(ViewBag.Type == "PerQuantity" || ViewBag.strCalculationType == "PQ")
+										)
+									{
+										<td class="text-center">
+											@if (calculation.intnGroupId != null)
+											{
+												<text>G</text>@calculation.intnGroupId
+											}
+											else
+											{
+												<input type="checkbox" value="@calculation.intPk" class="group-checkbox" style="display: none" />
+											}
+										</td>
+									}
+								}
+								if (calculation.intnPkProcess != null)
+								{
+									<td>@calculation.strProcessName</td>
+								}
+
+								if (ViewBag.boolByResource != null && (bool)ViewBag.boolByResource)
+								{
+									<td hidden class="resource-proces-name">@calculation.strProcessName</td>
+									<td>@calculation.strResourceName</td>
+									@if (
+									   ViewBag.Type != "BasePerQuantity"
+									   )
+									{
+										<td>@calculation.strQtyFromResourceName</td>
+									}
+									else
+									{
+										<td>@calculation.numnNeeded</td>
+									}
+								}
+								if (ViewBag.boolnByIntent == true || ViewBag.boolnByResource == true)
+								{
+									if (calculation.arrAscendantName.Count > 0 && ViewBag.boolnByResource != true)
+									{
+										strName = calculation.arrAscendantName[0];
+										<td>@strName</td>
+									}
+
+									<td>
+										@{
+											strName = null;
+											foreach (var name in calculation.arrAscendantName)
+											{
+												strName = strName + name + "/ ";
+											}
+										}
+										<label>@strName.TrimEnd(' ').TrimEnd('/') </label>
+									</td>
+									<td>@calculation.strValue</td>
+								}
+							}
+
+
+							<td>@calculation.strDescription</td>
+							@if (
+							   (ViewBag.boolnByTime == null || !(bool)ViewBag.boolnByTime) &&
+							   (ViewBag.boolByResource == null || !(bool)ViewBag.boolByResource) &&
+							   (ViewBag.Type != "Profit")
+							   )
+							{
+								<td>
+									@calculation.strAccountName
+								</td>
+							}
+
+							@if (
+								ViewBag.Type == "Base" || ViewBag.strCalculationType == "B"
+							)
+							{
+								@if (ViewBag.boolnByTime != null && (bool)ViewBag.boolnByTime)
+								{
+									<td>
+										@if (calculation.intnHours != null && calculation.intnHours > 0)
+										{
+											<text>@calculation.intnHours</text>
+											if (calculation.intnMinutes != null && calculation.intnMinutes > 0)
+											{
+												<text>:@calculation.intnMinutes.Value.ToString("00")</text>
+
+												if (calculation.intnSeconds != null && calculation.intnSeconds > 0)
+												{
+													<text>:@calculation.intnSeconds.Value.ToString("00")</text>
+												}
+											}
+											<text> hrs.</text>
+										}
+										else if (calculation.intnMinutes != null && calculation.intnMinutes > 0)
+										{
+											<text>@calculation.intnMinutes</text>
+
+											if (calculation.intnSeconds != null && calculation.intnSeconds > 0)
+											{
+												<text>:@calculation.intnSeconds.Value.ToString("00")</text>
+											}
+											<text> min.</text>
+										}
+										else if (calculation.intnSeconds != null && calculation.intnSeconds > 0)
+										{
+											<text>@calculation.intnSeconds sec.</text>
+										}
+									</td>
+								}
+								else
+								{
+									<td>$@calculation.numnCost.GetValueOrDefault().ToString("n2")</td>
+								}
+							}
+							@if (
+								ViewBag.Type == "Profit"
+							)
+							{
+								<td>@calculation.numnProfit %</td>
+							}
+							@if (
+								ViewBag.Type == "PerQuantity" || ViewBag.strCalculationType == "PQ"
+							)
+							{
+								if (ViewBag.boolByResource == null || !(bool)ViewBag.boolByResource)
+								{
+									@if (ViewBag.boolnByTime != null && (bool)ViewBag.boolnByTime)
+									{
+										<td>
+											@if (calculation.intnHours != null && calculation.intnHours > 0)
+											{
+												<text>@calculation.intnHours</text>
+												if (calculation.intnMinutes != null && calculation.intnMinutes > 0)
+												{
+													<text>:@calculation.intnMinutes.Value.ToString("00")</text>
+
+													if (calculation.intnSeconds != null && calculation.intnSeconds > 0)
+													{
+														<text>:@calculation.intnSeconds.Value.ToString("00")</text>
+													}
+												}
+												<text> hrs.</text>
+											}
+											else if (calculation.intnMinutes != null && calculation.intnMinutes > 0)
+											{
+												<text>@calculation.intnMinutes</text>
+
+												if (calculation.intnSeconds != null && calculation.intnSeconds > 0)
+												{
+													<text>:@calculation.intnSeconds.Value.ToString("00")</text>
+												}
+												<text> min.</text>
+											}
+											else if (calculation.intnSeconds != null && calculation.intnSeconds > 0)
+											{
+												<text>@calculation.intnSeconds sec.</text>
+											}
+										</td>
+									}
+									else
+									{
+										<td>$@calculation.numnCost.GetValueOrDefault().ToString("n2")</td>
+									}
+									<td>@calculation.numnQuantity</td>
+								}
+								@if (
+								ViewBag.boolnByProcess == true
+								)
+								{
+									<td>@calculation.strUnitI</td>
+								}
+								@if (
+								ViewBag.Type != "ProcessDefaults" && ViewBag.Type != "ResourceDefaults" &&
+								((ViewBag.boolByResource == true) || (ViewBag.boolnByProcess == true))
+								)
+								{
+									<td>@(calculation.numnNeeded + " " + (ViewBag.boolByResource == true ? calculation.strUnitI : ""))</td>
+									<td>@(calculation.numnPerUnits + " " + (ViewBag.boolByResource == true ? calculation.strUnitO : ""))</td>
+								}
+								@if (ViewBag.boolByResource == true)
+								{
+									<td>@calculation.numnPercentWaste</td>
+									<td>@calculation.numnQuantityWaste</td>
+								}
+							}
+							@if (
+							 ViewBag.Type == "PerUnit" || ViewBag.Type == "PerQuantity" || ViewBag.strCalculationType == "PQ" || ViewBag.strCalculationType == "PU"
+							)
+							{
+								@*if ((ViewBag.boolnByProcess == null || !(bool)ViewBag.boolnByProcess) && (ViewBag.boolByResource == null || !(bool)ViewBag.boolByResource))
+									{
+										<td>@calculation.intnMinAmount</td>
+										<td>@calculation.intnMaxAmount</td>
+									}*@
+								@if (
+									 ViewBag.Type == "PerUnit" || ViewBag.strCalculationType == "PU"
+								 )
+								{
+									<td>$@calculation.numnCost.GetValueOrDefault().ToString("n2")</td>
+								}
+								if ((ViewBag.boolByResource == null || !(bool)ViewBag.boolByResource) && (ViewBag.boolnByTime == null || !(bool)ViewBag.boolnByTime))
+								{
+									<td>@calculation.numnMin</td>
+								}
+							}
+							@if (
+                           ViewBag.Type != "Profit" && ViewBag.Type != "ProcessDefaults" && ViewBag.Type != "ResourceDefaults"
+                           )
+                            {
+								//							//Calculation has condition to apply and minimum or maximum.
+                                bool boolHasConditionOperator = ((calculation.strConditionToApply != null) &&
+                                    (calculation.strConditionToApply != "")) &&
+                                    ((calculation.intnMinAmount != null) || (calculation.intnMaxAmount != null));
+
+                                String strOperator = "";
+                                /*CASE*/
+                                if (
+                                    //						//Has operator and the operator is AND.
+                                    boolHasConditionOperator && calculation.boolConditionAnd
+                                    )
+                                {
+                                    strOperator = "AND";
+                                }
+                                else if (
+                                    //						//Has operator and the operator is OR.
+                                    boolHasConditionOperator && !calculation.boolConditionAnd
+                                    )
+                                {
+                                    strOperator = "OR";
+                                }
+                                /*END-CASE*/
+
+								<td>@calculation.strConditionToApply</td>
+								<td>@strOperator</td>
+								@*<td>@calculation.intnMinAmount</td>
+								<td>@calculation.intnMaxAmount</td>*@
+							}
+							@if (
+							 ViewBag.Type == "PerQuantity" || ViewBag.strCalculationType == "PQ" || ViewBag.Type == "PerUnit" || ViewBag.strCalculationType == "PU"
+							 )
+							{
+								if ((ViewBag.boolByResource == null || !(bool)ViewBag.boolByResource) && (ViewBag.boolnByTime == null || !(bool)ViewBag.boolnByTime))
+								{
+									<td>
+										@*@if (calculation.boolnIsBlock != null && calculation.boolnIsBlock.Value)
+											{
+												<i class="fa fa-check" style="color: green"></i>
+											}
+											else if (calculation.boolnIsBlock != null)
+											{
+												<i class="fa fa-times" style="color: red"></i>
+											}*@
+										@if (calculation.numnBlock != null)
+										{
+											<text>@calculation.numnBlock</text>
+										}
+										else
+										{
+
+											<i>-</i>
+
+										}
+
+									</td>
+								}
+							}
+							@if (ViewBag.boolnByResource == null || ViewBag.boolnByResource == false)
+							{
+								<td>
+									@if (calculation.boolIsEnable)
+									{
+										<i class="fa fa-check" aria-hidden="true" style="color: green"></i>
+									}
+									else
+									{
+										<i class="fa fa-times" aria-hidden="true" style="color: red"></i>
+									}
+								</td>
+							}
+							@if (
+							 (ViewBag.intnPkProduct == null || ViewBag.intnPkProduct > 0)
+							 )
+							{
+								<td>
+									<button class="btn btn-danger btn-sm delete-calculation" id="@calculation.intPk" href=""><i class="fa fa-trash-o"></i></button>
+								</td>
+							}
+							<td>
+
+								@if (
+								 (ViewBag.intnPkProduct == null || ViewBag.intnPkProduct > 0) &&
+								 (ViewBag.boolnByResource == null || ViewBag.boolnByResource == false)
+								 )
+								{
+									<button class="btn btn-secondary btn-sm edit-calculation" id="@calculation.intPk"
+											data-boolisinpostprocess="@calculation.boolIsInPostProcess" href=""
+											@if (!calculation.boolIsEditable) { <text> disabled </text> }>
+										<i class="fa fa-pencil"></i>
+									</button>
+								}
+								else if (ViewBag.boolnByResource == null || ViewBag.boolnByResource == false)
+								{
+									<a class="btn btn-secondary btn-sm edit-calculation add-default" id="@calculation.intPk" href="">Add default</a>
+								}
+							</td>
+						</tr>
+					}
+				}
+				else
+				{
+					<tr class="tr-calculation-row">
+						<td colspan="10">This section contains no records.</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>

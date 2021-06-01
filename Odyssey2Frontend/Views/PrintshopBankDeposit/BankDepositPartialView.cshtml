@@ -1,0 +1,136 @@
+﻿@model List<BankDepositModel>
+<div id="bankDepositForm">
+    <div class="row">
+        <div class="col-sm-4">
+            <label class="input-label">Account</label>
+			<span class="select" style="width: 100%">
+				<select class="" asp-items="@ViewBag.darrBankAccount" id="intPkBankAccount">
+					<option value="">Pick one</option>
+				</select>
+			</span>
+        </div>
+        <div class="col-sm-4">
+            <div><label><span class="input-label">Balance</span></label></div>
+            <label><span class="lblAmount mt-3"></span></label>
+        </div>
+        <div class="col-sm-4">
+            <label class="input-label">Date</label>
+            <input id="strBankDate" class="input-with-dropdowns form-control" data-toggle="datetimepicker"
+                   data-target="#strBankDate" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="table-responsive overflow-auto" style="height: 400px">
+                <table class="table table-hover" id="bankDepositTable">
+                    <thead>
+                        <tr class="tr-calculation-row">
+                            <th></th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Method</th>
+                            <th>Reference</th>
+                            <th colspan="2">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input chkPayment" 
+                                                   id="payment_@item.intPkPayment" value="@item.intPkPayment" data-numAmount="@item.numAmount">
+                                            <label class="custom-control-label" for="payment_@item.intPkPayment"></label>
+                                        </div>
+                                    </td>
+                                    <td>@item.strCustomerFullName</td>
+                                    <td>@item.strDate</td>
+                                    <td>@item.strMethodName</td>
+                                    <td>@item.strReference</td>
+                                    <td class="">$</td>
+                                    <td class="text-right">@item.numAmount.ToString("n2")</td>
+                                </tr>
+                            }
+                            <tr class="tr-calculation-row">
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="font-bold text-right" colspan="2">Selected payments total</td>
+                                <td class="font-bold">$</td>
+                                <td class="font-bold text-right numBankTotal">0.00</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7">Nothing to show</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <button class="btn btn-info btn-sm mb-3 accountBankModalBtn pull-left" data-toggle="modal" data-target="#accountBankModal" disabled="">
+                <i class="fa fa-money" aria-hidden="true"></i> View Bank Deposit
+            </button>
+            <button class="btn btn-primary btn-sm mb-3 btnAddDepositBank pull-right ml-2">
+                <i class="fa fa-floppy-o" aria-hidden="true"></i> Save
+            </button>
+            <button class="btn btn-primary btn-sm mb-3 btnSaveAndPrintDepositBank btnAddDepositBank pull-right">
+                <i class="fa fa-print" aria-hidden="true"></i> Save & Print
+            </button>
+        </div>
+    </div>
+</div>
+<!-- Account's bank deposits -->
+<div class="modal fade" id="accountBankModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title" id="accountBankModalTitle">Account's bank deposits</h4>
+                <button type="button" class="close accountBankModalClose">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <label class="font-bold"></label>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label class="input-label">Start Date</label>
+                        <input id="strAccountBankStartDate" class="input-with-dropdowns form-control" data-toggle="datetimepicker"
+                               data-target="#strAccountBankStartDate" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="input-label">End Date</label>
+                        <input id="strAccountBankEndDate" class="input-with-dropdowns form-control" data-toggle="datetimepicker"
+                               data-target="#strAccountBankEndDate" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <button class="btn btn-sm btn-primary col-sm-12 getBankDepositsInARange">Ok</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12" id="accountBankTable">
+                    </div>
+                </div>
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary accountBankModalClose">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,197 @@
+﻿@model IEnumerable<Odyssey2Frontend.Models.PrintshopProcessTemplateModel>
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "My Process";
+    String strPrintshopName = HttpContextAccessor.HttpContext.Session.GetString("strPrintshopName");
+    String strPrintshopId = HttpContextAccessor.HttpContext.Session.GetString("strPrintshopId");
+
+    ViewBag.PrintshopProcess = new SelectList(Model, "intPk", "strTypeId");
+
+    ViewBag.boolDefaultCalculationProcess = true;
+
+    List<PrintshopProcessTemplateModel> darrprintshopXJDFProcess = ViewBag.PrintshopXJDFProcess;
+
+    List<String> darrstrXJDFProcessClassification = ViewBag.darrstrXJDFProcessClassification;
+
+    List<SelectListItem> darrselectlistitemClassification = null;
+
+    if (darrstrXJDFProcessClassification != null)
+    {
+        darrselectlistitemClassification = darrstrXJDFProcessClassification
+           .Select(process => new SelectListItem
+           {
+               Text = process,
+               Value = process
+           }).ToList();
+
+        darrselectlistitemClassification.Add(new SelectListItem
+        {
+            Text = "All",
+            Value = "All"
+        });
+
+        darrselectlistitemClassification.Add(new SelectListItem
+        {
+            Text = "Common",
+            Value = "Common",
+            Selected = true
+        });
+    }
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <h2 class="float-left">My Processes</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <h3 class="float-left">Process groups</h3>
+        <a class="btn btn-info btn-sm float-right backToWorkflow" style="display: none">
+            <i class="fa fa-angle-left" aria-hidden="true"></i> Back
+        </a>
+    </div>
+</div>
+
+<div class="myProcessBody">
+
+    <div class="row">
+        <div class="col-sm-12 accordion" id="myProcessAccordion">
+            @{
+                if (String.IsNullOrEmpty(strPrintshopId))
+                {
+                    <div class="alert alert-info text-center">
+                        The Printshop needs to be selected.
+                    </div>
+                }
+                else if (Model.Any())
+                {
+                    int intElement = 1;
+                    foreach (var item in Model)
+                    {
+                        <div class="card">
+                            <div class="card-header">
+                                @Html.ActionLink(item.strTypeId, "GetProcesses", "PrintshopTemplate", new { intPkProcessType = item.intPk, strTypeId = item.strTypeId }, new { @class = "btn btn-link btn-sm" })
+                                @*<button class="btn btn-danger btn-sm pull-right deleteProcess" value="@item.intPk"><i class="fa fa-trash-o"></i></button>*@
+                            </div>
+                        </div>
+                        intElement = intElement + 1;
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-danger text-center">
+                        No process added.
+                    </div>
+                }
+            }
+        </div>
+
+        @if (
+!String.IsNullOrEmpty(ViewBag.strPrintshopId)
+)
+        {
+            <div class="col-lg-6 text-center">
+                <br />
+                <button type="button" value="xjdf" class="btn btn-info addProcessTemplate" data-toggle="modal" data-target="#xjdfTemplateModal"><i class="fa fa-plus-circle"></i> Add Process</button>
+            </div>
+            <div class="col-lg-6 text-center">
+                <br />
+                <button type="button" value="custom" class="btn btn-info addProcessTemplate" data-toggle="modal" data-target="#xjdfTemplateModal"><i class="fa fa-plus-circle"></i> Add Custom Process</button>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Add process Modal -->
+@if (darrselectlistitemClassification != null)
+{
+    <div id="xjdfTemplateModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-dialog-centered xjdfDialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="process-modal-title">Add Process</h2>
+                    <button type="button" class="close dismissXJDFProcess" data-dismiss="modal">
+                        <i class="fa fa-close"></i>
+                    </button>
+                </div>
+                <div class="modal-body autoHeight modal-content-scroll-screen-height">
+                    <div id="addXJDFProcessSection">
+                        <div class="col-sm-12" id="xjdf-process-filter">
+                            <div class="form-inline">
+                                <div class="form-group">
+                                    <label class="checkbox-label" for="email">Show Process Groups: </label>
+                                    <span class="select ml-2" style="width:200px">
+                                        <select id="classification-process-select"
+                                                asp-items='new SelectList(darrselectlistitemClassification.
+													OrderByDescending(select => select.Value), "Value", "Text",
+													"Common")'>
+                                        </select>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr />
+                        </div>
+
+                        <form id="add-new-process-instance-form">
+                            @if (darrprintshopXJDFProcess != null && darrprintshopXJDFProcess.Count > 0)
+                            {
+                                <div class="row" id="xjdf-radio-section">
+                                    @foreach (var item in darrprintshopXJDFProcess)
+                                    {
+                                        <div class="checkbox col-sm-4 @item.strClassification @(item.boolIsCommon ? "Common" : "")" @(item.boolIsCommon ? "" : "hidden")>
+                                            @*<label>
+                                                <input type="radio" name="intPkTypeRadio" class="process-type-radio" value="@item.intPk" data-strTypeId="@item.strTypeId"
+                                                       id="chk_@item.intPk" />
+                                                <span class="checkbox-label">@item.strTypeId</span>
+                                            </label>*@
+                                            <div class="custom-control custom-radio">
+                                                <input type="radio" class="process-type-radio custom-control-input" id="chk_@item.intPk" name="intPkTypeRadio" value="@item.intPk"
+                                                       data-strTypeId="@item.strTypeId">
+                                                <label class="custom-control-label" for="chk_@item.intPk">@item.strTypeId</label>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="row" id="xjdf-instance-section" hidden>
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <input type="hidden" name="intPkType" id="intPkType" value="" />
+                                            <div class="form-group">
+                                                <label class="input-label">Process Name:</label>
+                                                <input type="text" name="strProcessName" class="input-with-dropdowns form-control" required />
+                                            </div>
+                                            <div class="form-group">
+                                                <button type="submit" class="btn btn-sm btn-primary pull-right"><i class="fa fa-save"></i> Save</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </form>
+                    </div>
+                    <div id="addCustomProcessSection" class="row" hidden>
+                        <div class="col-sm-12">
+                            <form asp-action="AddCustomProcessToPrintshop" id="addCustomProcessForm">
+                                <div class="form-group">
+                                    <label for="strName" class="input-label">Process Name </label>
+                                    <input name="strProcessName" class="input-with-dropdowns form-control" required>
+                                </div>
+                                <button type="submit" class="btn btn-sm btn-primary pull-right"><i class="fa fa-save"></i> Save</button>
+                            </form><br />
+                        </div>
+                        <div class="col-sm-12" id="processNotify"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="add-new-process-next-btn" hidden>Next</button>
+                    <button type="button" class="btn btn-secondary" id="add-new-process-back-btn" hidden>Back</button>
+                    <button type="button" class="btn btn-secondary dismissXJDFProcess" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+}

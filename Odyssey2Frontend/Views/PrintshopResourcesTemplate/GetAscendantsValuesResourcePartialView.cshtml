@@ -1,0 +1,65 @@
+﻿@model List<Odyssey2Frontend.Models.MyResourcesModel>
+
+@if (Model != null && Model.Count > 0)
+{
+    <br />
+    <div class="container-fluid">
+        <div class="accordion" id="resources-accordion">
+            @foreach (MyResourcesModel myResourcesModel in Model)
+            {
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="panel-title">
+                            <a class="btn btn-link" data-toggle="collapse" data-parent="#resources-accordion" href="#resources-accordion-@myResourcesModel.intPkType">
+                                @myResourcesModel.strResourceName
+                            </a>
+                            <button class="btn btn-danger btn-sm pull-right deleteResource"><i class="fa fa-trash-o"></i></button>
+                            <input type="hidden" value="All|@myResourcesModel.intPkType" id="intPkResource" />
+                            <button class="btn btn-info btn-sm pull-right addResourceDefaultCalculation" data-toggle="modal" data-target="#defaulCalculationModal">Default Calculations</button>
+                        </h5>
+                    </div>
+                    <div id="resources-accordion-@myResourcesModel.intPkType" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <div class="container-fluid">
+                                <div class="table-responsive">
+                                    <table class="table" style="text-align: center">
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align: center">Attribute</th>
+                                                <th style="text-align: center">Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (ResourceAscendantValues resourceAscendantValues in myResourcesModel.arrasc)
+                                            {
+                                                String strAscendantNames = null;
+                                                <tr>
+                                                    <td>
+                                                        @foreach (String strAscendantName in resourceAscendantValues.arrAscendant)
+                                                        {
+                                                            strAscendantNames = strAscendantNames + strAscendantName + "/ ";
+                                                        }
+                                                        @strAscendantNames.TrimEnd(' ').TrimEnd('/')
+                                                    </td>
+                                                    <td>@resourceAscendantValues.strValue</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-danger text-center">
+        <strong>Nothing to show.</strong>
+    </div>
+}
+
+

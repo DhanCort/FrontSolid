@@ -1,0 +1,186 @@
+﻿@model EstimateOptionsModel
+
+<div class="row" style="margin-top: 1%">
+    <div class="card col-sm-12" style="margin-bottom: 0%; padding-left: 0px; padding-right: 0px; border-radius: 1rem; border: 4px solid #2f6680;">
+        <div class="row" style="margin-top: 0%">
+            <div class="col-sm-6 font-bold text-center border-bottom-custom border-right-custom"><h5 class="card-title mt-2">Anticipated Start Date</h5></div>
+            <div class="col-sm-6 font-bold text-center border-bottom-custom">
+                <div class="input-group input-with-dropdowns mt-2">
+                    <input value="@Model.strBaseDate @Model.strBaseTime" id="strBaseDateTime" class="input-with-dropdowns form-control" data-toggle="datetimepicker" data-target="#strBaseDateTime" />
+                    <div class="input-group-append input-with-dropdowns">
+                        <button class="btn btn-sm btn-info font-weight-lighter sendOptionBaseDateTime" data-jobdata="@ViewBag.intJobId|@ViewBag.intPkWorkflow|@ViewBag.intEstimationId">
+                            Re-estimate
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row optionsData" style="margin-top: 1%">
+    <div class="card col-sm-12" style="margin-bottom: 0%; padding-left: 0px; padding-right: 0px; border-radius: 1rem; border: 4px solid #2f6680;">
+        <div class="row" style="margin-top: 0%">
+            <div class="col-sm-6 font-bold text-center border-bottom-custom border-right-custom"><h5 class="card-title">Resource</h5></div>
+            <div class="col-sm-3 font-bold text-center border-bottom-custom border-right-custom"><h5 class="card-title">Quantity</h5></div>
+            <div class="col-sm-3 font-bold text-center border-bottom-custom"><h5 class="card-title">Cost</h5></div>
+        </div>
+        @foreach (var resSelected in Model.arrresSelected)
+        {
+            <div class="row" style="margin-top: 0%">
+                <div class="col-sm-6 border-bottom-custom border-right-custom">
+                    <div class="row" style="margin-top: 0%">
+                        <div class="col-sm-10 io"
+                             data-arrresSelected="@resSelected.intPkProcessInWorkflow|@resSelected.intPkEleetOrEleele|@resSelected.boolIsEleet">
+                            <span class="font-bold" data-intnpk="@resSelected.intnPk">
+                                @if (string.IsNullOrEmpty(resSelected.strName))
+                                {
+                                    <text>-</text>
+                                }
+                                else
+                                {
+                                    @resSelected.strName;
+                                }
+                            </span>
+                            <span class="select" hidden>
+                                <select class="selectgetResForIoGr" data-jobdata="@ViewBag.intJobId|@ViewBag.intPkWorkflow|@ViewBag.intEstimationId">
+                                </select>
+                            </span>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="btn btn-secondary btn-sm getResForIoGr"
+                                    data-to-getresforiogr="@resSelected.intnPk|@ViewBag.intJobId|@resSelected.intPkProcessInWorkflow|@resSelected.intPkEleetOrEleele|@resSelected.boolIsEleet">
+                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                            </button>
+                            <button class="btn btn-secondary btn-sm cancelResForIoGr" hidden>
+                                <i class="fa fa-times" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    @*<span class="font-bold cursor-pointer getResForIoGr"
+                              data-to-getresforiogr="@resSelected.intnPk|@ViewBag.intJobId|@resSelected.intPkProcessInWorkflow|@resSelected.intPkEleetOrEleele|@resSelected.boolIsEleet">
+                            @if (String.IsNullOrEmpty(resSelected.strName))
+                            {
+                                <text>---</text>
+                            }
+                            else
+                            {
+                                @resSelected.strName;
+                            }
+                        </span>*@
+                </div>
+                <div class="col-sm-3 border-bottom-custom border-right-custom">
+                    @if (
+               resSelected.numnQuantity == null
+               )
+                    {
+                        <text>-</text>
+                    }
+                    else
+                    {
+                        @resSelected.numnQuantity<text> </text>@resSelected.strUnit
+                    }
+                </div>
+                <div class="col-sm-3 border-bottom-custom">
+                    @if (
+                   resSelected.numnCost == null
+                   )
+                    {
+                        <text>-</text>
+                    }
+                    else
+                    {
+                        <div class="pull-left">
+                            $
+                        </div>
+                        <div class="pull-right">
+                            @(((double)resSelected.numnCost).ToString("n2"))
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div class="row  optionsData" style="margin-top: 1%">
+    <div class="card col-sm-12" style="margin-bottom: 0%; padding-left: 0px; padding-right: 0px; border-radius: 1rem; border: 4px solid #2f6680;">
+        @{ int i = 0; int j = 0; }
+        @foreach (var option in Model.arrop)
+        {
+            i = i + 1;
+            <div class="row" style="margin-top: 0%">
+                <div class="col-sm-6 border-bottom-custom border-right-custom">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input customCheckOption"
+                               data-jobdata="@ViewBag.intJobId|@ViewBag.intPkWorkflow"
+                               data-intOptionId="@i"
+                               id="customRadioOption_@i" name="customRadioOption">
+                        <label class="custom-control-label" for="customRadioOption_@i">
+                            <span class="font-bold">
+                                Option @i &nbsp;<i class="fa fa-calendar" aria-hidden="true"></i> @option.strDeliveryDate
+                                &nbsp;<i class="fa fa-clock-o" aria-hidden="true"></i>  @option.strDeliveryTime
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-3 border-bottom-custom border-right-custom"></div>
+                <div class="col-sm-3 border-bottom-custom"></div>
+            </div>
+            @foreach (var process in option.arrpro)
+            {
+                j = j + 1;
+                <div class="row" style="margin-top: 0%">
+                    <div class="col-sm-6 border-bottom-custom border-right-custom pl-5">
+                        <span class="font-bold">@process.strName</span>
+                    </div>
+                    <div class="col-sm-3 border-bottom-custom border-right-custom"></div>
+                    <div class="col-sm-3 border-bottom-custom"></div>
+                </div>
+                @foreach (var resource in process.arrres)
+                {
+                    <div class="row resEstimateOption_@i" style="margin-top: 0%"
+                         data-res-est="@resource.intPkProcessInWorkflow|@resource.intPkEleetOrEleele|@resource.boolIsEleet|@resource.intnPk">
+                        <div class="col-sm-6 border-bottom-custom border-right-custom pl-6">
+                            @if (!resource.boolIsAvailable)
+                            {
+                                <i class="fa fa-info-circle" aria-hidden="true" style="color: #ffb000; font-size: 20px;"
+                                   data-toggle="tooltip" data-placement="left" title="Unavailable"></i>
+                            }
+                            @resource.strName
+                        </div>
+                        <div class="col-sm-3 border-bottom-custom border-right-custom">@resource.numnQuantity @resource.strUnit</div>
+                        <div class="col-sm-3 border-bottom-custom">
+                            <div class="pull-left">
+                                $
+                            </div>
+                            <div class="pull-right">
+                                @(((double)resource.numnCost).ToString("n2"))
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            }
+            <div class="row" style="margin-top: 0%">
+                <div class="col-sm-6 border-bottom-custom border-right-custom pl-6">
+                    <span class="font-bold">Job Cost</span>
+                </div>
+                <div class="col-sm-3 border-bottom-custom border-right-custom"></div>
+                <div class="col-sm-3 border-bottom-custom">
+                    <span class="font-bold">
+                        <div class="pull-left">
+                            $
+                        </div>
+                        <div class="pull-right">
+                            @option.numJobCost.ToString("n2")
+                        </div>
+                    </span>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 0%">
+                <div class="col-sm-6 border-bottom-custom border-right-custom pl-6" style="color: white">*</div>
+                <div class="col-sm-3 border-bottom-custom border-right-custom"></div>
+                <div class="col-sm-3 border-bottom-custom"></div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,654 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    bool boolIsAccountant = bool.Parse(HttpContextAccessor.HttpContext.Session.GetString("boolIsAccountant") ?? "false");
+}
+@model Odyssey2Frontend.Models.CalculationModel
+
+<h3>By Process</h3>
+<div class="accordion" id="accordion2">
+
+    @* Collapse of cost Per Quantity *@
+    <div class="card">
+        <div class="card-header">
+            <a data-toggle="collapse" data-intJobId="@ViewBag.intJobId" data-intnPkWorkflow="@ViewBag.intPkWorkflow" data-hideButtons="@ViewBag.HideFormAttribute" 
+               data-boolnIsWorkflow="@Model.boolnIsWorkflow" class="btn btn-link calculations collapsed" data-parent="#accordion2" href="#ProcessPerQuantity"
+               data-strCalculationType="@if (ViewBag.boolDefaultCalculationProcess !=null && (bool)ViewBag.boolDefaultCalculationProcess)
+				   {
+					   <text>ProcessDefaults-PQ</text>
+				   }
+				   else
+				   {
+					   <text>PerQuantity</text>
+				   }" data-strBy="process">
+                <i class="fa fa-plus-circle"></i> Cost Per Quantity
+            </a>
+        </div>
+        <div id="ProcessPerQuantity" class="collapse" data-parent="#accordion2">
+            <div class="card-body">
+                @if (ViewBag.HideFormAttribute == null || !(bool)ViewBag.HideFormAttribute)
+                {
+                    <form class="form-horizontal add-calculation" asp-controller="Calculation" asp-action="AddCalculation" data-strBy="process"
+                          data-strCalculationType="@if (ViewBag.boolDefaultCalculationProcess != null && (bool)ViewBag.boolDefaultCalculationProcess)
+						  {
+					   <text>ProcessDefaults-PQ</text>
+						  }
+						  else
+						  {
+					   <text>PerQuantity</text>
+						  }">
+                        <input asp-for="strCalculationType" type="hidden" value="@CalculationModel.strPerQuantity">
+                        <input asp-for="intPk" type="hidden" value="0">
+                        <input asp-for="strBy" type="hidden" value="@CalculationModel.strByProcess">
+                        <input asp-for="intnPkProcessInWorkflow" class="intnPkProcessInWorkflow" type="hidden">
+                        <input asp-for="boolnIsWorkflow" type="hidden" value="@Model.boolnIsWorkflow">
+                        <input id="intnPkWorkflow" type="hidden" value="@ViewBag.intPkWorkflow">
+                        <input id="intJobId" type="hidden" value="@ViewBag.intJobId">
+                        <div class="form-group row">
+                            <div class="col-sm-3">
+                                <div>
+                                    <label class="input-label" for="intnPkProcess">Process</label>
+                                </div>
+                                <div>
+                                    <span class="select" style="width:200px;">
+                                        <select asp-for="intnPkProcess" class="intnPkProcess" required>
+                                            <option value="">Pick one</option>
+                                        </select>
+                                    </span>
+                                    <span asp-validation-for="intnPkProcess" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div>
+                                    <label class="input-label" for="strDescription">Description</label>
+                                </div>
+                                <div>
+                                    <input asp-for="strDescription" class="form-control input-with-dropdowns">
+                                    <span asp-validation-for="strDescription" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div>
+                                    <label class="input-label" for="intnPkProcess">Account</label>
+                                </div>
+                                <div>
+                                    <span class="select" style="width:200px;">
+                                        <select asp-for="intnPkAccount" disabled="@(boolIsAccountant ? null : "disabled")">
+                                            <option value="">Pick one</option>
+                                        </select>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <label class="input-label" for="numnCost">Cost</label>
+                                    <input asp-for="numnCost" class="form-control input-with-dropdowns" step=".0001" type="number" min=".0001" required>
+                                    <span asp-validation-for="numnCost" class="text-danger"></span>
+                                </div>
+                                <div class="col-sm-2">
+                                    <label class="input-label" for="intnQuantity">Quantity</label>
+                                    <input asp-for="numnQuantity" class="form-control input-with-dropdowns" step=".0001" type="number" min=".0001" required>
+                                    <span asp-validation-for="numnQuantity" class="text-danger"></span>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label class="input-label" for="intnMinAmount">Unit of Measurement</label>
+                                    <input type="text" class="busca form-control input-with-dropdowns showUnits" id="strUnitI" name="strUnit" autocomplete="off" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <label class="input-label" for="intnMinAmount">Needed</label>
+                                    <input asp-for="numnNeeded" class="form-control input-with-dropdowns" step=".0001" type="number" min=".0001" required>
+                                    <span asp-validation-for="numnNeeded" class="text-danger"></span>
+                                </div>
+                                <div class="col-sm-2">
+                                    <label class="input-label" for="intnMinAmount">Per Units</label>
+                                    <input asp-for="numnPerUnits" class="form-control input-with-dropdowns" min="1" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <label class="input-label" for="numnmin">Min to Use</label>
+                                    <input asp-for="numnMin" class="form-control input-with-dropdowns" step=".0001" type="number" min="0">
+                                    <span asp-validation-for="numnMin" class="text-danger"></span>
+                                </div>
+                                <div class="col-sm-2">
+                                    <label class="input-label" for="boolIsBlock">In blocks of</label><br />
+                                    <input asp-for="numnBlock" class="form-control input-with-dropdowns" type="number" step=".01" min="0">
+                                </div>
+                                <div id="boolConditionAnd" hidden>
+                                    <input type="hidden" name="boolConditionAnd" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <label class="input-label" for="boolIsEnable">Enable</label><br />
+                                    <div class="row">
+                                        <div class="custom-control custom-radio">
+                                            <input type="radio" class="custom-control-input" id="boolIsEnableTrueCPQ" name="boolIsEnable" value="true" checked>
+                                            <label class="custom-control-label checkbox-label" for="boolIsEnableTrueCPQ">Yes</label>
+                                        </div>
+                                        <div class="custom-control custom-radio ml-2">
+                                            <input type="radio" class="custom-control-input checkbox-label" id="boolIsEnableFalseCPQ" name="boolIsEnable" value="false">
+                                            <label class="custom-control-label checkbox-label" for="boolIsEnableFalseCPQ">No</label>
+                                        </div>
+                                    </div>
+                                    <span asp-validation-for="boolIsEnable" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        @if (Model.intnPkProduct != null && !(bool)ViewBag.boolFromScratch)
+                        {
+                            <div class="row">
+                                <div class="col-sm-4 text-center">
+									<input type="hidden" id="strConditionToApply" name="condition" value="" />
+                                    <button type="button" class="btn btn-info btn-sm openConditionToApplyModal" data-toggle="modal" data-target="#conditionToApplyModal"><b>Conditions to Apply</b></button>
+                                </div>
+                                <div class="col-sm-4 text-center">
+                                    <div class="alert alert-success" id="translatedCondition" hidden>
+
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 text-center">
+                                    <button type="button" class="btn btn-secondary btn-sm delete-condition-to-apply text-red">
+                                        <b>Remove Conditions</b>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                        <div class="form-group">
+                            <div class="col-sm-12 text-center">
+                                <input asp-for="intnPkProduct" type="hidden" value="@Model.intnPkProduct">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-floppy-o" aria-hidden="true"></i> Save
+                                </button>
+                            </div>
+                            <div class="col-sm-12" id="calculationAlert" hidden></div>
+                        </div>
+
+                        @if (Model.intnPkProduct != null)
+                        {
+                            <div class="container">
+                                <div class="form-inline">
+                                    <div class="ml-auto checkbox-switch">
+                                        <div class="show-defaults process-PerQuantity ProcessDefaults-PQ switch-plate" style="width: 120px;">
+                                            <div class="switch" id="switch2" data-on="Template" data-off="Resource"
+                                                 value="true">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <label class="checkbox-label">Show default</label>
+                                </div>
+                            </div>
+                        }
+                    </form>
+                }
+                @* Render table *@
+                <div>
+                    <div id="process-PerQuantity-table"></div>
+                    <div id="process-PerQuantity-table-default"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Collapse of cost base *@
+    <div class="card">
+        <div class="card-header">
+            <a data-toggle="collapse" data-intJobId="@ViewBag.intJobId" data-intnPkWorkflow="@ViewBag.intPkWorkflow" data-hideButtons="@ViewBag.HideFormAttribute" data-boolnIsWorkflow="@Model.boolnIsWorkflow" class="btn btn-link calculations collapsed" data-parent="#accordion2" href="#ProcessBase"
+               data-strCalculationType="@if (ViewBag.boolDefaultCalculationProcess !=null && (bool)ViewBag.boolDefaultCalculationProcess)
+				   {
+					   <text>ProcessDefaults-B</text>
+				   }
+				   else
+				   {
+					   <text>Base</text>
+				   }" data-strBy="process">
+                <i class="fa fa-plus-circle"></i> Cost Base
+            </a>
+        </div>
+        <div id="ProcessBase" class="collapse" data-parent="#accordion2">
+            <div class="card-body">
+                @if (ViewBag.HideFormAttribute == null || !(bool)ViewBag.HideFormAttribute)
+                {
+                    <form class="form-horizontal add-calculation" asp-controller="Calculation" asp-action="AddCalculation" data-strBy="process"
+                          data-strCalculationType="@if (ViewBag.boolDefaultCalculationProcess != null && (bool)ViewBag.boolDefaultCalculationProcess)
+						  {
+					   <text>ProcessDefaults-B</text>
+						  }
+						  else
+						  {
+					   <text>Base</text>
+						  }">
+                        <input asp-for="strCalculationType" type="hidden" value="@CalculationModel.strBase">
+                        <input asp-for="intPk" type="hidden" value="0">
+                        <input asp-for="strBy" type="hidden" value="@CalculationModel.strByProcess">
+                        <input asp-for="intnPkProcessInWorkflow" class="intnPkProcessInWorkflow" type="hidden">
+                        <input asp-for="boolnIsWorkflow" type="hidden" value="@Model.boolnIsWorkflow">
+                        <input id="intnPkWorkflow" type="hidden" value="@ViewBag.intPkWorkflow">
+                        <input id="intJobId" type="hidden" value="@ViewBag.intJobId">
+                        <div class="form-group">
+							<div class="row">
+								<div class="col-sm-3">
+									<div>
+										<label class="input-label" for="email">Process</label>
+									</div>
+									<div>
+										<span class="select" style="width:200px;">
+											<select asp-for="intnPkProcess" class="intnPkProcess" style="@if (ViewBag.boolDefaultCalculationProcess != null && (bool)ViewBag.boolDefaultCalculationProcess)
+									        {<text>pointer-events: none; </text>}" required>
+												<option value="">Pick one</option>
+											</select>
+										</span>
+										<span asp-validation-for="intnPkProcess" class="text-danger"></span>
+									</div>
+								</div>
+								<div class="col-sm-3">
+									<div>
+										<label class="input-label" for="email">Description</label>
+									</div>
+									<div>
+										<input asp-for="strDescription" class="form-control input-with-dropdowns">
+										<span asp-validation-for="strDescription" class="text-danger"></span>
+									</div>
+								</div>
+								<div class="col-sm-2">
+									<div>
+										<label class="input-label" for="intnPkProcess">Account</label>
+									</div>
+									<div>
+										<span class="select" style="width:200px;">
+											<select asp-for="intnPkAccount" disabled="@(boolIsAccountant ? null : "disabled")">
+												<option value="">Pick one</option>
+											</select>
+										</span>
+									</div>
+								</div>
+								<div class="col-sm-2">
+									<label class="input-label" for="email">Base Cost</label>
+									<input asp-for="numnCost" class="form-control input-with-dropdowns" step=".01" type="number" min="1" required>
+									<span asp-validation-for="numnCost" class="text-danger"></span>
+								</div>
+								<div class="col-sm-2">
+									<label class="input-label" for="boolIsEnable">Enable</label><br />
+									<div class="row">
+										<div class="custom-control custom-radio">
+											<input type="radio" class="custom-control-input" id="boolIsEnableTrueCB" name="boolIsEnable" value="true" checked>
+											<label class="custom-control-label checkbox-label" for="boolIsEnableTrueCB">Yes</label>
+										</div>
+										<div class="custom-control custom-radio ml-2">
+											<input type="radio" class="custom-control-input" id="boolIsEnableFalseCB" name="boolIsEnable" value="false">
+											<label class="custom-control-label checkbox-label" for="boolIsEnableFalseCB">No</label>
+										</div>
+									</div>
+									<span asp-validation-for="boolIsEnable" class="text-danger"></span>
+								</div>
+							</div>
+                        </div>
+
+                        @if (Model.intnPkProduct != null && !(bool)ViewBag.boolFromScratch)
+						{
+                            <div class="row">
+                                <div class="col-sm-4 text-center">
+									<input type="hidden" id="strConditionToApply" name="condition" value="" />
+                                    <button type="button" class="btn btn-info btn-sm openConditionToApplyModal" data-toggle="modal" data-target="#conditionToApplyModal"><b>Conditions to Apply</b></button>
+                                </div>
+                                <div class="col-sm-4 text-center">
+                                    <div class="alert alert-success" id="translatedCondition" hidden>
+
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 text-center">
+                                    <button type="button" class="btn btn-secondary btn-sm delete-condition-to-apply text-red">
+                                        <b>Remove Conditions</b>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+
+                        <input asp-for="intnPkProduct" type="hidden" value="@Model.intnPkProduct">
+                        <div class="form-group">
+                            <div class="col-sm-12 text-center">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-floppy-o" aria-hidden="true"></i> Save
+                                </button>
+                            </div>
+                            <div class="col-sm-12" id="calculationAlert" hidden></div>
+                        </div>
+
+                        @if (Model.intnPkProduct != null && !(bool)ViewBag.boolFromScratch)
+						{
+                            <div class="container">
+                                <div class="form-inline">
+                                    <div class="ml-auto checkbox-switch">
+                                        <div class="show-defaults process-Base ProcessDefaults-B switch-plate" style="width: 120px;">
+                                            <div class="switch" id="switch2" data-on="Template" data-off="Resource"
+                                                 value="true">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <label class="checkbox-label">Show default</label>
+                                </div>
+                            </div>
+                        }
+                    </form>
+                }
+                @* Render partial *@
+                <div>
+                    <div id="process-Base-table"></div>
+                    <div id="process-Base-table-default"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Collapse of Time Per Quantity *@
+    <div class="card">
+        <div class="card-header">
+            <a data-toggle="collapse" data-intJobId="@ViewBag.intJobId" data-intnPkWorkflow="@ViewBag.intPkWorkflow" data-hideButtons="@ViewBag.HideFormAttribute" data-boolnIsWorkflow="@Model.boolnIsWorkflow" class="btn btn-link calculations collapsed" data-parent="#accordion2" href="#ProcessTimePerQuantity"
+               data-strCalculationType="@if (ViewBag.boolDefaultCalculationProcess !=null && (bool)ViewBag.boolDefaultCalculationProcess)
+				   {
+					   <text>ProcessDefaults-PQ</text>
+				   }
+				   else
+				   {
+					   <text>PerQuantity</text>
+				   }" data-strBy="processTime">
+                <i class="fa fa-plus-circle"></i> Time Per Quantity
+            </a>
+        </div>
+        <div id="ProcessTimePerQuantity" class="collapse" data-parent="#accordion2">
+            <div class="card-body">
+                @if (ViewBag.HideFormAttribute == null || !(bool)ViewBag.HideFormAttribute)
+                {
+                    <form class="form-horizontal add-calculation" asp-controller="Calculation" asp-action="AddProcessTimeCalculation" data-strBy="processTime"
+                          data-strCalculationType="@if (ViewBag.boolDefaultCalculationProcess != null && (bool)ViewBag.boolDefaultCalculationProcess)
+							  {
+					   <text>ProcessDefaults-PQ</text>
+							  }
+							  else
+							  {
+					   <text>PerQuantity</text>
+							  }">
+                        <input asp-for="strCalculationType" type="hidden" value="@CalculationModel.strPerQuantity">
+                        <input asp-for="intPk" type="hidden" value="0">
+                        <input asp-for="strBy" type="hidden" value="@CalculationModel.strByProcess">
+                        <input asp-for="intnPkProcessInWorkflow" class="intnPkProcessInWorkflow" type="hidden">
+                        <input asp-for="boolnIsWorkflow" type="hidden" value="@Model.boolnIsWorkflow">
+                        <input id="intnPkWorkflow" type="hidden" value="@ViewBag.intPkWorkflow">
+                        <input id="intJobId" type="hidden" value="@ViewBag.intJobId">
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <div>
+                                    <label class="input-label" for="intnPkProcess">Process</label>
+                                </div>
+                                <div>
+                                    <span class="select" style="width: 100%;">
+                                        <select asp-for="intnPkProcess" class="intnPkProcess" required>
+                                            <option value="">Pick one</option>
+                                        </select>
+                                    </span>
+                                    <span asp-validation-for="intnPkProcess" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="input-label" for="strDescription">Description</label>
+                                <input asp-for="strDescription" class="form-control input-with-dropdowns">
+                                <span asp-validation-for="strDescription" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <label class="input-label" for="numnCost">Hours</label>
+                                    <span class="select" style="width:200px;">
+                                        <select asp-for="intnHours" required>
+                                            @for (int i = 0; i <= 24; i = i + 1)
+                                            {
+                                                <option>@i</option>
+                                            }
+                                        </select>
+                                    </span>
+                                </div>
+                                <div class="col-sm-2">
+                                    <label class="input-label" for="numnCost">Minutes</label>
+                                    <span class="select" style="width:200px;">
+                                        <select asp-for="intnMinutes" required>
+                                            @for (int i = 0; i <= 59; i = i + 1)
+                                            {
+                                                <option>@i</option>
+                                            }
+                                        </select>
+                                    </span>
+                                </div>
+                                <div class="col-sm-2">
+                                    <label class="input-label" for="numnCost">Seconds</label>
+                                    <span class="select" style="width:200px;">
+                                        <select asp-for="intnSeconds" required>
+                                            @for (int i = 0; i <= 59; i = i + 1)
+                                            {
+                                                <option>@i</option>
+                                            }
+                                        </select>
+                                    </span>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label class="input-label" for="intnQuantity">Quantity</label>
+                                    <input asp-for="numnQuantity" class="form-control input-with-dropdowns" step=".0001" type="number" min=".0001" required>
+                                    <span asp-validation-for="numnQuantity" class="text-danger"></span>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label class="input-label" for="intnMinAmount">Unit of Measurement</label>
+                                    <input type="text" class="busca form-control input-with-dropdowns showUnits" id="strUnitI" name="strUnit" autocomplete="off" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <label class="input-label" for="intnMinAmount">Needed</label>
+                                    <input asp-for="numnNeeded" class="form-control input-with-dropdowns" step=".0001" type="number" min=".0001" required>
+                                    <span asp-validation-for="numnNeeded" class="text-danger"></span>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label class="input-label" for="intnMinAmount">Per Units</label>
+                                    <input asp-for="numnPerUnits" class="form-control input-with-dropdowns" min="1" required>
+                                </div>
+                                <div class="col-sm-2">
+                                    <label class="input-label" for="boolIsEnable">Enable</label><br />
+                                    <div class="row">
+                                        <div class="custom-control custom-radio">
+                                            <input type="radio" class="custom-control-input" id="boolIsEnableTrueTPQ" name="boolIsEnable" value="true" checked>
+                                            <label class="custom-control-label checkbox-label" for="boolIsEnableTrueTPQ">Yes</label>
+                                        </div>
+                                        <div class="custom-control custom-radio ml-2">
+                                            <input type="radio" class="custom-control-input" id="boolIsEnableFalseTPQ" name="boolIsEnable" value="false">
+                                            <label class="custom-control-label checkbox-label" for="boolIsEnableFalseTPQ">No</label>
+                                        </div>
+                                    </div>
+                                    <span asp-validation-for="boolIsEnable" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        @if (Model.intnPkProduct != null && !(bool)ViewBag.boolFromScratch)
+						{
+                            <div class="row">
+                                <div class="col-sm-4 text-center">
+									<input type="hidden" id="strConditionToApply" name="condition" value="" />
+                                    <button type="button" class="btn btn-info btn-sm openConditionToApplyModal" data-toggle="modal" data-target="#conditionToApplyModal"><b>Conditions to Apply</b></button>
+                                </div>
+                                <div class="col-sm-4 text-center">
+                                    <div class="alert alert-success" id="translatedCondition" hidden>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 text-center">
+                                    <button type="button" class="btn btn-secondary btn-sm delete-condition-to-apply text-red">
+                                        <b>Remove Conditions</b>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                        <div class="form-group">
+                            <div class="col-sm-12 text-center">
+                                <input asp-for="intPkProduct" type="hidden" value="@Model.intnPkProduct">
+                                <input asp-for="intnPkProduct" type="hidden" value="@Model.intnPkProduct">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-floppy-o" aria-hidden="true"></i> Save
+                                </button>
+                            </div>
+                            <div class="col-sm-12" id="calculationAlert" hidden></div>
+                        </div>
+                    </form>
+                }
+                @* Render table *@
+                <div>
+                    <div id="processTime-PerQuantity-table"></div>
+                    <div id="processTime-PerQuantity-table-default"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* Collapse of Time base *@
+    <div class="card">
+        <div class="card-header">
+            <a data-toggle="collapse" data-intJobId="@ViewBag.intJobId" data-intnPkWorkflow="@ViewBag.intPkWorkflow" data-hideButtons="@ViewBag.HideFormAttribute" data-boolnIsWorkflow="@Model.boolnIsWorkflow" class="btn btn-link calculations collapsed" data-parent="#accordion2" href="#ProcessTimeBase"
+               data-strCalculationType="@if (ViewBag.boolDefaultCalculationProcess !=null && (bool)ViewBag.boolDefaultCalculationProcess)
+				   {
+					   <text>ProcessDefaults-B</text>
+				   }
+				   else
+				   {
+					   <text>Base</text>
+				   }" data-strBy="processTime">
+                <i class="fa fa-plus-circle"></i> Time Base
+            </a>
+        </div>
+        <div id="ProcessTimeBase" class="collapse" data-parent="#accordion2">
+            <div class="card-body">
+                @if (ViewBag.HideFormAttribute == null || !(bool)ViewBag.HideFormAttribute)
+                {
+                    <form class="form-horizontal add-calculation" asp-controller="Calculation" asp-action="AddProcessTimeCalculation" data-strBy="processTime"
+                          data-strCalculationType="@if (ViewBag.boolDefaultCalculationProcess != null && (bool)ViewBag.boolDefaultCalculationProcess)
+							  {
+					   <text>ProcessDefaults-B</text>
+							  }
+							  else
+							  {
+					   <text>Base</text>
+							  }">
+                        <input asp-for="strCalculationType" type="hidden" value="@CalculationModel.strBase">
+                        <input asp-for="intPk" type="hidden" value="0">
+                        <input asp-for="strBy" type="hidden" value="@CalculationModel.strByProcess">
+                        <input asp-for="intnPkProcessInWorkflow" class="intnPkProcessInWorkflow" type="hidden">
+                        <input asp-for="boolnIsWorkflow" type="hidden" value="@Model.boolnIsWorkflow">
+                        <input id="intnPkWorkflow" type="hidden" value="@ViewBag.intPkWorkflow">
+                        <input id="intJobId" type="hidden" value="@ViewBag.intJobId">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div>
+                                        <label class="input-label" for="email">Process</label>
+                                    </div>
+                                    <div>
+                                        <span class="select" style="width: 100%;">
+                                            <select asp-for="intnPkProcess" class="intnPkProcess" style="@if (ViewBag.boolDefaultCalculationProcess != null && (bool)ViewBag.boolDefaultCalculationProcess)
+										{<text>pointer-events: none; </text>}" required>
+                                                <option value="">Pick one</option>
+                                            </select>
+                                        </span>
+                                        <span asp-validation-for="intnPkProcess" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-5">
+                                    <label class="input-label" for="email">Description</label>
+                                    <input asp-for="strDescription" class="form-control input-with-dropdowns">
+                                    <span asp-validation-for="strDescription" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <label class="input-label" for="intnHours">Hours</label>
+                                    <span class="select" style="width:200px;">
+                                        <select asp-for="intnHours" required>
+                                            @for (int i = 0; i <= 24; i = i + 1)
+                                            {
+                                                <option>@i</option>
+                                            }
+                                        </select>
+                                    </span>
+                                </div>
+                                <div class="col-sm-2">
+                                    <label class="input-label" for="intnMinutes">Minutes</label>
+                                    <span class="select" style="width:200px;">
+                                        <select asp-for="intnMinutes" required>
+                                            @for (int i = 0; i <= 59; i = i + 1)
+                                            {
+                                                <option>@i</option>
+                                            }
+                                        </select>
+                                    </span>
+                                </div>
+                                <div class="col-sm-2">
+                                    <label class="input-label" for="intnSeconds">Seconds</label>
+                                    <span class="select" style="width:200px;">
+                                        <select asp-for="intnSeconds" required>
+                                            @for (int i = 0; i <= 59; i = i + 1)
+                                            {
+                                                <option>@i</option>
+                                            }
+                                        </select>
+                                    </span>
+                                </div>
+                                <div class="col-sm-2">
+                                    <label class="input-label" for="boolIsEnable">Enable</label><br />
+                                    <div class="row">
+                                        <div class="custom-control custom-radio">
+                                            <input type="radio" class="custom-control-input" id="boolIsEnableTrueTB" name="boolIsEnable" value="true" checked>
+                                            <label class="custom-control-label checkbox-label" for="boolIsEnableTrueTB">Yes</label>
+                                        </div>
+                                        <div class="custom-control custom-radio ml-2">
+                                            <input type="radio" class="custom-control-input" id="boolIsEnableFalseTB" name="boolIsEnable" value="false">
+                                            <label class="custom-control-label checkbox-label" for="boolIsEnableFalseTB">No</label>
+                                        </div>
+                                    </div>
+                                    <span asp-validation-for="boolIsEnable" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (Model.intnPkProduct != null && !(bool)ViewBag.boolFromScratch)
+                        {
+                            <div class="row">
+                                <div class="col-sm-4 text-center">
+									<input type="hidden" id="strConditionToApply" name="condition" value="" />
+                                    <button type="button" class="btn btn-info btn-sm openConditionToApplyModal" data-toggle="modal" data-target="#conditionToApplyModal"><b>Conditions to Apply</b></button>
+                                </div>
+                                <div class="col-sm-4 text-center">
+                                    <div class="alert alert-success" id="translatedCondition" hidden>
+
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 text-center">
+                                    <button type="button" class="btn btn-secondary btn-sm delete-condition-to-apply text-red">
+                                        <b>Remove Conditions</b>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+
+                        <input asp-for="intPkProduct" type="hidden" value="@Model.intnPkProduct">
+                        <div class="form-group">
+                            <div class="col-sm-12 text-center">
+                                <input asp-for="intnPkProduct" type="hidden" value="@Model.intnPkProduct">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-floppy-o" aria-hidden="true"></i> Save
+                                </button>
+                            </div>
+                            <div class="col-sm-12" id="calculationAlert" hidden></div>
+                        </div>
+                    </form>
+                }
+                @* Render partial *@
+                <div>
+                    <div id="processTime-Base-table"></div>
+                    <div id="processTime-Base-table-default"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

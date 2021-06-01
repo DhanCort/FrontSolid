@@ -1,0 +1,296 @@
+﻿@model List<Odyssey2Frontend.Models.JobsModel>
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    String strTitle = null;
+    if (
+        ViewBag.boolnUnsubmitted != null && (bool)ViewBag.boolnUnsubmitted
+        )
+    {
+        strTitle = "Unsubmitted Jobs";
+    }
+    else if (
+        ViewBag.boolnInEstimating != null && (bool)ViewBag.boolnInEstimating
+        )
+    {
+        strTitle = "In Estimating Jobs";
+    }
+    else if (
+        ViewBag.boolnWaitingForPriceApproval != null && (bool)ViewBag.boolnWaitingForPriceApproval
+        )
+    {
+        strTitle = "Waiting for Price Approval Jobs";
+    }
+    else if (
+        ViewBag.boolnPendingStage != null && (bool)ViewBag.boolnPendingStage
+        )
+    {
+        strTitle = "Pending Jobs";
+    }
+    else if (
+        ViewBag.boolnInProgressStage != null && (bool)ViewBag.boolnInProgressStage
+        )
+    {
+        strTitle = "In Progress Jobs";
+    }
+    else if (
+        ViewBag.boolnNotPaid != null && (bool)ViewBag.boolnNotPaid
+        )
+    {
+        strTitle = "Waiting For Payment Jobs";
+    }
+    else
+    {
+        strTitle = "Completed Jobs";
+    }
+
+    ViewData["Title"] = strTitle;
+    String strPrintshopName = HttpContextAccessor.HttpContext.Session.GetString("strPrintshopName");
+    String strPrintshopId = HttpContextAccessor.HttpContext.Session.GetString("strPrintshopId");
+    bool boolIsAccountant = bool.Parse(HttpContextAccessor.HttpContext.Session.GetString("boolIsAccountant") ?? "false");
+}
+
+<h2>@strTitle <span class="badge badge-primary text-center mb-4" style="min-width: 50px; background-color: #59a2c8">@Model.Count()</span></h2>
+
+@if (!String.IsNullOrEmpty(strPrintshopId))
+{
+	if (Model.Count > 0)
+	{
+		<div id="jobsTable" class="table-responsive" style="min-height: 55vh;">
+			<table class="table table-sm table-hover" id="jobsTable">
+				<thead>
+					<tr>
+						@*<th>
+								Order ID
+							</th>*@
+						<th>
+							Job Number
+						</th>
+						<th>
+							Customer
+						</th>
+						<th>
+							Job Name
+						</th>
+						<th>
+							Product Name
+						</th>
+						@*<th>
+								Category
+							</th>*@
+						<th>
+							Date Added
+						</th>
+						@if (ViewBag.boolnInProgressStage != null && (bool)ViewBag.boolnInProgressStage)
+						{
+							<th>Progress</th>
+						}
+						<th colspan="2"></th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var item in Model)
+					{
+						<tr id="tr_@item.intJobId">
+							@*<td>
+									@((item.intnOrderId == -1 ? "-" : (item.intnOrderId + "")))
+								</td>*@
+                            <td>
+                                @Html.DisplayFor(modelItem => item.strJobNumber)
+                                <i class="fa fa-info-circle" aria-hidden="true" data-toggle="tooltip" data-html="true"
+								   title="Website Order Id: @item.intnOrderId <br/> Website Job Id: @item.intJobId" data-placement="right"></i>
+                            </td>
+							<td>
+								@Html.DisplayFor(modelItem => item.strCustomerName)
+							</td>
+							<td id="td_@item.intJobId">
+								@Html.DisplayFor(modelItem => item.strJobTicket)
+							</td>
+							<td>
+								@Html.DisplayFor(modelItem => item.strProductName)
+							</td>
+							@*<td>@Html.DisplayFor(modelItem => item.strProductCategory)</td>*@
+							<td>
+								@*@Html.DisplayFor(modelItem => item.dateLastUpdate)*@
+								@(item.dateLastUpdate != null ? Convert.ToDateTime(item.dateLastUpdate).ToString("MM/dd/yyyy"): "")
+							</td>
+							@if (ViewBag.boolnInProgressStage != null && (bool)ViewBag.boolnInProgressStage)
+							{
+								<td class="p-3">
+									<div class="progress" style="height: 20px !important">
+										<div class="progress-bar progress-bar-striped progress-bar-animated" style="width:@item.numProgress%">
+											@item.numProgress %
+										</div>
+									</div>
+								</td>
+							}
+							@*<td>
+									<button type="button" class="btn btn-sm btn-info" onclick="calculateJob(@item.intJobId)"><i class="fa fa-calculator"></i> Calculate</button>
+								</td>*@
+
+                            @if (
+                                (ViewBag.boolnInEstimating != null && (bool)ViewBag.boolnInEstimating) ||
+                                (ViewBag.boolnWaitingForPriceApproval != null && (bool)ViewBag.boolnWaitingForPriceApproval)
+                                )
+                            {
+                                <td colspan="3">
+                                    <div class="dropdown workflow-job-dropdown" data-intPkProduct="@item.intPkProduct" data-intJobId="@item.intJobId" data-service="Estimate">
+                                        <button type="button" class="btn btn-sm btn-info dropdown-toggle" data-toggle="dropdown">
+                                            <i class="fa fa-usd" aria-hidden="true"></i> Estimates
+                                        </button>
+                                        <div class="dropdown-menu" style="overflow-y:auto !important; max-height: 200px; z-index: 4 !important">
+                                            <div class="col-sm-12 text-center"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only"></span></div>
+                                        </div>
+                                    </div>
+                                </td>
+                            }
+                            else if (
+                                (ViewBag.boolnPendingStage != null && (bool)ViewBag.boolnPendingStage)
+                                )
+                            {
+                                <td>
+                                    <div class="dropdown workflow-job-dropdown" data-intPkProduct="@item.intPkProduct" data-intJobId="@item.intJobId" data-service="Workflow">
+                                        <button type="button" class="btn btn-sm btn-info dropdown-toggle" data-toggle="dropdown">
+                                            <i class="fa fa-code-fork" aria-hidden="true"></i> Workflow
+                                        </button>
+                                        <div class="dropdown-menu" style="overflow-y:auto !important; max-height: 200px; z-index: 4 !important">
+                                            <div class="col-sm-12 text-center"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only"></span></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="dropdown workflow-job-dropdown" data-intPkProduct="@item.intPkProduct" data-intJobId="@item.intJobId" data-service="Ticket">
+                                        <button type="button" class="btn btn-sm btn-info dropdown-toggle" data-toggle="dropdown">
+                                            <i class="fa fa-file" aria-hidden="true"></i> Ticket
+                                        </button>
+                                        <div class="dropdown-menu" style="overflow-y:auto !important; max-height: 200px; z-index: 4 !important">
+                                            <div class="col-sm-12 text-center"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only"></span></div>
+                                        </div>
+                                    </div>
+                                </td>
+                            }
+                            else if (
+                                (ViewBag.boolnInProgressStage != null && (bool)ViewBag.boolnInProgressStage) ||
+                                (ViewBag.boolnCompletedStage != null && (bool)ViewBag.boolnCompletedStage)
+                                )
+                            {
+                                <td>
+                                    @if (
+                                   item.intPkWorkflow > 0
+                                   )
+                                    {
+                                        <a asp-controller="Jobs" asp-action="Workflow" asp-route-intJobId="@item.intJobId" asp-route-intPkWorkflow="@item.intPkWorkflow" class="btn btn-sm btn-info wfJobHref">
+                                            <i class="fa fa-code-fork" aria-hidden="true"></i> Workflow
+                                        </a>
+                                    }
+                                </td>
+                                <td>
+                                    @if (
+                                    item.intPkWorkflow > 0
+                                    )
+                                    {
+                                        <a data-intjobid="@item.intJobId" data-intpkproduct="@item.intPkProduct"
+                                           data-intpkworkflow="@item.intPkWorkflow" data-strname="@item.strProductName"
+                                           class="btn btn-sm btn-info download-ticket" href="#">
+                                            <i class="fa fa-file" aria-hidden="true"></i> Ticket
+                                        </a>
+                                    }
+                                </td>
+                                if (
+                                    boolIsAccountant && item.intPkWorkflow > 0
+                                    )
+                                {
+                                    <td>
+                                        <button class="btn btn-sm btn-info openMovements">
+                                            <i class="fa fa-file-text-o" aria-hidden="true"></i> Accounting Details
+                                        </button>
+                                    </td>
+                                }
+
+                            }
+                            else if (
+                                (ViewBag.boolnNotPaid != null && (bool)ViewBag.boolnNotPaid)
+                                )
+                            {
+                                if (
+                                    boolIsAccountant && item.intPkWorkflow > 0
+                                    )
+                                {
+                                    <td>
+                                        <button class="btn btn-sm btn-info openMovements">
+                                            <i class="fa fa-file-text-o" aria-hidden="true"></i> Accounting Details
+                                        </button>
+                                    </td>
+                                }
+
+                                @if (
+                                  item.intPkWorkflow > 0
+                                  )
+                                {
+                                    <td>
+                                        <a data-intjobid="@item.intJobId" data-intpkproduct="@item.intPkProduct"
+                                           data-intpkworkflow="@item.intPkWorkflow" data-strname="@item.strProductName"
+                                           class="btn btn-sm btn-info download-ticket" href="#">
+                                            <i class="fa fa-file" aria-hidden="true"></i> Ticket
+                                        </a>
+                                    </td>
+                                }
+                            }
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div id="result_calculation"></div>
+
+        <!-- Activity modal -->
+        <div class="modal fade" id="movementsModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Accounting Details</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body" id="movementsModalBody">
+
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="col-md-12">
+            <div class="alert alert-info text-center">
+                There are no records to show
+            </div>
+        </div>
+    }
+
+    @section Scripts {
+        <script>
+            funGoToJobOrEstimate();
+        </script>
+    }
+}
+else
+{
+    <div class="col-md-12">
+        <div class="alert alert-info text-center">
+            The Printshop needs to be selected.
+        </div>
+    </div>
+}
